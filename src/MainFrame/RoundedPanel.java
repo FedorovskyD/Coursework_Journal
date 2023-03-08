@@ -26,6 +26,9 @@ public class RoundedPanel extends JPanel {
         super.paintComponent(g);
     }
 
+    public RoundedPanelHeader getPerson1() {
+        return person1;
+    }
 }
 
 
