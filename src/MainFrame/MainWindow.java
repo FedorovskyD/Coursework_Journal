@@ -40,7 +40,7 @@ public class MainWindow extends JFrame {
     }
 
     public MainWindow() {
-
+        studentCard = new StudentCardPanel();
         // Устанавливаем компоновку GridLayout
         GroupLayout groupLayout = new GroupLayout(getContentPane());
         getContentPane().setLayout(groupLayout);
@@ -76,12 +76,6 @@ public class MainWindow extends JFrame {
                 addStudentDialog.setVisible(true);
             }
         });
-
-
-//        RoundedPanel studentCard1 = new RoundedPanel(100);
-//        studentCard1.setBackground(new Color(193, 193, 209));
-//        studentCard1.setBorder(createLineBorder(new Color(117, 117, 142), 100, true));
-
         // Создаем таблицу для отображения студентов
         // Создание заголовков столбцов
         String[] columns = {"Фамилия", "Имя", "Отчество", "Почта", "ID"};
@@ -97,54 +91,46 @@ public class MainWindow extends JFrame {
         // Создание таблицы и установка модели
         studentTable = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(studentTable);
-        // Установка цвета для четных строк
+        studentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Выбор только одной строки
         studentTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                // Если строка выделена, установить цвет фона
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 if (isSelected) {
-                    setBackground(table.getSelectionBackground());
+                    setBackground(Color.YELLOW); // Задаем желтый фон для выделенной строки
                 } else {
-                    setBackground(table.getBackground());
+                    setBackground(table.getBackground()); // Возвращаем цвет фона по умолчанию
                 }
-//				if (row % 2 == 0) {
-//					c.setBackground(Color.LIGHT_GRAY);
-//				} else {
-//					c.setBackground(Color.WHITE);
-//				}
-                return c;
+                return this;
             }
         });
-        // Получить объект ListSelectionModel
-        ListSelectionModel selectionModel = studentTable.getSelectionModel();
-        // Установить режим выделения
-        selectionModel.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        // Установить цвет фона для выделения
-        studentTable.setSelectionBackground(Color.YELLOW);
-        studentCard = new StudentCardPanel();
-        // Добавляем слушателя событий выбора строки
-        studentTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent event) {
-                // Получаем индекс выбранной строки
-                int row = studentTable.getSelectedRow();
-                // Получаем данные из выбранной строки
-                long id = Long.parseLong(studentTable.getValueAt(row, 4).toString());
 
-                Student student = MySQLConnector.getStudentById(id);
-                studentCard.getFullNameLabel().setText(student.getSurname() + " " + student.getName() +
-                        " " + student.getMiddleName());
-                studentCard.getEmailLabel().setText(student.getEmail());
-                studentCard.getPhoneLabel().setText(student.getTelephone());
+        studentTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                    int selectedRow = studentTable.getSelectedRow();
+                    if (selectedRow != -1) {
+                        long data = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
+
+                        Student student = MySQLConnector.getStudentById(data);
+                        studentCard.getFullNameLabel().setText(student.getSurname() + " " + student.getName() +
+                                " " + student.getMiddleName());
+                        studentCard.getEmailLabel().setText(student.getEmail());
+                        studentCard.getPhoneLabel().setText(student.getTelephone());
+                    }
+                }
             }
         });
+        // Добавляем слушателя событий выбора строки
 
         TableColumn column = studentTable.getColumnModel().getColumn(4);
 
         // Устанавливаем ширину колонки в 0
-        column.setMinWidth(0);
-        column.setMaxWidth(0);
-        column.setWidth(0);
-        column.setPreferredWidth(0);
+//        column.setMinWidth(0);
+//        column.setMaxWidth(0);
+//        column.setWidth(0);
+//        column.setPreferredWidth(0);
         // Заполнение таблицы начальными данными
         String selectedGroup = (String) groupNumberCmb.getSelectedItem();
         List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
@@ -187,7 +173,7 @@ public class MainWindow extends JFrame {
                     DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
                     model.setRowCount(0); // удаление всех строк
                     for (Student student : students) {
-                        model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail()});
+                        model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail(),student.getId()});
                     }
                 }
             });
