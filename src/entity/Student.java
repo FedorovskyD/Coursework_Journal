@@ -1,11 +1,5 @@
 package entity;
 
-import connection.MySQLConnector;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
 public class Student {
     private int id;
     private String name;
@@ -13,6 +7,23 @@ public class Student {
     private String middlename;
     private String telephone;
     private String email;
+    private long group;
+
+    public String getMiddlename() {
+        return middlename;
+    }
+
+    public void setMiddlename(String middlename) {
+        this.middlename = middlename;
+    }
+
+    public long getGroup() {
+        return group;
+    }
+
+    public void setGroup(long group) {
+        this.group = group;
+    }
 
     private int age;
 
@@ -23,6 +34,7 @@ public class Student {
         this.age = age;
         this.email="default email";
     }
+    public Student(){}
 
     public int getId() {
         return id;
