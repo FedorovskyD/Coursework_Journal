@@ -15,13 +15,26 @@ import java.util.List;
 import static javax.swing.BorderFactory.createLineBorder;
 
 public class MainWindow extends JFrame {
-	protected JMenuBar menuBar;
-	protected JMenu fileMenu;
-	protected JButton addStudentbtn;
-	protected final JLabel groupNumberLbl;
-	protected JComboBox<String> groupNumberCmb;
-	protected JPanel studentCard;
-	protected JTable studentTable;
+	private JMenuBar menuBar;
+	private JMenu fileMenu;
+	private final JLabel groupNumberLbl;
+	private JComboBox<String> groupNumberCmb;
+	private JPanel studentCard;
+	private JButton addStudentBtn;
+
+	public JComboBox<String> getGroupNumberCmb() {
+		return groupNumberCmb;
+	}
+
+	public JTable getStudentTable() {
+		return studentTable;
+	}
+
+	private JTable studentTable;
+
+	public JButton getAddStudentBtn() {
+		return addStudentBtn;
+	}
 
 	public MainWindow() {
 
@@ -51,7 +64,15 @@ public class MainWindow extends JFrame {
 		groupNumberCmb.setPreferredSize(new Dimension(15, 20));
 		groupNumberCmb.setMaximumSize(new Dimension(24, 15));
 		// Создаем кнопки
-		addStudentbtn = new JButton("Добавить студента");
+		addStudentBtn = new JButton("Добавить студента");
+		MainWindow mainWindow = this;
+		addStudentBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AddStudentDialog addStudentDialog = new AddStudentDialog(mainWindow);
+				addStudentDialog.setVisible(true);
+			}
+		});
 
 
 
@@ -105,6 +126,7 @@ studentCard = new StudentCardPanel();
 		model.setRowCount(0); // удаление всех строк
 		for (Student student : students) {
 			model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail()});
+
 			// Компановка главной панели
 			groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
 					.addGroup(groupLayout.createSequentialGroup()
@@ -114,8 +136,9 @@ studentCard = new StudentCardPanel();
 							.addComponent(scrollPane)
 							.addComponent(studentCard)
 							.addGroup(groupLayout.createParallelGroup()
-									.addComponent(addStudentbtn)))
 
+									.addComponent(addStudentBtn))
+					)
 			);
 			groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
 					.addGroup(groupLayout.createSequentialGroup()
@@ -125,21 +148,12 @@ studentCard = new StudentCardPanel();
 							.addComponent(scrollPane))
 					.addComponent(studentCard)
 					.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(addStudentbtn))
+
+							.addComponent(addStudentBtn))
 			);
 			// Добавление слушателей
-			MainWindow mainWindow = this;
+
 			Listener listener = new Listener(this);
-			addStudentbtn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					AddStudentDialog dialog = new AddStudentDialog(mainWindow);
-					System.out.println(
-							dialog
-					);
-					dialog.setVisible(true);
-				}
-			});
 			groupNumberCmb.addActionListener(listener);
 		}
 	}

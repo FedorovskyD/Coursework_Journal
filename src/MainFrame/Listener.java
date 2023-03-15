@@ -23,13 +23,13 @@ public class Listener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == mainWindow.addStudentbtn) {
+		if (e.getSource() == mainWindow.getAddStudentBtn()) {
 			AddStudentDialog dialog = new AddStudentDialog(mainWindow);
 			dialog.setVisible(true);
-		} else if (e.getSource() == mainWindow.groupNumberCmb) {
-			String selectedGroup = (String) mainWindow.groupNumberCmb.getSelectedItem();
+		} else if (e.getSource() == mainWindow.getGroupNumberCmb()) {
+			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
 			List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
-			DefaultTableModel model = (DefaultTableModel) mainWindow.studentTable.getModel();
+			DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
 			model.setRowCount(0); // удаление всех строк
 			for (Student student : students) {
 				model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail()});
