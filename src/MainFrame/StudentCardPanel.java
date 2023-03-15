@@ -25,6 +25,38 @@ public class StudentCardPanel extends JPanel {
 	private JCheckBox lectureCheckBox;
 	private JCheckBox labCheckBox;
 
+	public JLabel getPhotoLabel() {
+		return photoLabel;
+	}
+
+	public JLabel getFullNameLabel() {
+		return fullNameLabel;
+	}
+
+	public JLabel getPhoneLabel() {
+		return phoneLabel;
+	}
+
+	public JLabel getEmailLabel() {
+		return emailLabel;
+	}
+
+	public void setPhotoLabel(JLabel photoLabel) {
+		this.photoLabel = photoLabel;
+	}
+
+	public void setFullNameLabel(JLabel fullNameLabel) {
+		this.fullNameLabel = fullNameLabel;
+	}
+
+	public void setPhoneLabel(JLabel phoneLabel) {
+		this.phoneLabel = phoneLabel;
+	}
+
+	public void setEmailLabel(JLabel emailLabel) {
+		this.emailLabel = emailLabel;
+	}
+
 	public StudentCardPanel() {
 		setLayout(new BorderLayout());
 
@@ -43,7 +75,7 @@ public class StudentCardPanel extends JPanel {
 		infoPanel.add(photoLabel, gbc);
 
 		// Добавление ФИО
-		fullNameLabel = new JLabel("Иванов Иван Иванович");
+		fullNameLabel = new JLabel();
 		fullNameLabel.setFont(new Font("Arial", Font.BOLD, 20));
 		gbc.gridx = 1;
 		gbc.gridheight = 1;
@@ -134,6 +166,7 @@ public class StudentCardPanel extends JPanel {
 			checkBox.setSelected(value != null && ((Boolean) value).booleanValue());
 			return checkBox;
 		}
+
 	}
 
 	public static void main(String[] args) {

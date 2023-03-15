@@ -1,20 +1,20 @@
 package entity;
 
 public class Student {
-    private int id;
-    private String name;
-    private String surname;
-    private String middlename;
-    private String telephone;
-    private String email;
-    private long group;
+    private int id ;
+    private String name ;
+    private String surname ;
+    private String middleName ;
+    private String telephone ;
+    private String email ;
+    private long group ;
 
-    public String getMiddlename() {
-        return middlename;
+    public String getMiddleName() {
+        return middleName;
     }
 
-    public void setMiddlename(String middlename) {
-        this.middlename = middlename;
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
     }
 
     public long getGroup() {
@@ -66,14 +66,6 @@ public class Student {
 
     public void setAge(int age) {
         this.age = age;
-    }
-
-    public String getMiddleName() {
-        return middlename;
-    }
-
-    public void setMiddleName(String middlename) {
-        this.middlename = middlename;
     }
 
     public String getTelephone() {

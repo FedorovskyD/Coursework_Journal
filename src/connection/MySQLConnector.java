@@ -86,7 +86,7 @@ public class MySQLConnector {
 				student.setId(rs.getInt("ID"));
 				student.setName(rs.getString("FirstName"));
 				student.setSurname(rs.getString("LastName"));
-				student.setMiddlename(rs.getString("MiddleName"));
+				student.setMiddleName(rs.getString("MiddleName"));
 				student.setEmail(rs.getString("Email"));
 				//student.setGroup(rs.getString("GroupNumber"));
 				// Добавление экземпляра в список студентов
@@ -119,5 +119,52 @@ public class MySQLConnector {
 
 		return groupId;
 	}
+
+	public static Student getStudentById(long id)  {
+		// Установить соединение с базой данных
+		PreparedStatement preparedStatement = null;
+		ResultSet resultSet = null;
+		Student student = new Student();
+		try {
+			Connection connection = getConnection();
+
+			// Создать объект PreparedStatement
+			preparedStatement = connection.prepareStatement("SELECT * FROM student WHERE id=?");
+
+			// Установить значение параметра id
+			preparedStatement.setLong(1, id);
+
+			// Выполнить запрос
+			resultSet = preparedStatement.executeQuery();
+
+			// Извлечь данные студента из ResultSet
+
+			if (resultSet.next()) {
+				String firstName = resultSet.getString("FirstName");
+				String lastName = resultSet.getString("LastName");
+				String middleName = resultSet.getString("MiddleName");
+				String telephone = resultSet.getString("Telephone");
+				String email = resultSet.getString("Email");
+				student = new Student();
+				student.setName(firstName);
+				student.setSurname(lastName);
+				student.setMiddleName(middleName);
+				student.setTelephone(telephone);
+				student.setEmail(email);
+				// Закрыть ResultSet и PreparedStatement
+				resultSet.close();
+				preparedStatement.close();
+
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+
+
+
+		// Возвращаем найденного студента
+		return student;
+	}
+
 }
 

@@ -148,6 +148,7 @@ public class AddStudentDialog extends JDialog {
 		cancelButton = new JButton("Отмена");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				dispose();
 			}
 		});

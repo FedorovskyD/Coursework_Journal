@@ -28,20 +28,12 @@ public class Listener implements ActionListener {
 		if (e.getSource() == mainWindow.getAddStudentBtn()) {
 			AddStudentDialog dialog = new AddStudentDialog(mainWindow);
 			dialog.setVisible(true);
-		} else if (e.getSource() == mainWindow.getGroupNumberCmb()) {
-			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
-			List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
-			DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
-			model.setRowCount(0); // удаление всех строк
-			for (Student student : students) {
-				model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail()});
-			}
-		} else if (e.getSource() == addStudentDialog.getOkButton()) {
+		}  else if (e.getSource() == addStudentDialog.getOkButton()) {
 			Student student = new Student();
 			student.setName(addStudentDialog.getFirstName());
 			student.setSurname(addStudentDialog.getLastName());
 			student.setGroup(MySQLConnector.getGroupIDByGroupNumber((String) addStudentDialog.getGroupField().getSelectedItem()));
-			student.setMiddlename(addStudentDialog.getMiddleName());
+			student.setMiddleName(addStudentDialog.getMiddleName());
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
 			MySQLConnector.addStudent(student);
