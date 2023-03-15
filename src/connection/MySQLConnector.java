@@ -2,6 +2,7 @@ package connection;
 
 import entity.Student;
 
+import javax.swing.*;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -159,11 +160,48 @@ public class MySQLConnector {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
-
-
-
 		// Возвращаем найденного студента
 		return student;
+	}
+	public static void addGroup(String groupName) {
+		try {
+			// Создаем подключение к базе данных
+			Connection conn = getConnection();
+
+			// Создаем SQL-запрос для добавления новой группы
+			String sql = "INSERT INTO `group` (groupnumber) VALUES (?)";
+
+			// Подготавливаем запрос и задаем параметры
+			PreparedStatement statement = conn.prepareStatement(sql);
+			statement.setString(1, groupName);
+
+			// Выполняем запрос
+			statement.executeUpdate();
+
+// Создаем новый экземпляр модели ComboBoxModel
+
+			// Закрываем ресурсы
+			statement.close();
+			conn.close();
+
+			System.out.println("Group added successfully!");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public static boolean deleteGroup(String groupName) {
+		try (Connection conn = getConnection()) {
+			// Создаем подготовленный запрос для удаления группы
+			String sql = "DELETE FROM `group` WHERE GroupNumber = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setString(1, groupName);
+			// Выполняем запрос
+			int rowsAffected = stmt.executeUpdate();
+			return rowsAffected > 0;
+		} catch (SQLException ex) {
+			System.out.println("Error deleting group: " + ex.getMessage());
+			return false;
+		}
 	}
 
 }

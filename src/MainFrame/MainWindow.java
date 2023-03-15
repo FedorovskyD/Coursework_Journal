@@ -1,7 +1,9 @@
 package MainFrame;
 
 import connection.MySQLConnector;
+import dialogs.AddGroupDialog;
 import dialogs.AddStudentDialog;
+import dialogs.DeleteGroupDialog;
 import entity.Student;
 
 import javax.swing.*;
@@ -23,7 +25,7 @@ public class MainWindow extends JFrame {
     private final JLabel groupNumberLbl;
     private JComboBox<String> groupNumberCmb;
     private StudentCardPanel studentCard;
-    private JButton addStudentBtn;
+    private JButton addStudentBtn, addGroupBtn, deleteGroupBtn;
 
     public JComboBox<String> getGroupNumberCmb() {
         return groupNumberCmb;
@@ -68,12 +70,28 @@ public class MainWindow extends JFrame {
         groupNumberCmb.setMaximumSize(new Dimension(24, 15));
         // Создаем кнопки
         addStudentBtn = new JButton("Добавить студента");
+        addGroupBtn = new JButton("Добавить группу");
+        deleteGroupBtn = new JButton("Удалить группу");
         MainWindow mainWindow = this;
         addStudentBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AddStudentDialog addStudentDialog = new AddStudentDialog(mainWindow);
                 addStudentDialog.setVisible(true);
+            }
+        });
+        addGroupBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AddGroupDialog addGroupDialog = new AddGroupDialog(mainWindow);
+                addGroupDialog.setVisible(true);
+            }
+        });
+        deleteGroupBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                DeleteGroupDialog deleteGroupDialog = new DeleteGroupDialog(mainWindow);
+                deleteGroupDialog.setVisible(true);
             }
         });
         // Создаем таблицу для отображения студентов
@@ -122,15 +140,12 @@ public class MainWindow extends JFrame {
                 }
             }
         });
-        // Добавляем слушателя событий выбора строки
-
         TableColumn column = studentTable.getColumnModel().getColumn(4);
 
-        // Устанавливаем ширину колонки в 0
-//        column.setMinWidth(0);
-//        column.setMaxWidth(0);
-//        column.setWidth(0);
-//        column.setPreferredWidth(0);
+        column.setMinWidth(0);
+        column.setMaxWidth(0);
+        column.setWidth(0);
+        column.setPreferredWidth(0);
         // Заполнение таблицы начальными данными
         String selectedGroup = (String) groupNumberCmb.getSelectedItem();
         List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
@@ -148,7 +163,8 @@ public class MainWindow extends JFrame {
                             .addComponent(studentCard)
                             .addGroup(groupLayout.createParallelGroup()
 
-                                    .addComponent(addStudentBtn))
+                                    .addComponent(addStudentBtn)
+                                    .addComponent(addGroupBtn).addComponent(deleteGroupBtn))
                     )
             );
             groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
@@ -160,7 +176,8 @@ public class MainWindow extends JFrame {
                     .addComponent(studentCard)
                     .addGroup(groupLayout.createSequentialGroup()
 
-                            .addComponent(addStudentBtn))
+                            .addComponent(addStudentBtn)
+                            .addComponent(addGroupBtn).addComponent(deleteGroupBtn))
             );
             // Добавление слушателей
 
@@ -173,7 +190,8 @@ public class MainWindow extends JFrame {
                     DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
                     model.setRowCount(0); // удаление всех строк
                     for (Student student : students) {
-                        model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail(),student.getId()});
+                        model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(),
+                                student.getEmail(),student.getId()});
                     }
                 }
             });

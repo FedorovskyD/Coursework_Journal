@@ -83,13 +83,13 @@ public class StudentCardPanel extends JPanel {
 
 		// Добавление телефона
 		gbc.gridy++;
-		phoneLabel = new JLabel("Телефон: +7 (999) 123-45-67");
+		phoneLabel = new JLabel();
 		phoneLabel.setFont(new Font("Arial", Font.PLAIN, 16));
 		infoPanel.add(phoneLabel, gbc);
 
 		// Добавление почты
 		gbc.gridy++;
-		emailLabel = new JLabel("E-mail: ivanov@mail.ru");
+		emailLabel = new JLabel();
 		emailLabel.setFont(new Font("Arial", Font.PLAIN, 16));
 		infoPanel.add(emailLabel, gbc);
 
