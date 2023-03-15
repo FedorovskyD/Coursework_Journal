@@ -1,6 +1,7 @@
 package dialogs;
 
 
+import MainFrame.Listener;
 import connection.MySQLConnector;
 import entity.Student;
 
@@ -24,6 +25,10 @@ public class AddStudentDialog extends JDialog {
 	private JButton cancelButton;
 
 	private boolean ok;
+
+	public JButton getOkButton() {
+		return okButton;
+	}
 
 	public AddStudentDialog(JFrame parent) {
 		super(parent, "Добавить студента", true);
@@ -128,14 +133,7 @@ public class AddStudentDialog extends JDialog {
 
 		okButton = new JButton("ОК");
 		okButton.addActionListener(e->{
-			Student student = new Student();
-			student.setName(getFirstName());
-			student.setSurname(getLastName());
-			student.setGroup(MySQLConnector.getGroupIDByGroupNumber((String) groupField.getSelectedItem()));
-			student.setMiddlename(getMiddleName());
-			student.setEmail(getEmail());
-			student.setTelephone(getTelephone());
-			MySQLConnector.addStudent(student);
+
 		});
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -156,6 +154,7 @@ public class AddStudentDialog extends JDialog {
 		constraints.gridx = 2;
 		constraints.gridy = 7;
 		panel.add(cancelButton, constraints);
+		okButton.addActionListener(new Listener(this,parent));
 
 		getContentPane().add(panel, BorderLayout.CENTER);
 
@@ -179,6 +178,11 @@ public class AddStudentDialog extends JDialog {
 	public String getEmail() {
 		return emailField.getText();
 	}
+
+	public JComboBox getGroupField() {
+		return groupField;
+	}
+
 	public String getTelephone(){return telephonefield.getText();}
 
 	public ImageIcon getPhoto() {

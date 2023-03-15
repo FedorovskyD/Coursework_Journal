@@ -4,6 +4,7 @@ import connection.MySQLConnector;
 import dialogs.AddStudentDialog;
 import entity.Student;
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,7 +18,8 @@ public class Listener implements ActionListener {
 		this.mainWindow = mainWindow;
 	}
 
-	public Listener(AddStudentDialog addStudentDialog) {
+	public Listener(AddStudentDialog addStudentDialog, JFrame mainWindow) {
+		this.mainWindow = (MainWindow) mainWindow;
 		this.addStudentDialog = addStudentDialog;
 	}
 
@@ -34,6 +36,23 @@ public class Listener implements ActionListener {
 			for (Student student : students) {
 				model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail()});
 			}
+		} else if (e.getSource() == addStudentDialog.getOkButton()) {
+			Student student = new Student();
+			student.setName(addStudentDialog.getFirstName());
+			student.setSurname(addStudentDialog.getLastName());
+			student.setGroup(MySQLConnector.getGroupIDByGroupNumber((String) addStudentDialog.getGroupField().getSelectedItem()));
+			student.setMiddlename(addStudentDialog.getMiddleName());
+			student.setEmail(addStudentDialog.getEmail());
+			student.setTelephone(addStudentDialog.getTelephone());
+			MySQLConnector.addStudent(student);
+			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
+			List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
+			DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
+			model.setRowCount(0); // удаление всех строк
+			for (Student stud : students) {
+				model.addRow(new Object[]{stud.getSurname(), stud.getName(), stud.getMiddleName(), stud.getEmail()});
+			}
+
 		}
 	}
 }
