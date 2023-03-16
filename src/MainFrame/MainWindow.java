@@ -1,11 +1,9 @@
 package MainFrame;
 
-import dialogs.AboutDialog;
+import dialogs.*;
 import connection.MySQLConnector;
-import dialogs.AddGroupDialog;
-import dialogs.AddStudentDialog;
-import dialogs.DeleteGroupDialog;
 import entity.Student;
+import utils.PhotoUtils;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -16,6 +14,8 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.List;
 
 public class MainWindow extends JFrame {
@@ -24,10 +24,15 @@ public class MainWindow extends JFrame {
     private final JLabel groupNumberLbl;
     private JComboBox<String> groupNumberCmb;
     private StudentCardPanel studentCard;
-    private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,aboutAuthorBtn,deleteStudentBtn;
+    private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,
+            aboutAuthorBtn,deleteStudentBtn, addPhotoBtn;
 
     public JComboBox<String> getGroupNumberCmb() {
         return groupNumberCmb;
+    }
+
+    public StudentCardPanel getStudentCard() {
+        return studentCard;
     }
 
     public JTable getStudentTable() {
@@ -69,7 +74,19 @@ public class MainWindow extends JFrame {
         deleteGroupBtn = new JButton("Удалить группу");
         aboutAuthorBtn=new JButton("Об авторе");
         deleteStudentBtn = new JButton("Удалить студента");
+        addPhotoBtn = new JButton("Добавить фото студента");
         MainWindow mainWindow = this;
+        addPhotoBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = studentTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    long id = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
+                    AddPhotoDialog addPhotoDialog = new AddPhotoDialog(mainWindow,id);
+                    addPhotoDialog.setVisible(true);
+                }
+            }
+        });
         addStudentBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -87,7 +104,14 @@ public class MainWindow extends JFrame {
                     studentCard.getPhoneLabel().setText("");
                     studentCard.getFullNameLabel().setText("");
                     studentCard.getEmailLabel().setText("");
+                    studentCard.getPhotoLabel().setIcon(null);
                     String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
+                    File fileToDelete = new File(MySQLConnector.getStudentById(data).getPhotoPath());
+                    if (fileToDelete.delete()) {
+                        System.out.println("File deleted successfully.");
+                    } else {
+                        System.out.println("Failed to delete the file.");
+                    }
                     if(MySQLConnector.deleteStudent(data)){
                         System.out.println("Student was deleted");
                     }
@@ -165,6 +189,17 @@ public class MainWindow extends JFrame {
                                 " " + student.getMiddleName());
                         studentCard.getEmailLabel().setText(student.getEmail());
                         studentCard.getPhoneLabel().setText(student.getTelephone());
+                        Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
+                        JLabel photoLabel = studentCard.getPhotoLabel();
+                        //photoLabel.setPreferredSize(new Dimension(160, 200));
+                        if(image != null) {
+                            photoLabel.setSize(new Dimension(160, 200));
+                            ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
+                            photoLabel.setIcon(icon);
+                        }else {
+                            photoLabel.setSize(new Dimension(0,0));
+                        }
+
                     }
                 }
             }
@@ -200,7 +235,8 @@ public class MainWindow extends JFrame {
                                     .addComponent(addGroupBtn)
                                     .addComponent(deleteGroupBtn)
                                     .addComponent(deleteStudentBtn)
-                                    .addComponent(aboutAuthorBtn))
+                                    .addComponent(aboutAuthorBtn)
+                                    .addComponent(addPhotoBtn))
                     )
             );
             groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
@@ -216,7 +252,8 @@ public class MainWindow extends JFrame {
                             .addComponent(addGroupBtn)
                             .addComponent(deleteGroupBtn)
                             .addComponent(deleteStudentBtn)
-                            .addComponent(aboutAuthorBtn))
+                            .addComponent(aboutAuthorBtn)
+                            .addComponent(addPhotoBtn))
             );
             // Добавление слушателей
 

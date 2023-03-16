@@ -154,12 +154,14 @@ public class MySQLConnector {
 				String middleName = resultSet.getString("MiddleName");
 				String telephone = resultSet.getString("Telephone");
 				String email = resultSet.getString("Email");
+				String photoPath = resultSet.getString("PhotoPath");
 				student = new Student();
 				student.setName(firstName);
 				student.setSurname(lastName);
 				student.setMiddleName(middleName);
 				student.setTelephone(telephone);
 				student.setEmail(email);
+				student.setPhotoPath(photoPath);
 				// Закрыть ResultSet и PreparedStatement
 				resultSet.close();
 				preparedStatement.close();
@@ -224,6 +226,25 @@ public class MySQLConnector {
 			System.out.println("Error deleting group: " + ex.getMessage());
 			return false;
 		}
+	}
+	public static void addPhotoPath(String photoPath,long id){
+		String sql = "UPDATE student SET PhotoPath = ? WHERE ID = ?";
+		try (Connection conn = getConnection();
+		     PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+			pstmt.setString(1, photoPath);
+			pstmt.setLong(2, id);
+
+			int rowsUpdated = pstmt.executeUpdate();
+			if (rowsUpdated > 0) {
+				System.out.println("Photo path has been updated for student with ID " + id);
+			} else {
+				System.out.println("No student found with ID " + id);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 	/*public List<Authors> getProjectAuthors(long projectId) throws SQLException {
 		String query = "SELECT FirstName, LastName, Email FROM student WHERE projectId = ?";

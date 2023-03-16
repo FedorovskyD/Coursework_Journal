@@ -69,8 +69,7 @@ public class StudentCardPanel extends JPanel {
 		gbc.anchor = GridBagConstraints.WEST;
 
 		// Добавление фотографии
-		ImageIcon photo = new ImageIcon();
-		photoLabel = new JLabel(photo);
+		photoLabel = new JLabel();
 		gbc.gridheight = 4;
 		infoPanel.add(photoLabel, gbc);
 

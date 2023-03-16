@@ -38,7 +38,17 @@ public class Listener implements ActionListener {
 			student.setMiddleName(addStudentDialog.getMiddleName());
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
-			System.out.println("Student with id = "+MySQLConnector.addStudent(student)+" was added");
+			long id = MySQLConnector.addStudent(student);
+			System.out.println("Student with id = "+id+" was added");
+			student.setId(id);
+			if(addStudentDialog.getPhotoPath()!=null) {
+				try {
+					PhotoUtils.getInstance().savePhoto(student, addStudentDialog.getPhotoPath());
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+				MySQLConnector.addPhotoPath(student.getPhotoPath(), id);
+			}
 			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
 			List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
 			DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
