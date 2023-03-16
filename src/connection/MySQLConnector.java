@@ -1,5 +1,6 @@
 package connection;
 
+import entity.Authors;
 import entity.Student;
 
 import javax.swing.*;
@@ -203,6 +204,24 @@ public class MySQLConnector {
 			return false;
 		}
 	}
+	/*public List<Authors> getProjectAuthors(long projectId) throws SQLException {
+		String query = "SELECT FirstName, LastName, Email FROM student WHERE projectId = ?";
+		Connection connection = getConnection();
+		PreparedStatement statement = connection.prepareStatement(query);
+		statement.setLong( 1,projectId);
+		ResultSet resultSet = statement.executeQuery();
+		List<Authors> authors = new ArrayList<>();
+		while (resultSet.next()) {
+			String firstName = resultSet.getString("first_name");
+			String lastName = resultSet.getString("last_name");
+			String email = resultSet.getString("email");
+			Authors author = new Authors();
+			authors.add(author);
+		}
+		connection.close();
+		return authors;
+		}
+	 */
 
 }
 

@@ -1,5 +1,6 @@
 package MainFrame;
 
+import dialogs.AboutDialog;
 import connection.MySQLConnector;
 import dialogs.AddGroupDialog;
 import dialogs.AddStudentDialog;
@@ -25,7 +26,7 @@ public class MainWindow extends JFrame {
     private final JLabel groupNumberLbl;
     private JComboBox<String> groupNumberCmb;
     private StudentCardPanel studentCard;
-    private JButton addStudentBtn, addGroupBtn, deleteGroupBtn;
+    private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,aboutAuthorBtn;
 
     public JComboBox<String> getGroupNumberCmb() {
         return groupNumberCmb;
@@ -72,6 +73,7 @@ public class MainWindow extends JFrame {
         addStudentBtn = new JButton("Добавить студента");
         addGroupBtn = new JButton("Добавить группу");
         deleteGroupBtn = new JButton("Удалить группу");
+        aboutAuthorBtn=new JButton("Об авторе");
         MainWindow mainWindow = this;
         addStudentBtn.addActionListener(new ActionListener() {
             @Override
@@ -92,6 +94,13 @@ public class MainWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 DeleteGroupDialog deleteGroupDialog = new DeleteGroupDialog(mainWindow);
                 deleteGroupDialog.setVisible(true);
+            }
+        });
+        aboutAuthorBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AboutDialog aboutAuthorDialog = new AboutDialog(mainWindow);
+                aboutAuthorDialog.setVisible(true);
             }
         });
         // Создаем таблицу для отображения студентов
@@ -164,7 +173,8 @@ public class MainWindow extends JFrame {
                             .addGroup(groupLayout.createParallelGroup()
 
                                     .addComponent(addStudentBtn)
-                                    .addComponent(addGroupBtn).addComponent(deleteGroupBtn))
+                                    .addComponent(addGroupBtn).addComponent(deleteGroupBtn)
+                                    .addComponent(aboutAuthorBtn))
                     )
             );
             groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
@@ -177,7 +187,8 @@ public class MainWindow extends JFrame {
                     .addGroup(groupLayout.createSequentialGroup()
 
                             .addComponent(addStudentBtn)
-                            .addComponent(addGroupBtn).addComponent(deleteGroupBtn))
+                            .addComponent(addGroupBtn).addComponent(deleteGroupBtn)
+                            .addComponent(aboutAuthorBtn))
             );
             // Добавление слушателей
 

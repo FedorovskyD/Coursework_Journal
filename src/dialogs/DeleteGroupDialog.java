@@ -58,7 +58,7 @@ public class DeleteGroupDialog extends JDialog {
 		getContentPane().add(panel);
 
 		// Устанавливаем размер и отображаем диалоговое окно
-		setSize(300, 150);
+		setSize(350, 200);
 		setLocationRelativeTo(parent);
 		setVisible(true);
 	}
