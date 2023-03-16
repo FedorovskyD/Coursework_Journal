@@ -18,15 +18,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import static javax.swing.BorderFactory.createLineBorder;
-
 public class MainWindow extends JFrame {
     private JMenuBar menuBar;
     private JMenu fileMenu;
     private final JLabel groupNumberLbl;
     private JComboBox<String> groupNumberCmb;
     private StudentCardPanel studentCard;
-    private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,aboutAuthorBtn;
+    private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,aboutAuthorBtn,deleteStudentBtn;
 
     public JComboBox<String> getGroupNumberCmb() {
         return groupNumberCmb;
@@ -44,11 +42,7 @@ public class MainWindow extends JFrame {
 
     public MainWindow() {
         studentCard = new StudentCardPanel();
-        // Устанавливаем компоновку GridLayout
-        GroupLayout groupLayout = new GroupLayout(getContentPane());
-        getContentPane().setLayout(groupLayout);
-        groupLayout.setAutoCreateGaps(true);
-        groupLayout.setAutoCreateContainerGaps(true);
+
         // Создание меню
         fileMenu = new JMenu("Файл");
         menuBar = new JMenuBar();
@@ -74,12 +68,38 @@ public class MainWindow extends JFrame {
         addGroupBtn = new JButton("Добавить группу");
         deleteGroupBtn = new JButton("Удалить группу");
         aboutAuthorBtn=new JButton("Об авторе");
+        deleteStudentBtn = new JButton("Удалить студента");
         MainWindow mainWindow = this;
         addStudentBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 AddStudentDialog addStudentDialog = new AddStudentDialog(mainWindow);
                 addStudentDialog.setVisible(true);
+            }
+        });
+        deleteStudentBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int selectedRow = studentTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    long data = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
+
+                    studentCard.getPhoneLabel().setText("");
+                    studentCard.getFullNameLabel().setText("");
+                    studentCard.getEmailLabel().setText("");
+                    String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
+                    if(MySQLConnector.deleteStudent(data)){
+                        System.out.println("Student was deleted");
+                    }
+                    List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
+                    DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
+                    model.setRowCount(0); // удаление всех строк
+                    for (Student student : students) {
+                        model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(),
+                                student.getEmail(),student.getId()});
+                    }
+
+                }
             }
         });
         addGroupBtn.addActionListener(new ActionListener() {
@@ -161,7 +181,11 @@ public class MainWindow extends JFrame {
         model.setRowCount(0); // удаление всех строк
         for (Student student : students) {
             model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail(), student.getId()});
-
+        }
+        GroupLayout groupLayout = new GroupLayout(getContentPane());
+        getContentPane().setLayout(groupLayout);
+        groupLayout.setAutoCreateGaps(true);
+        groupLayout.setAutoCreateContainerGaps(true);
             // Компановка главной панели
             groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
                     .addGroup(groupLayout.createSequentialGroup()
@@ -173,7 +197,9 @@ public class MainWindow extends JFrame {
                             .addGroup(groupLayout.createParallelGroup()
 
                                     .addComponent(addStudentBtn)
-                                    .addComponent(addGroupBtn).addComponent(deleteGroupBtn)
+                                    .addComponent(addGroupBtn)
+                                    .addComponent(deleteGroupBtn)
+                                    .addComponent(deleteStudentBtn)
                                     .addComponent(aboutAuthorBtn))
                     )
             );
@@ -187,7 +213,9 @@ public class MainWindow extends JFrame {
                     .addGroup(groupLayout.createSequentialGroup()
 
                             .addComponent(addStudentBtn)
-                            .addComponent(addGroupBtn).addComponent(deleteGroupBtn)
+                            .addComponent(addGroupBtn)
+                            .addComponent(deleteGroupBtn)
+                            .addComponent(deleteStudentBtn)
                             .addComponent(aboutAuthorBtn))
             );
             // Добавление слушателей
@@ -206,7 +234,6 @@ public class MainWindow extends JFrame {
                     }
                 }
             });
-        }
     }
 
     public static void main(String[] args) {

@@ -28,12 +28,13 @@ public class MySQLConnector {
 		return statement.executeUpdate(query);
 	}
 
-	public static void addStudent(Student student) {
+	public static long addStudent(Student student) {
+		long id = -1;
 		try {
 			Connection connection = MySQLConnector.getConnection();
 			PreparedStatement statement = connection.prepareStatement(
 					//language=SQL
-					"INSERT INTO student (LastName,FirstName, MiddleName, GroupID ,Telephone, Email) VALUES ( ?, ?, ?,?, ?, ?)");
+					"INSERT INTO student (LastName,FirstName, MiddleName, GroupID ,Telephone, Email) VALUES ( ?, ?, ?,?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
 
 			statement.setString(1, student.getSurname());
 			statement.setString(2, student.getName());
@@ -42,11 +43,17 @@ public class MySQLConnector {
 			statement.setString(5, student.getTelephone());
 			statement.setString(6, student.getEmail());
 			int rowsAffected = statement.executeUpdate();
+			ResultSet generatedKeys= statement.getGeneratedKeys();
+
+			if (generatedKeys.next()){
+				id = generatedKeys.getLong(1);
+			}
 			System.out.println(rowsAffected + " row(s) affected");
 			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return id;
 	}
 
 	public static List<String> getAllGroupNumbers() {
@@ -196,6 +203,20 @@ public class MySQLConnector {
 			String sql = "DELETE FROM `group` WHERE GroupNumber = ?";
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setString(1, groupName);
+			// Выполняем запрос
+			int rowsAffected = stmt.executeUpdate();
+			return rowsAffected > 0;
+		} catch (SQLException ex) {
+			System.out.println("Error deleting group: " + ex.getMessage());
+			return false;
+		}
+	}
+	public static boolean deleteStudent(long id) {
+		try (Connection conn = getConnection()) {
+			// Создаем подготовленный запрос для удаления группы
+			String sql = "DELETE FROM `student` WHERE ID = ?";
+			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt.setLong(1, id);
 			// Выполняем запрос
 			int rowsAffected = stmt.executeUpdate();
 			return rowsAffected > 0;

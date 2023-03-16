@@ -1,5 +1,9 @@
 package entity;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.io.ByteArrayOutputStream;
+
 public class Student {
     private int id ;
     private String name ;
@@ -8,6 +12,15 @@ public class Student {
     private String telephone ;
     private String email ;
     private long group ;
+    private String photoPath;
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
+    }
 
     public String getMiddleName() {
         return middleName;

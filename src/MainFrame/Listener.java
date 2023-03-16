@@ -3,11 +3,13 @@ package MainFrame;
 import connection.MySQLConnector;
 import dialogs.AddStudentDialog;
 import entity.Student;
+import utils.PhotoUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.util.List;
 
 public class Listener implements ActionListener {
@@ -36,7 +38,7 @@ public class Listener implements ActionListener {
 			student.setMiddleName(addStudentDialog.getMiddleName());
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
-			MySQLConnector.addStudent(student);
+			System.out.println("Student with id = "+MySQLConnector.addStudent(student)+" was added");
 			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
 			List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
 			DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();

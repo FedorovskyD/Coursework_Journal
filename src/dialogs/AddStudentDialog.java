@@ -4,6 +4,7 @@ package dialogs;
 import MainFrame.Listener;
 import connection.MySQLConnector;
 import entity.Student;
+import utils.PhotoUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,8 +24,16 @@ public class AddStudentDialog extends JDialog {
 	private JButton photoButton;
 	private JButton okButton;
 	private JButton cancelButton;
-
+	private File photoPath;
 	private boolean ok;
+
+	public File getPhotoPath() {
+		return photoPath;
+	}
+
+	public void setPhotoPath(File photoPath) {
+		this.photoPath = photoPath;
+	}
 
 	public JButton getOkButton() {
 		return okButton;
@@ -108,9 +117,10 @@ public class AddStudentDialog extends JDialog {
 				JFileChooser fileChooser = new JFileChooser();
 				int result = fileChooser.showOpenDialog(AddStudentDialog.this);
 				if (result == JFileChooser.APPROVE_OPTION) {
-					File selectedFile = fileChooser.getSelectedFile();
+					photoPath = fileChooser.getSelectedFile();
+
 					try {
-						BufferedImage image = ImageIO.read(selectedFile);
+						BufferedImage image = ImageIO.read(photoPath);
 						// Масштабируем изображение и создаем иконку
 						ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
 						// Устанавливаем иконку изображения в JLabel
