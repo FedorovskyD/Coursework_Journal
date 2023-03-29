@@ -3,6 +3,7 @@ package entity;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.io.ByteArrayOutputStream;
+import java.util.List;
 
 public class Student {
     private long id ;
@@ -11,8 +12,10 @@ public class Student {
     private String middleName ;
     private String telephone ;
     private String email ;
-    private long group ;
+    private int groupID ;
     private String photoPath;
+    private List<Attendance> attendanceList;
+    private List<Grade> gradeList;
 
     public String getPhotoPath() {
         return photoPath;
@@ -30,15 +33,23 @@ public class Student {
         this.middleName = middleName;
     }
 
-    public long getGroup() {
-        return group;
+    public int getGroup() {
+        return groupID;
     }
 
-    public void setGroup(long group) {
-        this.group = group;
+    public void setGroupID(int group) {
+        groupID=group;
     }
 
     private int age;
+
+    public void addAttendance(Attendance attendance) {
+        attendanceList.add(attendance);
+    }
+
+    public void addGrade(Grade grade) {
+        gradeList.add(grade);
+    }
 
     public Student(int id, String name, String surname, int age) {
         this.id = id;

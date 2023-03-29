@@ -1,6 +1,7 @@
 package connection;
 
 import entity.Authors;
+import entity.Lab;
 import entity.Student;
 
 import javax.swing.*;
@@ -106,8 +107,8 @@ public class MySQLConnector {
 		}
 		return students;
 	}
-	public static Long getGroupIDByGroupNumber(String groupNumber){
-		long groupId = -1L; // если группа не найдена, возвращаем -1
+	public static int getGroupIDByGroupNumber(String groupNumber){
+		int groupId = -1; // если группа не найдена, возвращаем -1
 
 		try {
 			Connection connection = getConnection();
@@ -246,6 +247,58 @@ public class MySQLConnector {
 		}
 
 	}
+	public static long addLab(Lab lab) {
+		long id = -1;
+		try {
+			Connection connection = MySQLConnector.getConnection();
+			PreparedStatement statement = connection.prepareStatement(
+					//language=SQL
+					"INSERT INTO lab (date,classroom, groupID, lab_name) VALUES ( ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
+
+			statement.setDate(1, new Date(lab.getDate().getTime()));
+			statement.setString(2, lab.getClassroom());
+			statement.setInt(3, lab.getGroup());
+			statement.setString(4,lab.getLabName());
+			int rowsAffected = statement.executeUpdate();
+			ResultSet generatedKeys= statement.getGeneratedKeys();
+
+			if (generatedKeys.next()){
+				id = generatedKeys.getLong(1);
+			}
+			System.out.println(rowsAffected + " row(s) affected");
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return id;
+	}
+	public static List<Lab> getAllLabByGroup(String groupNumber) {
+		List<Lab> labs = new ArrayList<>();
+		try {
+			Connection conn = getConnection();
+			PreparedStatement stmt = conn.prepareStatement("SELECT l.*, g.GroupNumber" +
+					" FROM lab  l" +
+					" JOIN `group` g ON l.GroupID = g.ID WHERE GroupNumber=?;");
+			stmt.setString(1, groupNumber);
+			ResultSet rs = stmt.executeQuery();
+			// Цикл по всем строкам результата запроса
+			while (rs.next()) {
+				// Создание экземпляра класса-сущности и заполнение полей
+				Lab lab = new Lab();
+				lab.setId(rs.getInt("ID"));
+				lab.setDate(rs.getDate("date"));
+				lab.setClassroom(rs.getString("classroom"));
+				lab.setGroup(rs.getInt("groupID"));
+				lab.setLabName(rs.getString("lab_name"));
+
+				labs.add(lab);
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return labs;
+	}
+	public static int getGradeByLessonIDAndStudentID(int lessonID, long studentID){return -1;}
 	/*public List<Authors> getProjectAuthors(long projectId) throws SQLException {
 		String query = "SELECT FirstName, LastName, Email FROM student WHERE projectId = ?";
 		Connection connection = getConnection();

@@ -34,7 +34,7 @@ public class Listener implements ActionListener {
 			Student student = new Student();
 			student.setName(addStudentDialog.getFirstName());
 			student.setSurname(addStudentDialog.getLastName());
-			student.setGroup(MySQLConnector.getGroupIDByGroupNumber((String) addStudentDialog.getGroupField().getSelectedItem()));
+			student.setGroupID(MySQLConnector.getGroupIDByGroupNumber((String) addStudentDialog.getGroupField().getSelectedItem()));
 			student.setMiddleName(addStudentDialog.getMiddleName());
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
