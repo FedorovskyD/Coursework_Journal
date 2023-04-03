@@ -24,7 +24,7 @@ public class AddStudentDialog extends JDialog {
 	private JButton photoButton;
 	private JButton okButton;
 	private JButton cancelButton;
-	private File photoPath;
+	private File photoPath ;
 	private boolean ok;
 
 	public File getPhotoPath() {
@@ -42,6 +42,7 @@ public class AddStudentDialog extends JDialog {
 	public AddStudentDialog(JFrame parent) {
 		super(parent, "Добавить студента", true);
 		JPanel panel = new JPanel(new GridBagLayout());
+		photoPath= new File("photos/default.jpg");
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.insets = new Insets(5, 5, 5, 5);
@@ -112,22 +113,20 @@ public class AddStudentDialog extends JDialog {
 		panel.add(photoLabel, constraints);
 
 		photoButton = new JButton("Выбрать файл");
-		photoButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				int result = fileChooser.showOpenDialog(AddStudentDialog.this);
-				if (result == JFileChooser.APPROVE_OPTION) {
-					photoPath = fileChooser.getSelectedFile();
+		photoButton.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+			int result = fileChooser.showOpenDialog(AddStudentDialog.this);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				photoPath = fileChooser.getSelectedFile();
 
-					try {
-						BufferedImage image = ImageIO.read(photoPath);
-						// Масштабируем изображение и создаем иконку
-						ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
-						// Устанавливаем иконку изображения в JLabel
-						photoLabel.setIcon(icon);
-					} catch (IOException ex) {
-						ex.printStackTrace();
-					}
+				try {
+					BufferedImage image = ImageIO.read(photoPath);
+					// Масштабируем изображение и создаем иконку
+					ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
+					// Устанавливаем иконку изображения в JLabel
+					photoLabel.setIcon(icon);
+				} catch (IOException ex) {
+					ex.printStackTrace();
 				}
 			}
 		});

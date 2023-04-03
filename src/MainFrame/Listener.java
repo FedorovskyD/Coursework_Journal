@@ -50,12 +50,7 @@ public class Listener implements ActionListener {
 				MySQLConnector.addPhotoPath(student.getPhotoPath(), id);
 			}
 			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
-			List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
-			DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
-			model.setRowCount(0); // удаление всех строк
-			for (Student stud : students) {
-				model.addRow(new Object[]{stud.getSurname(), stud.getName(), stud.getMiddleName(), stud.getEmail(),stud.getId()});
-			}
+			MainWindow.updStudentTable(mainWindow.getStudentTable(),selectedGroup);
 
 		}
 	}

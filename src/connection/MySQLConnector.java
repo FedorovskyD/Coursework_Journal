@@ -134,7 +134,7 @@ public class MySQLConnector {
 		// Установить соединение с базой данных
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
-		Student student = new Student();
+		Student student = null;
 		try {
 			Connection connection = getConnection();
 

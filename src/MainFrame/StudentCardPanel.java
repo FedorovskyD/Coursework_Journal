@@ -61,7 +61,9 @@ public class StudentCardPanel extends JPanel {
 
 	public StudentCardPanel() {
 		setLayout(new BorderLayout());
-
+		setPreferredSize(new Dimension(800,1000));
+		setMaximumSize(getPreferredSize());
+		setMinimumSize(getPreferredSize());
 		// Создание панели информации о студенте
 		JPanel infoPanel = new JPanel(new GridBagLayout());
 		GridBagConstraints gbc = new GridBagConstraints();
