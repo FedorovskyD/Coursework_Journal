@@ -35,18 +35,18 @@ public class MySQLConnector {
 			Connection connection = MySQLConnector.getConnection();
 			PreparedStatement statement = connection.prepareStatement(
 					//language=SQL
-					"INSERT INTO student (LastName,FirstName, MiddleName, GroupID ,Telephone, Email) VALUES ( ?, ?, ?,?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
+					"INSERT INTO student (LastName,FirstName, MiddleName, GroupID ,Telephone, Email) VALUES ( ?, ?, ?,?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
 			statement.setString(1, student.getSurname());
 			statement.setString(2, student.getName());
 			statement.setString(3, student.getMiddleName());
-			statement.setLong(4,student.getGroup());
+			statement.setLong(4, student.getGroup());
 			statement.setString(5, student.getTelephone());
 			statement.setString(6, student.getEmail());
 			int rowsAffected = statement.executeUpdate();
-			ResultSet generatedKeys= statement.getGeneratedKeys();
+			ResultSet generatedKeys = statement.getGeneratedKeys();
 
-			if (generatedKeys.next()){
+			if (generatedKeys.next()) {
 				id = generatedKeys.getLong(1);
 			}
 			System.out.println(rowsAffected + " row(s) affected");
@@ -107,13 +107,14 @@ public class MySQLConnector {
 		}
 		return students;
 	}
-	public static int getGroupIDByGroupNumber(String groupNumber){
+
+	public static int getGroupIDByGroupNumber(String groupNumber) {
 		int groupId = -1; // если группа не найдена, возвращаем -1
 
 		try {
 			Connection connection = getConnection();
 			PreparedStatement statement = connection.prepareStatement("SELECT ID FROM `group` WHERE GroupNumber = ?");
-			statement.setString(1,groupNumber);
+			statement.setString(1, groupNumber);
 			ResultSet resultSet = statement.executeQuery();
 
 			if (resultSet.next()) {
@@ -130,7 +131,7 @@ public class MySQLConnector {
 		return groupId;
 	}
 
-	public static Student getStudentById(long id)  {
+	public static Student getStudentById(long id) {
 		// Установить соединение с базой данных
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -157,6 +158,7 @@ public class MySQLConnector {
 				String email = resultSet.getString("Email");
 				String photoPath = resultSet.getString("PhotoPath");
 				student = new Student();
+				student.setId(id);
 				student.setName(firstName);
 				student.setSurname(lastName);
 				student.setMiddleName(middleName);
@@ -174,6 +176,7 @@ public class MySQLConnector {
 		// Возвращаем найденного студента
 		return student;
 	}
+
 	public static void addGroup(String groupName) {
 		try {
 			// Создаем подключение к базе данных
@@ -200,6 +203,7 @@ public class MySQLConnector {
 			e.printStackTrace();
 		}
 	}
+
 	public static boolean deleteGroup(String groupName) {
 		try (Connection conn = getConnection()) {
 			// Создаем подготовленный запрос для удаления группы
@@ -214,6 +218,7 @@ public class MySQLConnector {
 			return false;
 		}
 	}
+
 	public static boolean deleteStudent(long id) {
 		try (Connection conn = getConnection()) {
 			// Создаем подготовленный запрос для удаления группы
@@ -228,7 +233,8 @@ public class MySQLConnector {
 			return false;
 		}
 	}
-	public static void addPhotoPath(String photoPath,long id){
+
+	public static void addPhotoPath(String photoPath, long id) {
 		String sql = "UPDATE student SET PhotoPath = ? WHERE ID = ?";
 		try (Connection conn = getConnection();
 		     PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -247,22 +253,23 @@ public class MySQLConnector {
 		}
 
 	}
+
 	public static long addLab(Lab lab) {
 		long id = -1;
 		try {
 			Connection connection = MySQLConnector.getConnection();
 			PreparedStatement statement = connection.prepareStatement(
 					//language=SQL
-					"INSERT INTO lab (date,classroom, groupID, lab_name) VALUES ( ?, ?, ?, ?)",Statement.RETURN_GENERATED_KEYS);
+					"INSERT INTO lab (date,classroom, groupID, lab_name) VALUES ( ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 
 			statement.setDate(1, new Date(lab.getDate().getTime()));
 			statement.setString(2, lab.getClassroom());
 			statement.setInt(3, lab.getGroup());
-			statement.setString(4,lab.getLabName());
+			statement.setString(4, lab.getLabName());
 			int rowsAffected = statement.executeUpdate();
-			ResultSet generatedKeys= statement.getGeneratedKeys();
+			ResultSet generatedKeys = statement.getGeneratedKeys();
 
-			if (generatedKeys.next()){
+			if (generatedKeys.next()) {
 				id = generatedKeys.getLong(1);
 			}
 			System.out.println(rowsAffected + " row(s) affected");
@@ -272,6 +279,7 @@ public class MySQLConnector {
 		}
 		return id;
 	}
+
 	public static List<Lab> getAllLabByGroup(String groupNumber) {
 		List<Lab> labs = new ArrayList<>();
 		try {
@@ -298,7 +306,50 @@ public class MySQLConnector {
 		}
 		return labs;
 	}
-	public static int getGradeByLessonIDAndStudentID(int lessonID, long studentID){return -1;}
+
+	public static String getGradeByLessonIDAndStudentID(int lessonID, long studentID) {
+		return "_";
+	}
+
+	public static long addAttendance(long studentID, int lessonID) {
+		long id = -1;
+		try {
+			Connection connection = MySQLConnector.getConnection();
+			PreparedStatement statement = connection.prepareStatement(
+					//language=SQL
+					"INSERT INTO attendance (student_ID,lesson_ID) VALUES ( ?, ?)", Statement.RETURN_GENERATED_KEYS);
+
+			statement.setLong(1, studentID);
+			statement.setInt(2, lessonID);
+			int rowsAffected = statement.executeUpdate();
+			ResultSet generatedKeys = statement.getGeneratedKeys();
+
+			if (generatedKeys.next()) {
+				id = generatedKeys.getLong(1);
+			}
+			System.out.println(rowsAffected + " row(s) affected");
+			statement.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return id;
+	}
+
+	public static boolean isAttendance(long studentID, int lessonID) {
+		String sql = "SELECT * FROM attendance  WHERE student_ID = ? AND lesson_ID = ?";
+		try (Connection conn = getConnection();
+		     PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+			pstmt.setLong(1, studentID);
+			pstmt.setInt(2, lessonID);
+			ResultSet resultSet = pstmt.executeQuery();
+			return resultSet.next();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 	/*public List<Authors> getProjectAuthors(long projectId) throws SQLException {
 		String query = "SELECT FirstName, LastName, Email FROM student WHERE projectId = ?";
 		Connection connection = getConnection();

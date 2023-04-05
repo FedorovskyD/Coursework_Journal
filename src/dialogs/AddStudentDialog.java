@@ -97,10 +97,10 @@ public class AddStudentDialog extends JDialog {
 		constraints.gridy = 4;
 		panel.add(emailField, constraints);
 
-		JLabel telephonelbl = new JLabel("Telephone:");
+		JLabel telephoneLbl = new JLabel("Telephone:");
 		constraints.gridx = 0;
 		constraints.gridy = 5;
-		panel.add(telephonelbl, constraints);
+		panel.add(telephoneLbl, constraints);
 
 		telephonefield = new JTextField(20);
 		constraints.gridx = 1;
@@ -141,14 +141,9 @@ public class AddStudentDialog extends JDialog {
 		panel.add(photoLabel, constraints);
 
 		okButton = new JButton("ОК");
-		okButton.addActionListener(e->{
-
-		});
-		okButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				ok = true;
-				dispose();
-			}
+		okButton.addActionListener(e -> {
+			ok = true;
+			dispose();
 		});
 		constraints.gridx = 1;
 		constraints.gridy = 7;

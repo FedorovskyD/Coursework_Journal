@@ -84,10 +84,10 @@ public class AddPhotoDialog extends JDialog implements ActionListener {
 			}
 			MySQLConnector.addPhotoPath(student.getPhotoPath(), studentId);
 			Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
-			JLabel photoLabel = mainWindow.getStudentCard().getPhotoLabel();
-			photoLabel.setSize(new Dimension(160,200));
-			ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
-			photoLabel.setIcon(icon);
+			//JLabel photoLabel = mainWindow.getStudentCard().getPhotoLabel();
+//			photoLabel.setSize(new Dimension(160,200));
+//			ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
+//			photoLabel.setIcon(icon);
 			dispose();
 		} else if (e.getSource() == cancelButton) {
 			selectedFile = null;

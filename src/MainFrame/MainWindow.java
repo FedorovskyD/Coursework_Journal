@@ -2,46 +2,35 @@ package MainFrame;
 
 import connection.MySQLConnector;
 import dialogs.*;
-import entity.Lab;
 import entity.Student;
-import utils.PhotoUtils;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
 public class MainWindow extends JFrame {
+	private static MainWindow mainWindow;
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
 	private JLabel groupNumberLbl;
 	private JComboBox<String> groupNumberCmb;
-	private StudentCardPanel studentCard;
+	private JPanel studentCard;
 	private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,
 			aboutAuthorBtn, deleteStudentBtn, addPhotoBtn, addLabBtn;
 	private JTable studentTable;
-	private JPanel backGround;
-	private JLabel bgLabel;
 
-	public MainWindow() {
+	private MainWindow() {
 		//Создаем панель с информацией о студенте
-		studentCard = new StudentCardPanel();
-		backGround = new JPanel();
-		backGround.setPreferredSize(new Dimension(800,1000));
-		backGround.setMaximumSize(backGround.getPreferredSize());
-		backGround.setMinimumSize(backGround.getPreferredSize());
-		studentCard.setVisible(false);
+		studentCard = new JPanel();
+		studentCard.setPreferredSize(new Dimension(800, 1000));
+		studentCard.setMinimumSize(studentCard.getPreferredSize());
+		studentCard.setMaximumSize(studentCard.getPreferredSize());
 		ImageIcon imageIcon = new ImageIcon("img/s.png");
-		bgLabel = new JLabel("",imageIcon,JLabel.CENTER);
-		backGround.add(bgLabel);
-		backGround.add(studentCard);
+
 		// Создание меню
 		fileMenu = new JMenu("Файл");
 		menuBar = new JMenuBar();
@@ -101,8 +90,7 @@ public class MainWindow extends JFrame {
 				if (MySQLConnector.deleteStudent(id)) {
 					System.out.println("Student was deleted");
 				}
-				updateStudentCard(studentCard,id);
-				bgLabel.setVisible(true);
+				updateStudentCard(id);
 				updStudentTable(studentTable, selectedGroup);
 			}
 		});
@@ -121,6 +109,11 @@ public class MainWindow extends JFrame {
 		addLabBtn.addActionListener(e -> {
 			AddLabDialog addLabDialog = new AddLabDialog(mainWindow);
 			addLabDialog.setVisible(true);
+			addLabDialog.getAddButton().addActionListener(e1 -> {
+				int selectedRow = studentTable.getSelectedRow();
+				long id = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString());
+				updateStudentCard(id);
+			});
 		});
 		// Создаем таблицу для отображения студентов
 		// Создание заголовков столбцов
@@ -136,7 +129,7 @@ public class MainWindow extends JFrame {
 		model.setColumnIdentifiers(columns);
 		// Создание таблицы и установка модели
 		studentTable = new JTable(model);
-		studentTable.setPreferredSize(new Dimension(800,920));
+		studentTable.setPreferredSize(new Dimension(800, 920));
 		studentTable.setMaximumSize(studentTable.getPreferredSize());
 		studentTable.setMaximumSize(studentTable.getPreferredSize());
 		JScrollPane scrollPane = new JScrollPane(studentTable);
@@ -155,49 +148,13 @@ public class MainWindow extends JFrame {
 		});
 
 		studentTable.getSelectionModel().addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting()) {
-				int selectedRow = studentTable.getSelectedRow();
-				if (selectedRow != -1) {
-					long data = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
-					updateStudentCard(studentCard, data);
-					bgLabel.setVisible(false);
-					String currGroup = (String) groupNumberCmb.getSelectedItem();
-					List<Lab> labs = MySQLConnector.getAllLabByGroup(currGroup);
-					studentCard.getCalendarPanel().setLayout(new GridLayout(4, 5, 5, 5)); // задаем сетку для кнопок
-					// Создаем кнопки для каждой лабораторной работы и добавляем их на панель
-					for (Lab lab : labs) {
-						String labDate = lab.getDate().toString(); // получаем дату лабораторной работы
-						int labGrade = MySQLConnector.getGradeByLessonIDAndStudentID(lab.getId(), Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString())); // получаем оценку студента за лабораторную работу
 
-						// Создаем новую кнопку с датой и оценкой студента
-						JButton labButton = new JButton(labDate + " (" + labGrade + ")");
-
-						// Добавляем слушателя событий, который будет обрабатывать нажатие на кнопку и нажатие правой кнопки мыши
-						labButton.addMouseListener(new MouseAdapter() {
-							@Override
-							public void mousePressed(MouseEvent e) {
-								if (e.getButton() == MouseEvent.BUTTON1) { // если была нажата левая кнопка мыши
-									labButton.setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
-								} else if (e.getButton() == MouseEvent.BUTTON3) { // если была нажата правая кнопка мыши
-									JPopupMenu popupMenu = new JPopupMenu(); // создаем контекстное меню
-									JMenuItem setGradeMenuItem = new JMenuItem("Поставить оценку"); // создаем пункт меню "Поставить оценку"
-
-									// Добавляем слушателя событий, который будет обрабатывать нажатие на пункт меню
-									setGradeMenuItem.addActionListener(e1 -> {
-										String grade = JOptionPane.showInputDialog("Введите оценку:"); // выводим диалоговое окно для ввода оценки
-										labButton.setText(labDate + " (" + grade + ")"); // изменяем текст кнопки, добавляя в него новую оценку
-										labButton.setBackground(Color.WHITE); // меняем цвет кнопки обратно на белый
-									});
-
-									popupMenu.add(setGradeMenuItem); // добавляем пункт меню в контекстное меню
-									popupMenu.show(labButton, e.getX(), e.getY());
-								}
-							}
-						});
-						studentCard.getCalendarPanel().add(labButton); // добавляем кнопку на панель
-					}
-				}
+			int selectedRow = studentTable.getSelectedRow();
+			if (selectedRow != -1) {
+				long studentId = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
+				updateStudentCard(studentId);
 			}
+
 		});
 		TableColumn column = studentTable.getColumnModel().getColumn(4);
 		column.setMinWidth(0);
@@ -218,7 +175,7 @@ public class MainWindow extends JFrame {
 						.addComponent(groupNumberCmb))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(scrollPane)
-						.addComponent(backGround)
+						.addComponent(studentCard)
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(addStudentBtn)
 								.addComponent(addGroupBtn)
@@ -235,7 +192,7 @@ public class MainWindow extends JFrame {
 								.addComponent(groupNumberLbl)
 								.addComponent(groupNumberCmb))
 						.addComponent(scrollPane))
-				.addComponent(backGround)
+				.addComponent(studentCard)
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(addStudentBtn)
 						.addComponent(addGroupBtn)
@@ -248,14 +205,10 @@ public class MainWindow extends JFrame {
 		// Добавление слушателей
 
 
-		groupNumberCmb.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
-				updateStudentCard(studentCard,-1);
-				updStudentTable(studentTable, selectedGroup);
-				bgLabel.setVisible(true);
-			}
+		groupNumberCmb.addActionListener(e -> {
+			String selectedGroup1 = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
+			updateStudentCard(-1);
+			updStudentTable(studentTable, selectedGroup1);
 		});
 	}
 
@@ -263,7 +216,7 @@ public class MainWindow extends JFrame {
 		return groupNumberCmb;
 	}
 
-	public StudentCardPanel getStudentCard() {
+	public JPanel getStudentCard() {
 		return studentCard;
 	}
 
@@ -284,36 +237,39 @@ public class MainWindow extends JFrame {
 		}
 	}
 
-	protected static void updateStudentCard(StudentCardPanel studentCard, long studentID) {
+	protected void updateStudentCard(long studentID) {
 		Student student = MySQLConnector.getStudentById(studentID);
 		if (student != null) {
-			studentCard.getFullNameLabel().setText(student.getSurname() + " " + student.getName() +
-					" " + student.getMiddleName());
-			studentCard.getEmailLabel().setText(student.getEmail());
-			studentCard.getPhoneLabel().setText(student.getTelephone());
-			JLabel photoLabel = studentCard.getPhotoLabel();
-			Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
-			if (image != null) {
-				photoLabel.setSize(new Dimension(160, 200));
-				ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
-				photoLabel.setIcon(icon);
-			} else {
-				photoLabel.setSize(new Dimension(0, 0));
-			}
-			studentCard.getCalendarPanel().removeAll() ;
-			studentCard.getCalendarPanel().revalidate();
-			studentCard.getCalendarPanel().repaint();
-			studentCard.setVisible(true);
-		}else {
-			studentCard.getFullNameLabel().setText("");
-			studentCard.getEmailLabel().setText("");
-			studentCard.getPhoneLabel().setText("");
-			studentCard.getPhotoLabel().setText("");
-			studentCard.getCalendarPanel().removeAll() ;
-			studentCard.getCalendarPanel().revalidate();
-			studentCard.getCalendarPanel().repaint();
-			studentCard.setVisible(false);
+			JPanel panel = new StudentCardPanel(student);
+			studentCard.removeAll();
+			studentCard.add(panel);
+			studentCard.revalidate();
 		}
+		else {
+			studentCard.removeAll();
+			studentCard.repaint();
+			studentCard.revalidate();
+		}
+	}
+
+	protected String getSelectedGroup() {
+		return groupNumberCmb.getSelectedItem().toString();
+	}
+
+	protected long getSelectedStudentID() {
+		int selectedRow = studentTable.getSelectedRow();
+		long studentId = -1;
+		if (selectedRow != -1) {
+			studentId = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString());
+		}
+		return studentId;
+	}
+
+	public static MainWindow getInstance() {
+		if (mainWindow == null) {
+			mainWindow = new MainWindow();
+		}
+		return mainWindow;
 	}
 
 	public static void main(String[] args) {

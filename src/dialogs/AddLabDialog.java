@@ -6,6 +6,8 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.Objects;
 
+import MainFrame.Listener;
+import MainFrame.MainWindow;
 import com.toedter.calendar.JDateChooser;
 import connection.MySQLConnector;
 import entity.Group;
@@ -33,7 +35,7 @@ public class AddLabDialog extends JDialog  {
 		nameField = new JTextField(20);
 		roomField = new JTextField(20);
 
-		groupComboBox = new JComboBox<String>(MySQLConnector.getAllGroupNumbers().toArray(new String[0]));
+		groupComboBox = new JComboBox<>(MySQLConnector.getAllGroupNumbers().toArray(new String[0]));
 		dateChooser = new JDateChooser(new Date());
 
 		addButton = new JButton("Добавить");
@@ -55,18 +57,54 @@ public class AddLabDialog extends JDialog  {
 		cancelButton.addActionListener(e-> {
 		dispose();
 		});
-		addButton.addActionListener(e -> {
-			int groupID = MySQLConnector.getGroupIDByGroupNumber(Objects.requireNonNull(groupComboBox.getSelectedItem()).toString());
-			Lab lab = new Lab(roomField.getText(),dateChooser.getDate(),groupID,nameField.getText());
-			MySQLConnector.addLab(lab);
-		});
 
+addButton.addActionListener(new Listener(this,parent));
 		this.setContentPane(panel);
 		this.pack();
 		this.setLocationRelativeTo(null);
 	}
 
+	public JButton getAddButton() {
+		return addButton;
+	}
+
 	public boolean isAddButtonPressed() {
 		return isAddButtonPressed;
+	}
+
+	public JLabel getNameLabel() {
+		return nameLabel;
+	}
+
+	public JLabel getRoomLabel() {
+		return roomLabel;
+	}
+
+	public JLabel getDateLabel() {
+		return dateLabel;
+	}
+
+	public JLabel getGroupLabel() {
+		return groupLabel;
+	}
+
+	public JTextField getNameField() {
+		return nameField;
+	}
+
+	public JTextField getRoomField() {
+		return roomField;
+	}
+
+	public JComboBox<String> getGroupComboBox() {
+		return groupComboBox;
+	}
+
+	public JDateChooser getDateChooser() {
+		return dateChooser;
+	}
+
+	public JButton getCancelButton() {
+		return cancelButton;
 	}
 }

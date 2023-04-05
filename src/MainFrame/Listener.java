@@ -1,7 +1,9 @@
 package MainFrame;
 
 import connection.MySQLConnector;
+import dialogs.AddLabDialog;
 import dialogs.AddStudentDialog;
+import entity.Lab;
 import entity.Student;
 import utils.PhotoUtils;
 
@@ -11,10 +13,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class Listener implements ActionListener {
 	private MainWindow mainWindow;
 	private AddStudentDialog addStudentDialog;
+
+	private AddLabDialog  addLabDialog;
 
 	public Listener(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
@@ -24,13 +29,16 @@ public class Listener implements ActionListener {
 		this.mainWindow = (MainWindow) mainWindow;
 		this.addStudentDialog = addStudentDialog;
 	}
-
+	public Listener(AddLabDialog addStudentDialog, JFrame mainWindow) {
+		this.mainWindow = (MainWindow) mainWindow;
+		this.addLabDialog = addStudentDialog;
+	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == mainWindow.getAddStudentBtn()) {
 			AddStudentDialog dialog = new AddStudentDialog(mainWindow);
 			dialog.setVisible(true);
-		}  else if (e.getSource() == addStudentDialog.getOkButton()) {
+		}  else if (addStudentDialog != null && e.getSource() == addStudentDialog.getOkButton()) {
 			Student student = new Student();
 			student.setName(addStudentDialog.getFirstName());
 			student.setSurname(addStudentDialog.getLastName());
@@ -52,6 +60,12 @@ public class Listener implements ActionListener {
 			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
 			MainWindow.updStudentTable(mainWindow.getStudentTable(),selectedGroup);
 
+		} else if (addLabDialog != null && e.getSource() == addLabDialog.getAddButton()) {
+			int groupID = MySQLConnector.getGroupIDByGroupNumber(Objects.requireNonNull(addLabDialog.getGroupComboBox().getSelectedItem()).toString());
+			Lab lab = new Lab(addLabDialog.getRoomField().getText(),
+					addLabDialog.getDateChooser().getDate(),groupID,addLabDialog.getNameField().getText());
+			MySQLConnector.addLab(lab);
+			MainWindow.getInstance().updateStudentCard(mainWindow.getSelectedStudentID());
 		}
 	}
 }
