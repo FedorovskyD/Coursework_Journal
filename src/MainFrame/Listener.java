@@ -65,7 +65,6 @@ public class Listener implements ActionListener {
 			Lab lab = new Lab(addLabDialog.getRoomField().getText(),
 					addLabDialog.getDateChooser().getDate(),groupID,addLabDialog.getNameField().getText());
 			MySQLConnector.addLab(lab);
-			MainWindow.getInstance().updateStudentCard(mainWindow.getSelectedStudentID());
 		}
 	}
 }

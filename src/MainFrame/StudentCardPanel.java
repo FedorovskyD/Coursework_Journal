@@ -174,6 +174,7 @@ public class StudentCardPanel extends JPanel {
 						                           } else if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GREEN)) {
 							                           labButton.setBackground(Color.GRAY);
 
+
 						                           } else if (e.getButton() == MouseEvent.BUTTON3) { // если была нажата правая кнопка мыши
 							                           JPopupMenu popupMenu = new JPopupMenu(); // создаем контекстное меню
 							                           JMenuItem setGradeMenuItem = new JMenuItem("Поставить оценку"); // создаем пункт меню "Поставить оценку"

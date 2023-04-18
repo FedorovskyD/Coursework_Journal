@@ -9,6 +9,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.List;
 
@@ -18,17 +19,13 @@ public class MainWindow extends JFrame {
 	private JMenu fileMenu;
 	private JLabel groupNumberLbl;
 	private JComboBox<String> groupNumberCmb;
-	private JPanel studentCard;
 	private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,
 			aboutAuthorBtn, deleteStudentBtn, addPhotoBtn, addLabBtn;
 	private JTable studentTable;
+	private StudentCardDialog studentCardDialog;
 
 	private MainWindow() {
 		//Создаем панель с информацией о студенте
-		studentCard = new JPanel();
-		studentCard.setPreferredSize(new Dimension(800, 1000));
-		studentCard.setMinimumSize(studentCard.getPreferredSize());
-		studentCard.setMaximumSize(studentCard.getPreferredSize());
 		ImageIcon imageIcon = new ImageIcon("img/s.png");
 
 		// Создание меню
@@ -90,7 +87,6 @@ public class MainWindow extends JFrame {
 				if (MySQLConnector.deleteStudent(id)) {
 					System.out.println("Student was deleted");
 				}
-				updateStudentCard(id);
 				updStudentTable(studentTable, selectedGroup);
 			}
 		});
@@ -112,7 +108,6 @@ public class MainWindow extends JFrame {
 			addLabDialog.getAddButton().addActionListener(e1 -> {
 				int selectedRow = studentTable.getSelectedRow();
 				long id = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString());
-				updateStudentCard(id);
 			});
 		});
 		// Создаем таблицу для отображения студентов
@@ -148,14 +143,49 @@ public class MainWindow extends JFrame {
 		});
 
 		studentTable.getSelectionModel().addListSelectionListener(e -> {
-
-			int selectedRow = studentTable.getSelectedRow();
-			if (selectedRow != -1) {
-				long studentId = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
-				updateStudentCard(studentId);
+			if (!e.getValueIsAdjusting()) {
+				int selectedRow = studentTable.getSelectedRow();
+				if (selectedRow != -1) {
+					long studentId = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
+					if(studentCardDialog==null) {
+						studentCardDialog = new StudentCardDialog(mainWindow, "Карточка", MySQLConnector.getStudentById(studentId));
+					}
+					studentCardDialog.setVisible(true);
+				}
 			}
-
 		});
+		// подписка на события клавиатуры
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(event -> {
+			if (event.getID() == KeyEvent.KEY_RELEASED && (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN)) {
+				if (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN) {
+					// получаем текущую выделенную строку в таблице
+					int selectedRow = studentTable.getSelectedRow();
+					// вычисляем номер следующей строки в зависимости от нажатой клавиши
+					int nextRow = event.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
+
+					// проверяем, что следующая строка существует
+					if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
+						// обновляем выделение строки в таблице
+						studentTable.setRowSelectionInterval(nextRow, nextRow);
+
+						// получаем данные следующего студента
+						Student nextStudent = MySQLConnector.getStudentById(getSelectedStudentID());
+
+						// обновляем данные в диалоговом окне
+						studentCardDialog.updateData(nextStudent);
+
+						// прокручиваем таблицу к следующей строке
+						studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
+					} else {
+						// если следующей строки нет, то закрываем диалоговое окно
+						studentCardDialog.dispose();
+					}
+				}
+			}
+			return true;
+		});
+
+
 		TableColumn column = studentTable.getColumnModel().getColumn(4);
 		column.setMinWidth(0);
 		column.setMaxWidth(0);
@@ -175,7 +205,6 @@ public class MainWindow extends JFrame {
 						.addComponent(groupNumberCmb))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(scrollPane)
-						.addComponent(studentCard)
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(addStudentBtn)
 								.addComponent(addGroupBtn)
@@ -192,7 +221,6 @@ public class MainWindow extends JFrame {
 								.addComponent(groupNumberLbl)
 								.addComponent(groupNumberCmb))
 						.addComponent(scrollPane))
-				.addComponent(studentCard)
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(addStudentBtn)
 						.addComponent(addGroupBtn)
@@ -207,17 +235,12 @@ public class MainWindow extends JFrame {
 
 		groupNumberCmb.addActionListener(e -> {
 			String selectedGroup1 = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
-			updateStudentCard(-1);
 			updStudentTable(studentTable, selectedGroup1);
 		});
 	}
 
 	public JComboBox<String> getGroupNumberCmb() {
 		return groupNumberCmb;
-	}
-
-	public JPanel getStudentCard() {
-		return studentCard;
 	}
 
 	public JTable getStudentTable() {
@@ -230,25 +253,10 @@ public class MainWindow extends JFrame {
 
 	protected static void updStudentTable(JTable studentTable, String selectedGroup) {
 		List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
-		DefaultTableModel model = (DefaultTableModel) studentTable.getModel();
-		model.setRowCount(0); // удаление всех строк
+		DefaultTableModel model1 = (DefaultTableModel) studentTable.getModel();
+		model1.setRowCount(0); // удаление всех строк
 		for (Student student : students) {
-			model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail(), student.getId()});
-		}
-	}
-
-	protected void updateStudentCard(long studentID) {
-		Student student = MySQLConnector.getStudentById(studentID);
-		if (student != null) {
-			JPanel panel = new StudentCardPanel(student);
-			studentCard.removeAll();
-			studentCard.add(panel);
-			studentCard.revalidate();
-		}
-		else {
-			studentCard.removeAll();
-			studentCard.repaint();
-			studentCard.revalidate();
+			model1.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail(), student.getId()});
 		}
 	}
 
