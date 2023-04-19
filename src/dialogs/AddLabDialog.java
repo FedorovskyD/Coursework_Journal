@@ -1,19 +1,12 @@
 package dialogs;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Date;
-import java.util.Objects;
-
 import MainFrame.Listener;
-import MainFrame.MainWindow;
 import com.toedter.calendar.JDateChooser;
 import connection.MySQLConnector;
-import entity.Group;
-import entity.Lab;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.Date;
 
 public class AddLabDialog extends JDialog  {
 

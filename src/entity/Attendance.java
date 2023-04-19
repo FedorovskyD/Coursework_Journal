@@ -4,12 +4,12 @@ class Attendance {
 	private int id;
 	private Lab lab;
 	private Student student;
-	private boolean isPresent;
+	private boolean isLecture;
 
-	public Attendance(Lab lab, Student student, boolean isPresent) {
+	public Attendance(Lab lab, Student student, boolean isLecture) {
 		this.lab = lab;
 		this.student = student;
-		this.isPresent = isPresent;
+		this.isLecture = isLecture;
 	}
 
 	public int getId() {
@@ -24,7 +24,7 @@ class Attendance {
 		return student;
 	}
 
-	public boolean isPresent() {
-		return isPresent;
+	public boolean isLecture() {
+		return isLecture;
 	}
 }

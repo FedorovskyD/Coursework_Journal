@@ -5,23 +5,20 @@ import java.util.Date;
 import java.util.List;
 
 public class Group {
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
-	private int id;
+	private Long id;
 	private String name;
-	private List<Student> studentList;
-	private List<Attendance> attendanceList;
+	private List<Student> students;
 
-	public Group(int id, String name) {
+	public Group(Long id, String name) {
 		this.id = id;
 		this.name = name;
-		studentList = new ArrayList<>();
-		attendanceList = new ArrayList<>();
 	}
 
-	public int getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -29,36 +26,21 @@ public class Group {
 		return name;
 	}
 
-	public List<Student> getStudentList() {
-		return studentList;
+	public List<Student> getStudents() {
+		return students;
 	}
 
-	public List<Attendance> getAttendanceList() {
-		return attendanceList;
+	public void setStudents(List<Student> students) {
+		this.students = students;
 	}
 
-//	public void addStudent(Student student) {
-//		studentList.add(student);
-//		student.getGroup().removeStudent(student);
-//		student.setGroupID(this.id);
-//	}
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	public void removeStudent(Student student) {
-		studentList.remove(student);
-	}
-
-	public void addAttendance(Attendance attendance) {
-		attendanceList.add(attendance);
-	}
-
-	public List<Attendance> getAttendanceByDate(Date date) {
-		List<Attendance> result = new ArrayList<>();
-		for (Attendance attendance : attendanceList) {
-			if (attendance.getLab().getDate().equals(date)) {
-				result.add(attendance);
-			}
-		}
-		return result;
+		students.remove(student);
 	}
 
 }

@@ -27,8 +27,6 @@ public class StudentCardPanel extends JPanel {
 	private JLabel fullNameLabel;
 	private JLabel phoneLabel;
 	private JLabel emailLabel;
-	private JCheckBox lectureCheckBox;
-	private JCheckBox labCheckBox;
 	private JPanel calendarPanel;
 
 	public JLabel getPhotoLabel() {
@@ -108,12 +106,6 @@ public class StudentCardPanel extends JPanel {
 		// Добавление панели выбора посещений
 		JPanel attendancePanel = new JPanel();
 		attendancePanel.setLayout(new BoxLayout(attendancePanel, BoxLayout.Y_AXIS));
-
-		lectureCheckBox = new JCheckBox("Посещение лекций");
-		attendancePanel.add(lectureCheckBox);
-
-		labCheckBox = new JCheckBox("Посещение лабораторных занятий");
-		attendancePanel.add(labCheckBox);
 
 		gbc.gridx = 2;
 		gbc.gridy = 0;

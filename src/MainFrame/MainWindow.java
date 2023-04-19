@@ -2,11 +2,11 @@ package MainFrame;
 
 import connection.MySQLConnector;
 import dialogs.*;
+import entity.Group;
 import entity.Student;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -18,16 +18,32 @@ public class MainWindow extends JFrame {
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
 	private JLabel groupNumberLbl;
-	private JComboBox<String> groupNumberCmb;
+	private JComboBox<Group> groupNumberCmb;
 	private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,
 			aboutAuthorBtn, deleteStudentBtn, addPhotoBtn, addLabBtn;
 	private JTable studentTable;
 	private StudentCardDialog studentCardDialog;
+	private JRadioButton lectureBtn;
+	private JRadioButton labBtn;
+	private JLabel lectureLbl;
+	private JLabel labLbl;
+	private JLabel currDateLbl;
+	private JComboBox<String> currDateCmb;
+	private List<Group> groups;
 
 	private MainWindow() {
 		//Создаем панель с информацией о студенте
-		ImageIcon imageIcon = new ImageIcon("img/s.png");
-
+		groups = MySQLConnector.getAllGroups();
+		labLbl = new JLabel("Лабораторные");
+		lectureLbl = new JLabel("Лекции");
+		currDateLbl = new JLabel("Текущая дата");
+		currDateCmb = new JComboBox<>();
+		currDateCmb.setPreferredSize(new Dimension(200,30));
+		currDateCmb.setMinimumSize(currDateCmb.getPreferredSize());
+		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
+		labBtn = new JRadioButton();
+		lectureBtn = new JRadioButton();
+		lectureBtn.setSelected(true);
 		// Создание меню
 		fileMenu = new JMenu("Файл");
 		menuBar = new JMenuBar();
@@ -45,8 +61,8 @@ public class MainWindow extends JFrame {
 		setJMenuBar(menuBar);
 		//Добавляем label и combobox для выбора номера группы
 		groupNumberLbl = new JLabel("Номер группы:");
-		groupNumberCmb = new JComboBox<>(MySQLConnector.getAllGroupNumbers().toArray(new String[0]));
-		groupNumberCmb.setPreferredSize(new Dimension(100, 24));
+		groupNumberCmb = new JComboBox<>(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
+		groupNumberCmb.setPreferredSize(new Dimension(100, 30));
 		groupNumberCmb.setMaximumSize(groupNumberCmb.getPreferredSize());
 		groupNumberCmb.setMinimumSize(groupNumberCmb.getPreferredSize());
 		// Создаем кнопки
@@ -61,7 +77,7 @@ public class MainWindow extends JFrame {
 		addPhotoBtn.addActionListener(e -> {
 			int selectedRow = studentTable.getSelectedRow();
 			if (selectedRow != -1) {
-				long id = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
+				long id = ((StudentTableModel)studentTable.getModel()).getStudentAt(selectedRow).getId(); // Получаем данные из выделенной строки
 				AddPhotoDialog addPhotoDialog = new AddPhotoDialog(mainWindow, id);
 				addPhotoDialog.setVisible(true);
 			}
@@ -73,9 +89,8 @@ public class MainWindow extends JFrame {
 		deleteStudentBtn.addActionListener(e -> {
 			int selectedRow = studentTable.getSelectedRow();
 			if (selectedRow != -1) {
-				long id = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
-				String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
-				String photoPath = MySQLConnector.getStudentById(id).getPhotoPath();
+				String photoPath = ((StudentTableModel)studentTable.getModel())
+						.getStudentAt(selectedRow).getPhotoPath();
 				if (photoPath != null) {
 					File fileToDelete = new File(photoPath);
 					if (fileToDelete.delete()) {
@@ -84,10 +99,10 @@ public class MainWindow extends JFrame {
 						System.out.println("Failed to delete the file.");
 					}
 				}
-				if (MySQLConnector.deleteStudent(id)) {
+				if (MySQLConnector.deleteStudent(((StudentTableModel)studentTable.getModel())
+						.getStudentAt(selectedRow).getId())) {
 					System.out.println("Student was deleted");
 				}
-				updStudentTable(studentTable, selectedGroup);
 			}
 		});
 		addGroupBtn.addActionListener(e -> {
@@ -110,50 +125,11 @@ public class MainWindow extends JFrame {
 				long id = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString());
 			});
 		});
-		// Создаем таблицу для отображения студентов
-		// Создание заголовков столбцов
-		String[] columns = {"Фамилия", "Имя", "Отчество", "Почта", "ID"};
-		// Запрещаем редактирование таблицы
-		DefaultTableModel model = new DefaultTableModel() {
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				return false;
-			}
-		};
-		// Установка заголовков
-		model.setColumnIdentifiers(columns);
-		// Создание таблицы и установка модели
-		studentTable = new JTable(model);
-		studentTable.setPreferredSize(new Dimension(800, 920));
-		studentTable.setMaximumSize(studentTable.getPreferredSize());
-		studentTable.setMaximumSize(studentTable.getPreferredSize());
+		studentTable = new JTable(new StudentTableModel());
+		StudentTableModel studentTableModel = (StudentTableModel) studentTable.getModel();
+		studentTableModel.setData(((Group)groupNumberCmb.getSelectedItem()).getStudents());
+		studentTable.setDefaultRenderer(StudentTableCellRender.class,new StudentTableCellRender());
 		JScrollPane scrollPane = new JScrollPane(studentTable);
-		studentTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Выбор только одной строки
-		studentTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-				super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-				if (isSelected) {
-					setBackground(Color.YELLOW); // Задаем желтый фон для выделенной строки
-				} else {
-					setBackground(table.getBackground()); // Возвращаем цвет фона по умолчанию
-				}
-				return this;
-			}
-		});
-
-		studentTable.getSelectionModel().addListSelectionListener(e -> {
-			if (!e.getValueIsAdjusting()) {
-				int selectedRow = studentTable.getSelectedRow();
-				if (selectedRow != -1) {
-					long studentId = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString()); // Получаем данные из выделенной строки
-					if(studentCardDialog==null) {
-						studentCardDialog = new StudentCardDialog(mainWindow, "Карточка", MySQLConnector.getStudentById(studentId));
-					}
-					studentCardDialog.setVisible(true);
-				}
-			}
-		});
 		// подписка на события клавиатуры
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(event -> {
 			if (event.getID() == KeyEvent.KEY_RELEASED && (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN)) {
@@ -161,39 +137,39 @@ public class MainWindow extends JFrame {
 					// получаем текущую выделенную строку в таблице
 					int selectedRow = studentTable.getSelectedRow();
 					// вычисляем номер следующей строки в зависимости от нажатой клавиши
-					int nextRow = event.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
+					if (selectedRow != -1) {
+						int nextRow = event.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
 
-					// проверяем, что следующая строка существует
-					if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
-						// обновляем выделение строки в таблице
-						studentTable.setRowSelectionInterval(nextRow, nextRow);
+						// проверяем, что следующая строка существует
+						if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
+							// обновляем выделение строки в таблице
+							studentTable.setRowSelectionInterval(nextRow, nextRow);
 
-						// получаем данные следующего студента
-						Student nextStudent = MySQLConnector.getStudentById(getSelectedStudentID());
+							// получаем данные следующего студента
+							Student nextStudent = MySQLConnector.getStudentById(getSelectedStudentID());
 
-						// обновляем данные в диалоговом окне
-						studentCardDialog.updateData(nextStudent);
+							// обновляем данные в диалоговом окне
+							studentCardDialog.updateData(nextStudent);
 
-						// прокручиваем таблицу к следующей строке
-						studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
-					} else {
-						// если следующей строки нет, то закрываем диалоговое окно
-						studentCardDialog.dispose();
+							// прокручиваем таблицу к следующей строке
+							studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
+						} else {
+							// если следующей строки нет, то закрываем диалоговое окно
+							studentCardDialog.dispose();
+							studentTable.clearSelection();
+						}
 					}
 				}
 			}
-			return true;
+			return false;
 		});
 
 
-		TableColumn column = studentTable.getColumnModel().getColumn(4);
+		TableColumn column = studentTable.getColumnModel().getColumn(5);
 		column.setMinWidth(0);
 		column.setMaxWidth(0);
 		column.setWidth(0);
 		column.setPreferredWidth(0);
-		// Заполнение таблицы начальными данными
-		String selectedGroup = (String) groupNumberCmb.getSelectedItem();
-		updStudentTable(studentTable, selectedGroup);
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(groupLayout);
 		groupLayout.setAutoCreateGaps(true);
@@ -202,7 +178,15 @@ public class MainWindow extends JFrame {
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(groupNumberLbl)
-						.addComponent(groupNumberCmb))
+						.addComponent(groupNumberCmb)
+						.addGroup(groupLayout.createParallelGroup()
+								.addComponent(lectureLbl)
+								.addComponent(labLbl))
+						.addGroup(groupLayout.createParallelGroup()
+								.addComponent(lectureBtn)
+								.addComponent(labBtn))
+						.addComponent(currDateLbl)
+						.addComponent(currDateCmb))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(scrollPane)
 						.addGroup(groupLayout.createParallelGroup()
@@ -219,7 +203,15 @@ public class MainWindow extends JFrame {
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(groupNumberLbl)
-								.addComponent(groupNumberCmb))
+								.addComponent(groupNumberCmb)
+								.addGroup(groupLayout.createSequentialGroup()
+										.addComponent(lectureLbl)
+										.addComponent(labLbl))
+								.addGroup(groupLayout.createSequentialGroup()
+										.addComponent(lectureBtn)
+										.addComponent(labBtn))
+								.addComponent(currDateLbl)
+								.addComponent(currDateCmb))
 						.addComponent(scrollPane))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(addStudentBtn)
@@ -234,12 +226,13 @@ public class MainWindow extends JFrame {
 
 
 		groupNumberCmb.addActionListener(e -> {
-			String selectedGroup1 = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
-			updStudentTable(studentTable, selectedGroup1);
+			Group group = (Group) groupNumberCmb.getSelectedItem();
+			StudentTableModel studentTableModel1 = (StudentTableModel) studentTable.getModel();
+			studentTableModel1.setData(group.getStudents());
 		});
 	}
 
-	public JComboBox<String> getGroupNumberCmb() {
+	public JComboBox<Group> getGroupNumberCmb() {
 		return groupNumberCmb;
 	}
 
@@ -251,15 +244,6 @@ public class MainWindow extends JFrame {
 		return addStudentBtn;
 	}
 
-	protected static void updStudentTable(JTable studentTable, String selectedGroup) {
-		List<Student> students = MySQLConnector.getAllStudentsByGroup(selectedGroup);
-		DefaultTableModel model1 = (DefaultTableModel) studentTable.getModel();
-		model1.setRowCount(0); // удаление всех строк
-		for (Student student : students) {
-			model1.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(), student.getEmail(), student.getId()});
-		}
-	}
-
 	protected String getSelectedGroup() {
 		return groupNumberCmb.getSelectedItem().toString();
 	}
@@ -268,7 +252,7 @@ public class MainWindow extends JFrame {
 		int selectedRow = studentTable.getSelectedRow();
 		long studentId = -1;
 		if (selectedRow != -1) {
-			studentId = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString());
+			 studentId = ((StudentTableModel)studentTable.getModel()).getStudentAt(selectedRow).getId();
 		}
 		return studentId;
 	}

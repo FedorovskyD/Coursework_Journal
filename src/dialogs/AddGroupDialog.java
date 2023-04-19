@@ -38,7 +38,7 @@ public class AddGroupDialog extends JDialog {
 
 // Устанавливаем новую модель в JComboBox
 
-				mainWindow.getGroupNumberCmb().setModel(newModel);
+
 				okPressed = true;
 				dispose(); // Закрываем диалоговое окно
 			}

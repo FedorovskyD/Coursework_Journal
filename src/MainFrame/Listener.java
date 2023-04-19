@@ -58,7 +58,6 @@ public class Listener implements ActionListener {
 				MySQLConnector.addPhotoPath(student.getPhotoPath(), id);
 			}
 			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
-			MainWindow.updStudentTable(mainWindow.getStudentTable(),selectedGroup);
 
 		} else if (addLabDialog != null && e.getSource() == addLabDialog.getAddButton()) {
 			int groupID = MySQLConnector.getGroupIDByGroupNumber(Objects.requireNonNull(addLabDialog.getGroupComboBox().getSelectedItem()).toString());

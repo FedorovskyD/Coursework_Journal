@@ -1,6 +1,7 @@
 package connection;
 
 import entity.Authors;
+import entity.Group;
 import entity.Lab;
 import entity.Student;
 
@@ -106,6 +107,47 @@ public class MySQLConnector {
 			ex.printStackTrace();
 		}
 		return students;
+	}
+	public static List<Student> getAllStudentsByGroupID(Long groupID) {
+		List<Student> students = new ArrayList<>();
+		try {
+			Connection conn = getConnection();
+			PreparedStatement stmt = conn.prepareStatement("SELECT * FROM student WHERE GroupID=?");
+			stmt.setLong(1, groupID);
+			ResultSet rs = stmt.executeQuery();
+			// Цикл по всем строкам результата запроса
+			while (rs.next()) {
+				// Создание экземпляра класса-сущности и заполнение полей
+				Student student = new Student();
+				student.setId(rs.getInt("ID"));
+				student.setName(rs.getString("FirstName"));
+				student.setSurname(rs.getString("LastName"));
+				student.setMiddleName(rs.getString("MiddleName"));
+				student.setEmail(rs.getString("Email"));
+				//student.setGroup(rs.getString("GroupNumber"));
+				// Добавление экземпляра в список студентов
+				students.add(student);
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+		}
+		return students;
+	}
+	public static List<Group> getAllGroups()  {
+		List<Group> groups = new ArrayList<>();
+		//language = SQL
+		String query = "SELECT * FROM `group`";
+		try (Statement stmt = getConnection().createStatement();
+		     ResultSet rs = stmt.executeQuery(query)) {
+			while (rs.next()) {
+				Group group = new Group(rs.getLong("ID"), rs.getString("GroupNumber"));
+				group.setStudents(getAllStudentsByGroupID(group.getId()));
+				groups.add(group);
+			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return groups;
 	}
 
 	public static int getGroupIDByGroupNumber(String groupNumber) {
@@ -350,24 +392,6 @@ public class MySQLConnector {
 		}
 		return false;
 	}
-	/*public List<Authors> getProjectAuthors(long projectId) throws SQLException {
-		String query = "SELECT FirstName, LastName, Email FROM student WHERE projectId = ?";
-		Connection connection = getConnection();
-		PreparedStatement statement = connection.prepareStatement(query);
-		statement.setLong( 1,projectId);
-		ResultSet resultSet = statement.executeQuery();
-		List<Authors> authors = new ArrayList<>();
-		while (resultSet.next()) {
-			String firstName = resultSet.getString("first_name");
-			String lastName = resultSet.getString("last_name");
-			String email = resultSet.getString("email");
-			Authors author = new Authors();
-			authors.add(author);
-		}
-		connection.close();
-		return authors;
-		}
-	 */
 
 }
 

@@ -22,13 +22,13 @@ private StudentCardPanel studentCardPanel;
 	}
 	public void updateData(Student student) {
 		// обновляем поля на диалоговом окне с информацией о студенте
-		removeAll();
-		validate();
-		repaint();
-		add(new StudentCardPanel(student));
+		getContentPane().removeAll();
+		studentCardPanel = new StudentCardPanel(student);
+		add(studentCardPanel);
+		studentCardPanel.setVisible(true);
+		getContentPane().revalidate();
+		getContentPane().repaint();
 		// и т.д. - здесь нужно обновить все соответствующие поля
 		// перерисовываем диалоговое окно
-
-
 	}
 }
