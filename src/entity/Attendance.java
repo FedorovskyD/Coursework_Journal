@@ -1,6 +1,6 @@
 package entity;
 
-class Attendance {
+public class Attendance {
 	private int id;
 	private Lab lab;
 	private Student student;
@@ -11,7 +11,7 @@ class Attendance {
 		this.student = student;
 		this.isLecture = isLecture;
 	}
-
+public Attendance(){}
 	public int getId() {
 		return id;
 	}
@@ -27,4 +27,21 @@ class Attendance {
 	public boolean isLecture() {
 		return isLecture;
 	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public void setLab(Lab lab) {
+		this.lab = lab;
+	}
+
+	public void setStudent(Student student) {
+		this.student = student;
+	}
+
+	public void setLecture(boolean lecture) {
+		isLecture = lecture;
+	}
+
 }

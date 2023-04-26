@@ -3,16 +3,15 @@ package MainFrame;
 import connection.MySQLConnector;
 import dialogs.AddLabDialog;
 import dialogs.AddStudentDialog;
+import entity.Group;
 import entity.Lab;
 import entity.Student;
 import utils.PhotoUtils;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 public class Listener implements ActionListener {
@@ -35,14 +34,14 @@ public class Listener implements ActionListener {
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == mainWindow.getAddStudentBtn()) {
+		if (e.getSource() == mainWindow.getBtnAddStudent()) {
 			AddStudentDialog dialog = new AddStudentDialog(mainWindow);
 			dialog.setVisible(true);
 		}  else if (addStudentDialog != null && e.getSource() == addStudentDialog.getOkButton()) {
 			Student student = new Student();
 			student.setName(addStudentDialog.getFirstName());
 			student.setSurname(addStudentDialog.getLastName());
-			student.setGroupID(MySQLConnector.getGroupIDByGroupNumber((String) addStudentDialog.getGroupField().getSelectedItem()));
+			student.setGroup((Group) addStudentDialog.getGroupField().getSelectedItem());
 			student.setMiddleName(addStudentDialog.getMiddleName());
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
@@ -57,7 +56,7 @@ public class Listener implements ActionListener {
 				}
 				MySQLConnector.addPhotoPath(student.getPhotoPath(), id);
 			}
-			String selectedGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
+			String selectedGroup = (String) mainWindow.getCmbGroupNumber().getSelectedItem();
 
 		} else if (addLabDialog != null && e.getSource() == addLabDialog.getAddButton()) {
 			int groupID = MySQLConnector.getGroupIDByGroupNumber(Objects.requireNonNull(addLabDialog.getGroupComboBox().getSelectedItem()).toString());

@@ -19,10 +19,10 @@ public class MainWindow extends JFrame {
 	private static MainWindow mainWindow;
 	private JMenuBar menuBar;
 	private JMenu fileMenu;
-	private JLabel groupNumberLbl;
-	private JComboBox<Group> groupNumberCmb;
-	private JButton addStudentBtn, addGroupBtn, deleteGroupBtn,
-			aboutAuthorBtn, deleteStudentBtn, addPhotoBtn, addLabBtn;
+	private JLabel lblGroupNumber;
+	private JComboBox<Group> CmbGroupNumber;
+	private JButton btnAddStudent, btnAddGroup, btnDeleteGroup,
+			btnAboutAuthor, btnDeleteStudent, btnAddPhoto, btnAddLab;
 	private JTable studentTable;
 	private StudentCardDialog studentCardDialog;
 	private JRadioButton lectureBtn;
@@ -35,8 +35,7 @@ public class MainWindow extends JFrame {
 
 	private MainWindow() {
 		//Создаем панель с информацией о студенте
-		JOptionPane optionPane = new JOptionPane(new StudentCardPanel(new Student()), JOptionPane.PLAIN_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-		JDialog dialog = optionPane.createDialog("Student Info");
+
 		groups = MySQLConnector.getAllGroups();
 		labLbl = new JLabel("Лабораторные");
 		lectureLbl = new JLabel("Лекции");
@@ -64,32 +63,33 @@ public class MainWindow extends JFrame {
 		menuBar.add(fileMenu);
 		setJMenuBar(menuBar);
 		//Добавляем label и combobox для выбора номера группы
-		groupNumberLbl = new JLabel("Номер группы:");
-		groupNumberCmb = new JComboBox<>(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
-		groupNumberCmb.setPreferredSize(new Dimension(100, 30));
-		groupNumberCmb.setMaximumSize(groupNumberCmb.getPreferredSize());
-		groupNumberCmb.setMinimumSize(groupNumberCmb.getPreferredSize());
+		lblGroupNumber = new JLabel("Номер группы:");
+		CmbGroupNumber = new JComboBox<>(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
+		CmbGroupNumber.setPreferredSize(new Dimension(100, 30));
+		CmbGroupNumber.setMaximumSize(CmbGroupNumber.getPreferredSize());
+		CmbGroupNumber.setMinimumSize(CmbGroupNumber.getPreferredSize());
 		// Создаем кнопки
-		addStudentBtn = new JButton("Добавить студента");
-		addGroupBtn = new JButton("Добавить группу");
-		deleteGroupBtn = new JButton("Удалить группу");
-		aboutAuthorBtn = new JButton("Об авторе");
-		deleteStudentBtn = new JButton("Удалить студента");
-		addPhotoBtn = new JButton("Добавить фото студента");
-		addLabBtn = new JButton("Добавить лабораторное занятие");
+		btnAddStudent = new JButton("Добавить студента");
+		btnAddGroup = new JButton("Добавить группу");
+		btnDeleteGroup = new JButton("Удалить группу");
+		btnAboutAuthor = new JButton("Об авторе");
+		btnDeleteStudent = new JButton("Удалить студента");
+		btnAddPhoto = new JButton("Добавить фото студента");
+		btnAddLab = new JButton("Добавить лабораторное занятие");
 		MainWindow mainWindow = this;
 
-		addPhotoBtn.addActionListener(e -> {
+		studentCardDialog = new StudentCardDialog(mainWindow, "Карточка студента", new Student());
+		btnAddPhoto.addActionListener(e -> {
 			if (studentTable.getSelectedRow() != -1) {
 				AddPhotoDialog addPhotoDialog = new AddPhotoDialog(mainWindow, getCurrentStudent());
 				addPhotoDialog.setVisible(true);
 			}
 		});
-		addStudentBtn.addActionListener(e -> {
+		btnAddStudent.addActionListener(e -> {
 			AddStudentDialog addStudentDialog = new AddStudentDialog(mainWindow);
 			addStudentDialog.setVisible(true);
 		});
-		deleteStudentBtn.addActionListener(e -> {
+		btnDeleteStudent.addActionListener(e -> {
 			int selectedRow = studentTable.getSelectedRow();
 			if (selectedRow != -1) {
 				String photoPath = ((StudentTableModel) studentTable.getModel())
@@ -109,19 +109,19 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-		addGroupBtn.addActionListener(e -> {
+		btnAddGroup.addActionListener(e -> {
 			AddGroupDialog addGroupDialog = new AddGroupDialog(mainWindow);
 			addGroupDialog.setVisible(true);
 		});
-		deleteGroupBtn.addActionListener(e -> {
+		btnDeleteGroup.addActionListener(e -> {
 			DeleteGroupDialog deleteGroupDialog = new DeleteGroupDialog(mainWindow);
 			deleteGroupDialog.setVisible(true);
 		});
-		aboutAuthorBtn.addActionListener(e -> {
+		btnAboutAuthor.addActionListener(e -> {
 			AboutDialog aboutAuthorDialog = new AboutDialog(mainWindow);
 			aboutAuthorDialog.setVisible(true);
 		});
-		addLabBtn.addActionListener(e -> {
+		btnAddLab.addActionListener(e -> {
 			AddLabDialog addLabDialog = new AddLabDialog(mainWindow);
 			addLabDialog.setVisible(true);
 			addLabDialog.getAddButton().addActionListener(e1 -> {
@@ -131,55 +131,65 @@ public class MainWindow extends JFrame {
 		});
 		studentTable = new JTable(new StudentTableModel());
 		StudentTableModel studentTableModel = (StudentTableModel) studentTable.getModel();
-		studentTableModel.setData(((Group) groupNumberCmb.getSelectedItem()).getStudents());
+		studentTableModel.setData(((Group) CmbGroupNumber.getSelectedItem()).getStudents());
 		studentTable.setDefaultRenderer(StudentTableCellRender.class, new StudentTableCellRender());
 		JScrollPane scrollPane = new JScrollPane(studentTable);
+		studentTable.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_UP ||
+						e.getKeyCode() == KeyEvent.VK_DOWN)
+				{
+					e.consume();
+				}
+			}
+		});
 
 
 		studentTable.getSelectionModel().addListSelectionListener(e -> {
 			int selectedRow = studentTable.getSelectedRow();
-			Student selectedStudent = ((StudentTableModel) studentTable.getModel()).getStudentAt(selectedRow);
-			StudentCardPanel studentPanel = (StudentCardPanel) optionPane.getMessage();
-
-// Обновить данные о студенте на пользовательской панели
-			studentPanel.update(selectedStudent);
-
-// Обновить значение JOptionPane, чтобы отобразить обновленные данные
-			optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-			dialog.setVisible(true);
-			studentTable.setFocusable(true);
+			if(selectedRow != -1) {
+				Student selectedStudent = ((StudentTableModel) studentTable.getModel()).getStudentAt(selectedRow);
+				selectedStudent.setGroup(getCurrentGroup());
+				studentCardDialog.getStudentCardPanel().update(selectedStudent);
+				SwingUtilities.invokeLater(() -> studentCardDialog.setVisible(true));
+			}
 
 		});
-
-
-		// Добавить слушателя для кнопки "OK"
-
-
-		// подписка на события клавиатуры
-		studentTable.addKeyListener(new KeyAdapter() {
+		studentCardDialog.addWindowListener(new WindowAdapter() {
 			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_UP) {
-					// Отобразить информацию о предыдущем студенте
-					StudentCardPanel studentPanel = (StudentCardPanel) optionPane.getMessage();
-
-// Обновить данные о студенте на пользовательской панели
-					studentPanel.update(getCurrentStudent());
-
-// Обновить значение JOptionPane, чтобы отобразить обновленные данные
-					optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
-
-				} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-					// Отобразить информацию о следующем студенте
-					StudentCardPanel studentPanel = (StudentCardPanel) optionPane.getMessage();
-
-// Обновить данные о студенте на пользовательской панели
-					studentPanel.update(getCurrentStudent());
-
-// Обновить значение JOptionPane, чтобы отобразить обновленные данные
-					optionPane.setValue(JOptionPane.UNINITIALIZED_VALUE);
+			public void windowClosing(WindowEvent e) {
+				studentCardDialog.setVisible(false);
+			//	studentTable.clearSelection();
+			}
+		});
+		studentCardDialog.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+					studentCardDialog.setVisible(false);
+					//studentTable.clearSelection();
 				}
 			}
+		});
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(event -> {
+			if (event.getID() == KeyEvent.KEY_RELEASED && (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN)) {
+				if (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN) {
+					// получаем текущую выделенную строку в таблице
+					int selectedRow = studentTable.getSelectedRow();
+					// вычисляем номер следующей строки в зависимости от нажатой клавиши
+					if (selectedRow != -1) {
+						int nextRow = event.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
+						// проверяем, что следующая строка существует
+						if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
+							// обновляем выделение строки в таблице
+							studentTable.setRowSelectionInterval(nextRow, nextRow);
+							// прокручиваем таблицу к следующей строке
+							studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
+						}
+					}
+				}
+			}
+			return false;
 		});
 
 
@@ -195,8 +205,8 @@ public class MainWindow extends JFrame {
 		// Компановка главной панели
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
 				.addGroup(groupLayout.createSequentialGroup()
-						.addComponent(groupNumberLbl)
-						.addComponent(groupNumberCmb)
+						.addComponent(lblGroupNumber)
+						.addComponent(CmbGroupNumber)
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(lectureLbl)
 								.addComponent(labLbl))
@@ -208,20 +218,20 @@ public class MainWindow extends JFrame {
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(scrollPane)
 						.addGroup(groupLayout.createParallelGroup()
-								.addComponent(addStudentBtn)
-								.addComponent(addGroupBtn)
-								.addComponent(deleteGroupBtn)
-								.addComponent(deleteStudentBtn)
-								.addComponent(aboutAuthorBtn)
-								.addComponent(addPhotoBtn)
-								.addComponent(addLabBtn))
+								.addComponent(btnAddStudent)
+								.addComponent(btnAddGroup)
+								.addComponent(btnDeleteGroup)
+								.addComponent(btnDeleteStudent)
+								.addComponent(btnAboutAuthor)
+								.addComponent(btnAddPhoto)
+								.addComponent(btnAddLab))
 				)
 		);
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGroup(groupLayout.createParallelGroup()
-								.addComponent(groupNumberLbl)
-								.addComponent(groupNumberCmb)
+								.addComponent(lblGroupNumber)
+								.addComponent(CmbGroupNumber)
 								.addGroup(groupLayout.createSequentialGroup()
 										.addComponent(lectureLbl)
 										.addComponent(labLbl))
@@ -232,31 +242,31 @@ public class MainWindow extends JFrame {
 								.addComponent(currDateCmb))
 						.addComponent(scrollPane))
 				.addGroup(groupLayout.createSequentialGroup()
-						.addComponent(addStudentBtn)
-						.addComponent(addGroupBtn)
-						.addComponent(deleteGroupBtn)
-						.addComponent(deleteStudentBtn)
-						.addComponent(aboutAuthorBtn)
-						.addComponent(addPhotoBtn)
-						.addComponent(addLabBtn))
+						.addComponent(btnAddStudent)
+						.addComponent(btnAddGroup)
+						.addComponent(btnDeleteGroup)
+						.addComponent(btnDeleteStudent)
+						.addComponent(btnAboutAuthor)
+						.addComponent(btnAddPhoto)
+						.addComponent(btnAddLab))
 		);
 		// Добавление слушателей
-		groupNumberCmb.addActionListener(e -> {
+		CmbGroupNumber.addActionListener(e -> {
 			StudentTableModel studentTableModel1 = (StudentTableModel) studentTable.getModel();
 			studentTableModel1.setData(getCurrentGroup().getStudents());
 		});
 	}
 
-	public JComboBox<Group> getGroupNumberCmb() {
-		return groupNumberCmb;
+	public JComboBox<Group> getCmbGroupNumber() {
+		return CmbGroupNumber;
 	}
 
 	public JTable getStudentTable() {
 		return studentTable;
 	}
 
-	public JButton getAddStudentBtn() {
-		return addStudentBtn;
+	public JButton getBtnAddStudent() {
+		return btnAddStudent;
 	}
 
 	protected long getSelectedStudentID() {
@@ -281,7 +291,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private Group getCurrentGroup() {
-		return (Group) groupNumberCmb.getSelectedItem();
+		return (Group) CmbGroupNumber.getSelectedItem();
 	}
 
 	public static void main(String[] args) {

@@ -3,6 +3,7 @@ package dialogs;
 
 import MainFrame.Listener;
 import connection.MySQLConnector;
+import entity.Group;
 import entity.Student;
 import utils.PhotoUtils;
 
@@ -18,7 +19,7 @@ public class AddStudentDialog extends JDialog {
 	private JTextField firstNameField;
 	private JTextField lastNameField;
 	private JTextField middleNameField;
-	private JComboBox groupField;
+	private JComboBox<Group> groupField;
 	private JTextField emailField,telephonefield;
 	private JLabel photoLabel;
 	private JButton photoButton;
@@ -82,7 +83,7 @@ public class AddStudentDialog extends JDialog {
 		constraints.gridy = 3;
 		panel.add(groupLabel, constraints);
 
-		groupField = new JComboBox<>(MySQLConnector.getAllGroupNumbers().toArray(new String[0]));
+		groupField = new JComboBox<>(MySQLConnector.getAllGroups().toArray(new Group[0]));
 		constraints.gridx = 1;
 		constraints.gridy = 3;
 		panel.add(groupField, constraints);
@@ -184,7 +185,7 @@ public class AddStudentDialog extends JDialog {
 		return emailField.getText();
 	}
 
-	public JComboBox getGroupField() {
+	public JComboBox<Group> getGroupField() {
 		return groupField;
 	}
 

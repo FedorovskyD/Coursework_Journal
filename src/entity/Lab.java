@@ -11,16 +11,12 @@ public class Lab {
 	private String classroom;
 	private int group;
 	private String LabName;
-	private List<Attendance> attendanceList;
-	private List<Grade> gradeList;
 public Lab(){}
 	public Lab(String classroom, Date date, int group,String labName) {
 		this.classroom = classroom;
 		this.date = date;
 		this.group = group;
 		this.LabName = labName;
-		attendanceList = new ArrayList<>();
-		gradeList = new ArrayList<>();
 	}
 
 	public int getId() {
@@ -63,11 +59,4 @@ public Lab(){}
 		this.group = group;
 	}
 
-	public void setAttendanceList(List<Attendance> attendanceList) {
-		this.attendanceList = attendanceList;
-	}
-
-	public void setGradeList(List<Grade> gradeList) {
-		this.gradeList = gradeList;
-	}
 }

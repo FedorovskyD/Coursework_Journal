@@ -63,7 +63,7 @@ public class StudentCardPanel extends JPanel {
 
 	public StudentCardPanel(Student student) {
 		setLayout(new BorderLayout());
-		setPreferredSize(new Dimension(800, 1000));
+		setPreferredSize(new Dimension(1000, 800));
 		setMaximumSize(getPreferredSize());
 		setMinimumSize(getPreferredSize());
 		// Создание панели информации о студенте
@@ -123,9 +123,17 @@ public class StudentCardPanel extends JPanel {
 		calendarPanel.setPreferredSize(new Dimension(800, 500));
 		calendarPanel.setMinimumSize(calendarPanel.getPreferredSize());
 		calendarPanel.setMaximumSize(calendarPanel.getPreferredSize());
+		photoLabel.setPreferredSize(new Dimension(200,220));
+		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
+		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
 		add(infoPanel, BorderLayout.NORTH);
 		add(calendarPanel, BorderLayout.CENTER);
+		update(student);
+		setVisible(true);
+	}
 
+	public void update(Student student) {
+		calendarPanel.removeAll();
 		fullNameLabel.setText(student.getSurname() + " " + student.getName() +
 				" " + student.getMiddleName());
 		emailLabel.setText(student.getEmail());
@@ -138,7 +146,7 @@ public class StudentCardPanel extends JPanel {
 		} else {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
-		List<Lab> labs = MySQLConnector.getAllLabByGroup("10702420");
+		List<Lab> labs = MySQLConnector.getAllLabByGroupId(student.getGroup().getId());
 		getCalendarPanel().setLayout(new GridLayout(5, 5, 5, 5)); // задаем сетку для кнопок
 		// Создаем кнопки для каждой лабораторной работы и добавляем их на панель
 		for (Lab lab : labs) {
@@ -154,36 +162,35 @@ public class StudentCardPanel extends JPanel {
 			}
 			// Добавляем слушателя событий, который будет обрабатывать нажатие на кнопку и нажатие правой кнопки мыши
 			labButton.addMouseListener(new MouseAdapter() {
-				                           @Override
-				                           public void mousePressed(MouseEvent e) {
-					                           Object o = e.getSource();
-					                           if (o instanceof JButton) {
+				@Override
+				public void mousePressed(MouseEvent e) {
+					Object o = e.getSource();
+					if (o instanceof JButton) {
 
-						                           JButton jButton = (JButton) o;
-						                           Color color = jButton.getBackground();
-						                           if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GRAY)) { // если была нажата левая кнопка мыши
-							                           labButton.setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
-							                           MySQLConnector.addAttendance(student.getId(), lab.getId());
-						                           } else if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GREEN)) {
-							                           labButton.setBackground(Color.GRAY);
+						JButton jButton = (JButton) o;
+						Color color = jButton.getBackground();
+						if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GRAY)) { // если была нажата левая кнопка мыши
+							labButton.setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
+							MySQLConnector.addAttendance(student.getId(), lab.getId());
+						} else if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GREEN)) {
+							labButton.setBackground(Color.GRAY);
 
+						} else if (e.getButton() == MouseEvent.BUTTON3) { // если была нажата правая кнопка мыши
+							JPopupMenu popupMenu = new JPopupMenu(); // создаем контекстное меню
+							JMenuItem setGradeMenuItem = new JMenuItem("Поставить оценку"); // создаем пункт меню "Поставить оценку"
 
-						                           } else if (e.getButton() == MouseEvent.BUTTON3) { // если была нажата правая кнопка мыши
-							                           JPopupMenu popupMenu = new JPopupMenu(); // создаем контекстное меню
-							                           JMenuItem setGradeMenuItem = new JMenuItem("Поставить оценку"); // создаем пункт меню "Поставить оценку"
+							// Добавляем слушателя событий, который будет обрабатывать нажатие на пункт меню
+							setGradeMenuItem.addActionListener(e1 -> {
+								String grade = JOptionPane.showInputDialog("Введите оценку:"); // выводим диалоговое окно для ввода оценки
+								labButton.setText("<html>" + labDate + "<br> Оценка: " + grade + "</html>"); // изменяем текст кнопки, добавляя в него новую оценку
+							});
 
-							                           // Добавляем слушателя событий, который будет обрабатывать нажатие на пункт меню
-							                           setGradeMenuItem.addActionListener(e1 -> {
-								                           String grade = JOptionPane.showInputDialog("Введите оценку:"); // выводим диалоговое окно для ввода оценки
-								                           labButton.setText("<html>" + labDate + "<br> Оценка: " + grade + "</html>"); // изменяем текст кнопки, добавляя в него новую оценку
-							                           });
-
-							                           popupMenu.add(setGradeMenuItem); // добавляем пункт меню в контекстное меню
-							                           popupMenu.show(labButton, e.getX(), e.getY());
-						                           }
-					                           }
-				                           }
-			                           });
+							popupMenu.add(setGradeMenuItem); // добавляем пункт меню в контекстное меню
+							popupMenu.show(labButton, e.getX(), e.getY());
+						}
+					}
+				}
+			});
 			labButton.setPreferredSize(new Dimension(100, 30));
 			getCalendarPanel().add(labButton); // добавляем кнопку на панель
 		}
@@ -192,78 +199,8 @@ public class StudentCardPanel extends JPanel {
 			JPanel filler = new JPanel();
 			getCalendarPanel().add(filler);
 		}
-		setVisible(true);
 	}
 
-public void update(Student student){
-		calendarPanel.removeAll();
-	fullNameLabel.setText(student.getSurname() + " " + student.getName() +
-			" " + student.getMiddleName());
-	emailLabel.setText(student.getEmail());
-	photoLabel.setText(student.getTelephone());
-	Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
-	if (image != null) {
-		photoLabel.setSize(new Dimension(200, 220));
-		ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
-		photoLabel.setIcon(icon);
-	} else {
-		photoLabel.setSize(new Dimension(0, 0));
-	}
-	List<Lab> labs = MySQLConnector.getAllLabByGroup("10702420");
-	getCalendarPanel().setLayout(new GridLayout(5, 5, 5, 5)); // задаем сетку для кнопок
-	// Создаем кнопки для каждой лабораторной работы и добавляем их на панель
-	for (Lab lab : labs) {
-		String labDate = lab.getDate().toString(); // получаем дату лабораторной работы
-		String labGrade = MySQLConnector.getGradeByLessonIDAndStudentID(lab.getId(), student.getId()); // получаем оценку студента за лабораторную работу
-
-		// Создаем новую кнопку с датой и оценкой студента
-		JButton labButton = new JButton("<html>" + labDate + "<br> Оценка: " + labGrade + "</html>");
-		if (MySQLConnector.isAttendance(student.getId(), lab.getId())) {
-			labButton.setBackground(Color.GREEN);
-		} else {
-			labButton.setBackground(Color.GRAY);
-		}
-		// Добавляем слушателя событий, который будет обрабатывать нажатие на кнопку и нажатие правой кнопки мыши
-		labButton.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				Object o = e.getSource();
-				if (o instanceof JButton) {
-
-					JButton jButton = (JButton) o;
-					Color color = jButton.getBackground();
-					if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GRAY)) { // если была нажата левая кнопка мыши
-						labButton.setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
-						MySQLConnector.addAttendance(student.getId(), lab.getId());
-					} else if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GREEN)) {
-						labButton.setBackground(Color.GRAY);
-
-
-					} else if (e.getButton() == MouseEvent.BUTTON3) { // если была нажата правая кнопка мыши
-						JPopupMenu popupMenu = new JPopupMenu(); // создаем контекстное меню
-						JMenuItem setGradeMenuItem = new JMenuItem("Поставить оценку"); // создаем пункт меню "Поставить оценку"
-
-						// Добавляем слушателя событий, который будет обрабатывать нажатие на пункт меню
-						setGradeMenuItem.addActionListener(e1 -> {
-							String grade = JOptionPane.showInputDialog("Введите оценку:"); // выводим диалоговое окно для ввода оценки
-							labButton.setText("<html>" + labDate + "<br> Оценка: " + grade + "</html>"); // изменяем текст кнопки, добавляя в него новую оценку
-						});
-
-						popupMenu.add(setGradeMenuItem); // добавляем пункт меню в контекстное меню
-						popupMenu.show(labButton, e.getX(), e.getY());
-					}
-				}
-			}
-		});
-		labButton.setPreferredSize(new Dimension(100, 30));
-		getCalendarPanel().add(labButton); // добавляем кнопку на панель
-	}
-	int remaining = 25 - labs.size();
-	for (int i = 1; i <= remaining; i++) {
-		JPanel filler = new JPanel();
-		getCalendarPanel().add(filler);
-	}
-}
 	public JPanel getCalendarPanel() {
 		return calendarPanel;
 	}

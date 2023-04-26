@@ -12,7 +12,7 @@ public class Student {
     private String middleName ;
     private String telephone ;
     private String email ;
-    private int groupID ;
+    private Group group ;
     private String photoPath;
     private List<Attendance> attendanceList;
     private List<Grade> gradeList;
@@ -33,19 +33,15 @@ public class Student {
         this.middleName = middleName;
     }
 
-    public int getGroup() {
-        return groupID;
+    public Group getGroup() {
+        return group;
     }
 
-    public void setGroupID(int group) {
-        groupID=group;
+    public void setGroup(Group group) {
+        this.group=group;
     }
 
     private int age;
-
-    public void addAttendance(Attendance attendance) {
-        attendanceList.add(attendance);
-    }
 
     public void addGrade(Grade grade) {
         gradeList.add(grade);
@@ -58,7 +54,10 @@ public class Student {
         this.age = age;
         this.email="default email";
     }
-    public Student(){}
+    public Student(){
+        group= new Group();
+
+    }
 
     public long getId() {
         return id;

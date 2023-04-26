@@ -1,9 +1,6 @@
 package connection;
 
-import entity.Authors;
-import entity.Group;
-import entity.Lab;
-import entity.Student;
+import entity.*;
 
 import javax.swing.*;
 import java.sql.*;
@@ -41,7 +38,7 @@ public class MySQLConnector {
 			statement.setString(1, student.getSurname());
 			statement.setString(2, student.getName());
 			statement.setString(3, student.getMiddleName());
-			statement.setLong(4, student.getGroup());
+			statement.setLong(4, student.getGroup().getId());
 			statement.setString(5, student.getTelephone());
 			statement.setString(6, student.getEmail());
 			int rowsAffected = statement.executeUpdate();
@@ -99,7 +96,7 @@ public class MySQLConnector {
 				student.setSurname(rs.getString("LastName"));
 				student.setMiddleName(rs.getString("MiddleName"));
 				student.setEmail(rs.getString("Email"));
-				//student.setGroup(rs.getString("GroupNumber"));
+				student.setGroup(getGroupByID(rs.getInt("GroupID")));
 				// Добавление экземпляра в список студентов
 				students.add(student);
 			}
@@ -124,7 +121,8 @@ public class MySQLConnector {
 				student.setSurname(rs.getString("LastName"));
 				student.setMiddleName(rs.getString("MiddleName"));
 				student.setEmail(rs.getString("Email"));
-				//student.setGroup(rs.getString("GroupNumber"));
+				student.setPhotoPath(rs.getString("PhotoPath"));
+				student.setTelephone(rs.getString("Telephone"));
 				// Добавление экземпляра в список студентов
 				students.add(student);
 			}
@@ -172,7 +170,27 @@ public class MySQLConnector {
 
 		return groupId;
 	}
+	public static Group getGroupByID(long groupId) {
+Group group = new Group();
+		try {
+			Connection connection = getConnection();
+			PreparedStatement statement = connection.prepareStatement("SELECT * FROM `group` WHERE ID = ?");
+			statement.setLong(1, groupId);
+			ResultSet resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				group.setId(resultSet.getInt("ID"));
+			//	group.s
+			}
 
+			resultSet.close();
+			statement.close();
+			connection.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return group;
+	}
 	public static Student getStudentById(long id) {
 		// Установить соединение с базой данных
 		PreparedStatement preparedStatement = null;
@@ -322,14 +340,14 @@ public class MySQLConnector {
 		return id;
 	}
 
-	public static List<Lab> getAllLabByGroup(String groupNumber) {
+	public static List<Lab> getAllLabByGroupId(long groupID) {
 		List<Lab> labs = new ArrayList<>();
 		try {
 			Connection conn = getConnection();
-			PreparedStatement stmt = conn.prepareStatement("SELECT l.*, g.GroupNumber" +
-					" FROM lab  l" +
-					" JOIN `group` g ON l.GroupID = g.ID WHERE GroupNumber=?;");
-			stmt.setString(1, groupNumber);
+			PreparedStatement stmt = conn.prepareStatement("SELECT *" +
+					" FROM lab " +
+					" WHERE groupID=?;");
+			stmt.setLong(1, groupID);
 			ResultSet rs = stmt.executeQuery();
 			// Цикл по всем строкам результата запроса
 			while (rs.next()) {
@@ -376,7 +394,27 @@ public class MySQLConnector {
 		}
 		return id;
 	}
+    public static List<Attendance> getAttendanceByStudentID(int studentID){
+	    String sql = "SELECT * FROM attendance  WHERE student_ID = ?";
+		List<Attendance> attendanceList = new ArrayList<>();
+		try(Connection con = getConnection();
+		    PreparedStatement pstmt = con.prepareStatement(sql)) {
+			pstmt.setInt(1,studentID);
+			ResultSet rs = pstmt.executeQuery();
+			while (rs.next()) {
+				// Создание экземпляра класса-сущности и заполнение полей
+				Attendance attendance = new Attendance();
+				attendance.setId(rs.getInt("ID"));
+				attendance.setStudent(getStudentById(rs.getInt("studentID")));
+				//attendance.setLab(getLabByID(rs.getInt("lesson_ID")));
+				attendanceList.add(attendance);
+			}
 
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+		return attendanceList;
+    }
 	public static boolean isAttendance(long studentID, int lessonID) {
 		String sql = "SELECT * FROM attendance  WHERE student_ID = ? AND lesson_ID = ?";
 		try (Connection conn = getConnection();

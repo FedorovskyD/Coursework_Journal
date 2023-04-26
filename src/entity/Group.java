@@ -1,15 +1,13 @@
 package entity;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class Group {
-	public void setId(Long id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	private Long id;
+	private long id ;
 	private String name;
 	private List<Student> students;
 
@@ -17,6 +15,7 @@ public class Group {
 		this.id = id;
 		this.name = name;
 	}
+	public Group(){}
 
 	public Long getId() {
 		return id;
@@ -37,10 +36,6 @@ public class Group {
 	@Override
 	public String toString() {
 		return name;
-	}
-
-	public void removeStudent(Student student) {
-		students.remove(student);
 	}
 
 }

@@ -34,7 +34,7 @@ public class DeleteGroupDialog extends JDialog {
 			groupComboBox.setModel(newModel);
 			// Устанавливаем новую модель в JComboBox
 
-			String selectGroup = (String) mainWindow.getGroupNumberCmb().getSelectedItem();
+			String selectGroup = (String) mainWindow.getCmbGroupNumber().getSelectedItem();
 			List<Student> students = MySQLConnector.getAllStudentsByGroup(selectGroup);
 			DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
 			model.setRowCount(0); // удаление всех строк
