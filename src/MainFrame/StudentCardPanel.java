@@ -150,6 +150,7 @@ public class StudentCardPanel extends JPanel {
 		getCalendarPanel().setLayout(new GridLayout(5, 5, 5, 5)); // задаем сетку для кнопок
 		// Создаем кнопки для каждой лабораторной работы и добавляем их на панель
 		for (Lab lab : labs) {
+
 			String labDate = lab.getDate().toString(); // получаем дату лабораторной работы
 			String labGrade = MySQLConnector.getGradeByLessonIDAndStudentID(lab.getId(), student.getId()); // получаем оценку студента за лабораторную работу
 
@@ -192,6 +193,9 @@ public class StudentCardPanel extends JPanel {
 				}
 			});
 			labButton.setPreferredSize(new Dimension(100, 30));
+			if(lab.getDate().equals(((Lab)MainWindow.getInstance().getCurrDateCmb().getSelectedItem()).getDate())) {
+			labButton.setSelected(true);
+			}
 			getCalendarPanel().add(labButton); // добавляем кнопку на панель
 		}
 		int remaining = 25 - labs.size();

@@ -5,6 +5,8 @@ import entity.Student;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class StudentCardDialog extends JDialog {
 	private StudentCardPanel studentCardPanel;
@@ -20,6 +22,14 @@ public class StudentCardDialog extends JDialog {
 		setSize(1000, 800);
 		setLocationRelativeTo(owner);
 		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+					setVisible(false);
+				}
+			}
+		});
 	}
 
 	public StudentCardPanel getStudentCardPanel() {

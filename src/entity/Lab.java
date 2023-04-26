@@ -1,9 +1,6 @@
 package entity;
 
-import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class Lab {
 	private int id;
@@ -59,4 +56,8 @@ public Lab(){}
 		this.group = group;
 	}
 
+	@Override
+	public String toString() {
+		return date.toString();
+	}
 }
