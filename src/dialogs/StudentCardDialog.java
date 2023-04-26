@@ -1,15 +1,19 @@
 package dialogs;
 
+import MainFrame.MainWindow;
 import MainFrame.StudentCardPanel;
 import entity.Student;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 public class StudentCardDialog extends JDialog {
 private StudentCardPanel studentCardPanel;
 	public StudentCardDialog(Frame owner, String title, Student student) {
-		super(owner, title, false);
+		super(owner, title, true);
 		setLayout(new BorderLayout());
 
 		// Добавляем элементы на панель содержимого
@@ -19,6 +23,12 @@ private StudentCardPanel studentCardPanel;
 		// Устанавливаем размер и положение окна
 		setSize(700, 900);
 		setLocationRelativeTo(owner);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				MainWindow.getInstance().getStudentTable().clearSelection();
+			}
+		});
 	}
 	public void updateData(Student student) {
 		// обновляем поля на диалоговом окне с информацией о студенте

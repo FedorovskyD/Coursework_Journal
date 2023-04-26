@@ -34,11 +34,6 @@ public class AddGroupDialog extends JDialog {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 			MySQLConnector.addGroup(groupNameField.getText());
-			ComboBoxModel<String> newModel = new DefaultComboBoxModel<>(MySQLConnector.getAllGroupNumbers().toArray(new String[0]));
-
-// Устанавливаем новую модель в JComboBox
-
-
 				okPressed = true;
 				dispose(); // Закрываем диалоговое окно
 			}

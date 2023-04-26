@@ -16,13 +16,13 @@ public class AddPhotoDialog extends JDialog implements ActionListener {
 	private JButton okButton;
 	private JButton cancelButton;
 	private File selectedFile;
-	private long studentId;
+	private Student student;
 	private MainWindow mainWindow;
 
-	public AddPhotoDialog(Frame parent, long id) {
+	public AddPhotoDialog(Frame parent, Student student) {
 		super(parent, "Добавить фото", true);
 		mainWindow = (MainWindow)parent;
-		studentId = id;
+		this.student = student;
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
 		chooseFileButton = new JButton("Выбрать фото ");
@@ -75,19 +75,12 @@ public class AddPhotoDialog extends JDialog implements ActionListener {
 				filePathTextField.setText(selectedFile.getAbsolutePath());
 			}
 		} else if (e.getSource() == okButton) {
-			Student student =MySQLConnector.getStudentById(studentId);
-			student.setId(studentId);
 			try {
 				PhotoUtils.getInstance().savePhoto(student,selectedFile);
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-			MySQLConnector.addPhotoPath(student.getPhotoPath(), studentId);
-			Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
-			//JLabel photoLabel = mainWindow.getStudentCard().getPhotoLabel();
-//			photoLabel.setSize(new Dimension(160,200));
-//			ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
-//			photoLabel.setIcon(icon);
+			MySQLConnector.addPhotoPath(student.getPhotoPath(), student.getId());
 			dispose();
 		} else if (e.getSource() == cancelButton) {
 			selectedFile = null;
