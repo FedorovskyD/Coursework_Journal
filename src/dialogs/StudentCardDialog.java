@@ -12,12 +12,12 @@ import java.awt.event.WindowEvent;
 
 public class StudentCardDialog extends JDialog {
 	private final StudentCardPanel studentCardPanel;
-	public StudentCardDialog(Frame owner, String title, Student student) {
+	public StudentCardDialog(JFrame owner, String title) {
 		super(owner, title, true);
 		setLayout(new BorderLayout());
 
 		// Добавляем элементы на панель содержимого
-		studentCardPanel = new StudentCardPanel(student);
+		studentCardPanel = new StudentCardPanel(owner);
 		add(studentCardPanel, BorderLayout.CENTER);
 
 		// Устанавливаем размер и положение окна

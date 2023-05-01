@@ -124,13 +124,8 @@ public class GroupDaoImpl implements GroupDao {
 	private Group createGroupFromResultSet(ResultSet rs) throws SQLException {
 		long id = rs.getLong("ID");
 		String groupNumber = rs.getString("GroupNumber");
-		return new Group(id, groupNumber,StudentDaoImpl.getInstance().getStudentsByGroupId(id));
+		return new Group(id, groupNumber,StudentDaoImpl.getInstance().getStudentsByGroupId(id),LabDaoImpl.getInstance().getAllLabByGroupId(id));
 	}
 }
-
-
-
-
-
 
 

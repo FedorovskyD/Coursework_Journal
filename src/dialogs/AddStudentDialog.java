@@ -35,6 +35,7 @@ public class AddStudentDialog extends JDialog {
 
 	public AddStudentDialog(JFrame parent) {
 		super(parent, "Добавить студента", true);
+		photoPath = new File("photos/default.jpg");
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;

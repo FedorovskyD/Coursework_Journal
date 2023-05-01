@@ -111,4 +111,11 @@ public class Student {
 	public void setAge(int age) {
 		this.age = age;
 	}
+	public double getMark(){
+		int sum = 0;
+		for (Grade grade:gradeList){
+			sum+=grade.getGrade();
+		}
+		return (double) sum/(gradeList.size()==0?1:gradeList.size());
+	}
 }

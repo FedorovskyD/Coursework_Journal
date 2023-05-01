@@ -52,9 +52,6 @@ public class Listener implements ActionListener {
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
-
-			}else {
-				student.setPhotoPath("photos/default.jpg");
 			}
 			StudentDaoImpl.getInstance().update(student);
 			mainWindow.getCurrentGroup().getStudents().add(student);

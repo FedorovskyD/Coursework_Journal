@@ -52,25 +52,7 @@ public class MainWindowistener implements ActionListener, ListSelectionListener 
 			DeleteGroupDialog deleteGroupDialog = new DeleteGroupDialog(mainWindow);
 			deleteGroupDialog.setVisible(true);
 		} else if (e.getSource() == mainWindow.getBtnDeleteStudent()) {
-			int selectedRow = studentTable.getSelectedRow();
-			if (selectedRow != -1) {
-				String photoPath = ((StudentTableModel) studentTable.getModel())
-						.getStudentAt(selectedRow).getPhotoPath();
-				if (photoPath != null) {
-					File fileToDelete = new File(photoPath);
-					if (fileToDelete.delete()) {
-						System.out.println("File deleted successfully.");
-					} else {
-						System.out.println("Failed to delete the file.");
-					}
-				}
-				if (StudentDaoImpl.getInstance().delete(((StudentTableModel) studentTable.getModel())
-						.getStudentAt(selectedRow))) {
-					mainWindow.getCurrentGroup().getStudents().remove(mainWindow.getCurrentStudent());
-					mainWindow.updateStudentTable();
-					System.out.println("Student was deleted");
-				}
-			}
+
 		} else if (e.getSource() == mainWindow.getBtnAboutAuthor()) {
 			AboutDialog aboutAuthorDialog = new AboutDialog(mainWindow);
 			aboutAuthorDialog.setVisible(true);
@@ -93,12 +75,14 @@ public class MainWindowistener implements ActionListener, ListSelectionListener 
 		if(e.getSource() == mainWindow.getStudentTable().getSelectionModel()){
 			JTable studentTable = mainWindow.getStudentTable();
 			StudentCardDialog studentCardDialog = mainWindow.getStudentCardDialog();
-			int selectedRow = studentTable.getSelectedRow();
-			if(selectedRow != -1) {
-				Student selectedStudent = ((StudentTableModel) studentTable.getModel()).getStudentAt(selectedRow);
-				selectedStudent.setGroup(mainWindow.getCurrentGroup().getId());
-				studentCardDialog.getStudentCardPanel().update(selectedStudent);
-				SwingUtilities.invokeLater(() -> studentCardDialog.setVisible(true));
+			if (!e.getValueIsAdjusting()) {
+				int selectedRow = studentTable.getSelectedRow();
+				if(selectedRow != -1) {
+					Student selectedStudent = ((StudentTableModel) studentTable.getModel()).getStudentAt(selectedRow);
+					selectedStudent.setGroup(mainWindow.getCurrentGroup().getId());
+					studentCardDialog.getStudentCardPanel().update(selectedStudent);
+					SwingUtilities.invokeLater(() -> studentCardDialog.setVisible(true));
+				}
 			}
 		}
 	}

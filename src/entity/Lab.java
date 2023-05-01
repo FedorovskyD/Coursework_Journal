@@ -1,5 +1,6 @@
 package entity;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Lab {
@@ -58,6 +59,6 @@ public Lab(){}
 
 	@Override
 	public String toString() {
-		return date.toString();
+		return new SimpleDateFormat("dd.MM.yyyy").format(date);
 	}
 }

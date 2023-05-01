@@ -77,11 +77,12 @@ public class MainWindow extends JFrame {
 		currDateCmb.setPreferredSize(new Dimension(200, 30));
 		currDateCmb.setMinimumSize(currDateCmb.getPreferredSize());
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
-		studentCardDialog = new StudentCardDialog(mainWindow, "Карточка студента", new Student());
+		currDateCmb.setEditable(false);
+		studentCardDialog = new StudentCardDialog(mainWindow, "Карточка студента");
 		studentTable = new JTable(new StudentTableModel());
 		StudentTableModel studentTableModel = (StudentTableModel) studentTable.getModel();
 		studentTableModel.setData(((Group) Objects.requireNonNull(cmbGroupNumber.getSelectedItem())).getStudents());
-		studentTable.setDefaultRenderer(StudentTableCellRender.class, new StudentTableCellRender());
+
 		JScrollPane scrollPane = new JScrollPane(studentTable);
 		studentTable.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
@@ -96,7 +97,7 @@ public class MainWindow extends JFrame {
 		column.setMaxWidth(0);
 		column.setWidth(0);
 		column.setPreferredWidth(0);
-
+		studentTable.setDefaultRenderer(Object.class, new StudentTableCellRender());
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(groupLayout);
 		groupLayout.setAutoCreateGaps(true);
