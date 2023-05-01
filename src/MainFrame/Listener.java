@@ -21,10 +21,6 @@ public class Listener implements ActionListener {
 
 	private AddLabDialog  addLabDialog;
 
-	public Listener(MainWindow mainWindow) {
-		this.mainWindow = mainWindow;
-	}
-
 	public Listener(AddStudentDialog addStudentDialog, JFrame mainWindow) {
 		this.mainWindow = (MainWindow) mainWindow;
 		this.addStudentDialog = addStudentDialog;

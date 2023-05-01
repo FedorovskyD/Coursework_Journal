@@ -2,13 +2,12 @@ package dialogs;
 
 import MainFrame.MainWindow;
 
-import MainFrame.StudentTableModel;
+import MainFrame.studentTable.StudentTableModel;
 import database.dao.impl.GroupDaoImpl;
 import entity.Group;
 import entity.Student;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 import java.util.List;
 
 public class DeleteGroupDialog extends JDialog {

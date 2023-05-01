@@ -1,6 +1,6 @@
 package MainFrame;
 
-import database.dao.impl.StudentDaoImpl;
+import MainFrame.studentTable.StudentTableModel;
 import dialogs.*;
 import entity.Student;
 
@@ -9,12 +9,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
 
-public class MainWindowistener implements ActionListener, ListSelectionListener {
+public class MainWindowListener implements ActionListener, ListSelectionListener {
 	private final MainWindow mainWindow;
 
-	public MainWindowistener(MainWindow mainWindow) {
+	public MainWindowListener(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(event -> {
 			if (event.getID() == KeyEvent.KEY_RELEASED && (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN)) {
@@ -51,8 +50,6 @@ public class MainWindowistener implements ActionListener, ListSelectionListener 
 		} else if (e.getSource() == mainWindow.getBtnDeleteGroup()) {
 			DeleteGroupDialog deleteGroupDialog = new DeleteGroupDialog(mainWindow);
 			deleteGroupDialog.setVisible(true);
-		} else if (e.getSource() == mainWindow.getBtnDeleteStudent()) {
-
 		} else if (e.getSource() == mainWindow.getBtnAboutAuthor()) {
 			AboutDialog aboutAuthorDialog = new AboutDialog(mainWindow);
 			aboutAuthorDialog.setVisible(true);
@@ -72,15 +69,15 @@ public class MainWindowistener implements ActionListener, ListSelectionListener 
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		if(e.getSource() == mainWindow.getStudentTable().getSelectionModel()){
+		if (e.getSource() == mainWindow.getStudentTable().getSelectionModel()) {
 			JTable studentTable = mainWindow.getStudentTable();
 			StudentCardDialog studentCardDialog = mainWindow.getStudentCardDialog();
 			if (!e.getValueIsAdjusting()) {
 				int selectedRow = studentTable.getSelectedRow();
-				if(selectedRow != -1) {
-					Student selectedStudent = ((StudentTableModel) studentTable.getModel()).getStudentAt(selectedRow);
+				if (selectedRow != -1) {
+					Student selectedStudent = mainWindow.getStudentTable().getStudentAt(selectedRow);
 					selectedStudent.setGroup(mainWindow.getCurrentGroup().getId());
-					studentCardDialog.getStudentCardPanel().update(selectedStudent);
+					studentCardDialog.update(selectedStudent);
 					SwingUtilities.invokeLater(() -> studentCardDialog.setVisible(true));
 				}
 			}

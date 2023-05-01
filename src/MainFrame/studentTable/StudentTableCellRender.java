@@ -1,4 +1,4 @@
-package MainFrame;
+package MainFrame.studentTable;
 
 import entity.Student;
 

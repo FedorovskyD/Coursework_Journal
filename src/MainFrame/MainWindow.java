@@ -1,64 +1,63 @@
 package MainFrame;
 
+import MainFrame.studentTable.StudentTable;
+import MainFrame.studentTable.StudentTableModel;
 import database.dao.impl.GroupDaoImpl;
-import database.dao.impl.LabDaoImpl;
-import dialogs.*;
+import dialogs.StudentCardDialog;
 import entity.Group;
 import entity.Lab;
 import entity.Student;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Objects;
 
 public class MainWindow extends JFrame {
-	private static MainWindow mainWindow;
-	private JMenu menuFile;
-	private JLabel jlblGroupNumber;
-	private JComboBox<Group> cmbGroupNumber;
-	private JButton btnAddStudent, btnAddGroup, btnDeleteGroup,
-			btnAboutAuthor, btnDeleteStudent, btnAddPhoto, btnAddLab;
-	private JTable studentTable;
-	private StudentCardDialog studentCardDialog;
-	private JRadioButton lectureBtn;
-	private JRadioButton labBtn;
-	private JLabel lectureLbl;
-	private JLabel labLbl;
-	private JLabel currDateLbl;
+	private final JButton btnAddStudent, btnAddLab,
+			btnAddGroup, btnDeleteGroup, btnAboutAuthor, btnAddPhoto;
+	private final StudentTable studentTable;
+	private final StudentCardDialog studentCardDialog;
+	private final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc,radioBtnDec;
+	private final JComboBox<Group> cmbGroupNumber;
 	private final JComboBox<Lab> currDateCmb;
+	private final JComboBox<String> cmbSort;
 	private final List<Group> groups;
 
 	private MainWindow() {
-		//Создаем панель с информацией о студенте
+		//Получаем данные о группах из базы данных
 		groups = GroupDaoImpl.getInstance().findAll();
-		labLbl = new JLabel("Лабораторные");
-		lectureLbl = new JLabel("Лекции");
-		currDateLbl = new JLabel("Текущая дата");
+		//Создаем элементы гланого окна
+		JLabel lblLab = new JLabel("Лабораторные");
+		JLabel lblLecture = new JLabel("Лекции");
+		JLabel currDateLbl = new JLabel("Текущая дата");
+		radioBtnLab = new JRadioButton();
+		radioBtnLecture = new JRadioButton();
+		radioBtnInc = new JRadioButton("в порядке возрастания");
+		radioBtnDec = new JRadioButton("в поряке убывания");
+		JLabel lblSort = new JLabel("Сортировать по: ");
+		cmbSort = new JComboBox<>(new DefaultComboBoxModel<>(new String[]{"алфавиту", "среднему баллу","посещаемости"}));
+		cmbSort.setPreferredSize(new Dimension(100,30));
+		cmbSort.setMaximumSize(cmbSort.getPreferredSize());
 
-		labBtn = new JRadioButton();
-		lectureBtn = new JRadioButton();
-		lectureBtn.setSelected(true);
+		radioBtnLecture.setSelected(true);
 		// Создание меню
-		menuFile = new JMenu("Файл");
+		JMenu menuFile = new JMenu("Файл");
 		JMenuBar menuBar = new JMenuBar();
 		// Создание пунктов меню
-		JMenuItem aboutAuthorItem = new JMenuItem("О авторе");
-		JMenuItem aboutProgramItem = new JMenuItem("О программе");
-		JMenuItem exitItem = new JMenuItem("Выход");
+		JMenuItem menuItemAboutAuthor = new JMenuItem("О авторе");
+		JMenuItem menuItemAboutProgram = new JMenuItem("О программе");
+		JMenuItem menuItemExit = new JMenuItem("Выход");
 		// Добавление пунктов в меню
-		menuFile.add(aboutAuthorItem);
-		menuFile.add(aboutProgramItem);
+		menuFile.add(menuItemAboutAuthor);
+		menuFile.add(menuItemAboutProgram);
 		menuFile.addSeparator();
-		menuFile.add(exitItem);
+		menuFile.add(menuItemExit);
 		// Добавление меню на фрейм
 		menuBar.add(menuFile);
 		setJMenuBar(menuBar);
 		//Добавляем label и combobox для выбора номера группы
-		jlblGroupNumber = new JLabel("Номер группы:");
+		JLabel lblGroupNumber = new JLabel("Номер группы:");
 		cmbGroupNumber = new JComboBox<>(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
 		cmbGroupNumber.setPreferredSize(new Dimension(100, 30));
 		cmbGroupNumber.setMaximumSize(cmbGroupNumber.getPreferredSize());
@@ -68,36 +67,20 @@ public class MainWindow extends JFrame {
 		btnAddGroup = new JButton("Добавить группу");
 		btnDeleteGroup = new JButton("Удалить группу");
 		btnAboutAuthor = new JButton("Об авторе");
-		btnDeleteStudent = new JButton("Удалить студента");
 		btnAddPhoto = new JButton("Добавить фото студента");
 		btnAddLab = new JButton("Добавить лабораторное занятие");
-		MainWindow mainWindow = this;
-
-		currDateCmb = new JComboBox<>(new DefaultComboBoxModel<>(LabDaoImpl.getInstance().getAllLabByGroupId(getCurrentGroup().getId()).toArray(new Lab[0])));
-		currDateCmb.setPreferredSize(new Dimension(200, 30));
+		//Создаем combobox для выбора даты занятия
+		currDateCmb = new JComboBox<>(new DefaultComboBoxModel<>(getCurrentGroup().getLabs().toArray(new Lab[0])));
+		currDateCmb.setPreferredSize(new Dimension(100, 30));
 		currDateCmb.setMinimumSize(currDateCmb.getPreferredSize());
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
-		currDateCmb.setEditable(false);
-		studentCardDialog = new StudentCardDialog(mainWindow, "Карточка студента");
-		studentTable = new JTable(new StudentTableModel());
-		StudentTableModel studentTableModel = (StudentTableModel) studentTable.getModel();
-		studentTableModel.setData(((Group) Objects.requireNonNull(cmbGroupNumber.getSelectedItem())).getStudents());
-
+		//Создаем карточку для отображения информации о студенте
+		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
+		//Создаем таблицу для отображения списка студентов
+		studentTable = new StudentTable();
+		studentTable.setData(((Group) Objects.requireNonNull(cmbGroupNumber.getSelectedItem())).getStudents());
 		JScrollPane scrollPane = new JScrollPane(studentTable);
-		studentTable.addKeyListener(new KeyAdapter() {
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_UP ||
-						e.getKeyCode() == KeyEvent.VK_DOWN) {
-					e.consume();
-				}
-			}
-		});
-		TableColumn column = studentTable.getColumnModel().getColumn(5);
-		column.setMinWidth(0);
-		column.setMaxWidth(0);
-		column.setWidth(0);
-		column.setPreferredWidth(0);
-		studentTable.setDefaultRenderer(Object.class, new StudentTableCellRender());
+		//Задаем расположение раннее заданным компонентам
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(groupLayout);
 		groupLayout.setAutoCreateGaps(true);
@@ -105,23 +88,27 @@ public class MainWindow extends JFrame {
 		// Компановка главной панели
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
 				.addGroup(groupLayout.createSequentialGroup()
-						.addComponent(jlblGroupNumber)
+						.addComponent(lblGroupNumber)
 						.addComponent(cmbGroupNumber)
 						.addGroup(groupLayout.createParallelGroup()
-								.addComponent(lectureLbl)
-								.addComponent(labLbl))
+								.addComponent(lblLecture)
+								.addComponent(lblLab))
 						.addGroup(groupLayout.createParallelGroup()
-								.addComponent(lectureBtn)
-								.addComponent(labBtn))
+								.addComponent(radioBtnLecture)
+								.addComponent(radioBtnLab))
 						.addComponent(currDateLbl)
-						.addComponent(currDateCmb))
+						.addComponent(currDateCmb)
+						.addComponent(lblSort)
+						.addComponent(cmbSort)
+						.addGroup(groupLayout.createParallelGroup()
+								.addComponent(radioBtnInc)
+								.addComponent(radioBtnDec)))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(scrollPane)
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(btnAddStudent)
 								.addComponent(btnAddGroup)
 								.addComponent(btnDeleteGroup)
-								.addComponent(btnDeleteStudent)
 								.addComponent(btnAboutAuthor)
 								.addComponent(btnAddPhoto)
 								.addComponent(btnAddLab))
@@ -130,44 +117,47 @@ public class MainWindow extends JFrame {
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGroup(groupLayout.createParallelGroup()
-								.addComponent(jlblGroupNumber)
+								.addComponent(lblGroupNumber)
 								.addComponent(cmbGroupNumber)
 								.addGroup(groupLayout.createSequentialGroup()
-										.addComponent(lectureLbl)
-										.addComponent(labLbl))
+										.addComponent(lblLecture)
+										.addComponent(lblLab))
 								.addGroup(groupLayout.createSequentialGroup()
-										.addComponent(lectureBtn)
-										.addComponent(labBtn))
+										.addComponent(radioBtnLecture)
+										.addComponent(radioBtnLab))
 								.addComponent(currDateLbl)
-								.addComponent(currDateCmb))
+								.addComponent(currDateCmb)
+								.addComponent(lblSort)
+								.addComponent(cmbSort)
+								.addGroup(groupLayout.createSequentialGroup()
+										.addComponent(radioBtnInc)
+										.addComponent(radioBtnDec)))
 						.addComponent(scrollPane))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(btnAddStudent)
 						.addComponent(btnAddGroup)
 						.addComponent(btnDeleteGroup)
-						.addComponent(btnDeleteStudent)
 						.addComponent(btnAboutAuthor)
 						.addComponent(btnAddPhoto)
 						.addComponent(btnAddLab))
 		);
 		// Добавление слушателей
-		MainWindowistener mainWindowistener = new MainWindowistener(this);
-		btnAddStudent.addActionListener(mainWindowistener);
-		btnAddGroup.addActionListener(mainWindowistener);
-		btnDeleteGroup.addActionListener(mainWindowistener);
-		btnDeleteStudent.addActionListener(mainWindowistener);
-		btnAboutAuthor.addActionListener(mainWindowistener);
-		btnAddPhoto.addActionListener(mainWindowistener);
-		btnAddLab.addActionListener(mainWindowistener);
-		studentTable.getSelectionModel().addListSelectionListener(mainWindowistener);
-		cmbGroupNumber.addActionListener(mainWindowistener);
+		MainWindowListener mainWindowListener = new MainWindowListener(this);
+		btnAddStudent.addActionListener(mainWindowListener);
+		btnAddGroup.addActionListener(mainWindowListener);
+		btnDeleteGroup.addActionListener(mainWindowListener);
+		btnAboutAuthor.addActionListener(mainWindowListener);
+		btnAddPhoto.addActionListener(mainWindowListener);
+		btnAddLab.addActionListener(mainWindowListener);
+		studentTable.getSelectionModel().addListSelectionListener(mainWindowListener);
+		cmbGroupNumber.addActionListener(mainWindowListener);
 	}
 
 	public JComboBox<Group> getCmbGroupNumber() {
 		return cmbGroupNumber;
 	}
 
-	public JTable getStudentTable() {
+	public StudentTable getStudentTable() {
 		return studentTable;
 	}
 
@@ -176,21 +166,14 @@ public class MainWindow extends JFrame {
 	}
 
 	public Student getCurrentStudent() {
+		int selectedRow = studentTable.getSelectedRow();
+		if (selectedRow != -1)
 		return ((StudentTableModel) studentTable.getModel()).getStudentAt(studentTable.getSelectedRow());
+		return null;
 	}
 
 	public Group getCurrentGroup() {
 		return (Group) cmbGroupNumber.getSelectedItem();
-	}
-
-	public static void main(String[] args) {
-		JFrame mainFrame = new MainWindow();
-		mainFrame.setTitle("Student journal");
-		mainFrame.setSize(new Dimension(1920, 1080));
-		mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		mainFrame.setLocationRelativeTo(null);
-		mainFrame.setExtendedState(MAXIMIZED_BOTH);
-		mainFrame.setVisible(true);
 	}
 
 	public JButton getBtnAddGroup() {
@@ -205,10 +188,6 @@ public class MainWindow extends JFrame {
 		return btnAboutAuthor;
 	}
 
-	public JButton getBtnDeleteStudent() {
-		return btnDeleteStudent;
-	}
-
 	public JButton getBtnAddPhoto() {
 		return btnAddPhoto;
 	}
@@ -219,6 +198,14 @@ public class MainWindow extends JFrame {
 
 	public JComboBox<Lab> getCurrDateCmb() {
 		return currDateCmb;
+	}
+
+	public JRadioButton getRadioBtnLecture() {
+		return radioBtnLecture;
+	}
+
+	public JRadioButton getRadioBtnLab() {
+		return radioBtnLab;
 	}
 
 	public StudentCardDialog getStudentCardDialog() {
@@ -236,5 +223,15 @@ public class MainWindow extends JFrame {
 
 	public List<Group> getGroups() {
 		return groups;
+	}
+
+	public static void main(String[] args) {
+		JFrame mainFrame = new MainWindow();
+		mainFrame.setTitle("Student journal");
+		mainFrame.setSize(new Dimension(1920, 1080));
+		mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		mainFrame.setLocationRelativeTo(null);
+		mainFrame.setExtendedState(MAXIMIZED_BOTH);
+		mainFrame.setVisible(true);
 	}
 }
