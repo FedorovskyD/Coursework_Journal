@@ -11,7 +11,8 @@ public class Group {
 	private String name;
 	private List<Student> students;
 
-	public Group(Long id, String name) {
+	public Group(Long id, String name,List<Student> students) {
+		this.students = students;
 		this.id = id;
 		this.name = name;
 	}
@@ -38,4 +39,7 @@ public class Group {
 		return name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
 }

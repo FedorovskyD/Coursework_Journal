@@ -1,6 +1,7 @@
 package MainFrame;
 
-import connection.MySQLConnector;
+import database.dao.impl.GroupDaoImpl;
+import database.dao.impl.LabDaoImpl;
 import dialogs.*;
 import entity.Group;
 import entity.Lab;
@@ -11,16 +12,13 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class MainWindow extends JFrame {
 	private static MainWindow mainWindow;
-	private JMenuBar menuBar;
-	private JMenu fileMenu;
-	private JLabel lblGroupNumber;
+	private JMenu menuFile;
+	private JLabel jlblGroupNumber;
 	private JComboBox<Group> cmbGroupNumber;
 	private JButton btnAddStudent, btnAddGroup, btnDeleteGroup,
 			btnAboutAuthor, btnDeleteStudent, btnAddPhoto, btnAddLab;
@@ -31,13 +29,12 @@ public class MainWindow extends JFrame {
 	private JLabel lectureLbl;
 	private JLabel labLbl;
 	private JLabel currDateLbl;
-	private JComboBox<Lab> currDateCmb;
-	private List<Group> groups;
+	private final JComboBox<Lab> currDateCmb;
+	private final List<Group> groups;
 
 	private MainWindow() {
 		//Создаем панель с информацией о студенте
-
-		groups = MySQLConnector.getAllGroups();
+		groups = GroupDaoImpl.getInstance().findAll();
 		labLbl = new JLabel("Лабораторные");
 		lectureLbl = new JLabel("Лекции");
 		currDateLbl = new JLabel("Текущая дата");
@@ -46,22 +43,22 @@ public class MainWindow extends JFrame {
 		lectureBtn = new JRadioButton();
 		lectureBtn.setSelected(true);
 		// Создание меню
-		fileMenu = new JMenu("Файл");
-		menuBar = new JMenuBar();
+		menuFile = new JMenu("Файл");
+		JMenuBar menuBar = new JMenuBar();
 		// Создание пунктов меню
 		JMenuItem aboutAuthorItem = new JMenuItem("О авторе");
 		JMenuItem aboutProgramItem = new JMenuItem("О программе");
 		JMenuItem exitItem = new JMenuItem("Выход");
 		// Добавление пунктов в меню
-		fileMenu.add(aboutAuthorItem);
-		fileMenu.add(aboutProgramItem);
-		fileMenu.addSeparator();
-		fileMenu.add(exitItem);
+		menuFile.add(aboutAuthorItem);
+		menuFile.add(aboutProgramItem);
+		menuFile.addSeparator();
+		menuFile.add(exitItem);
 		// Добавление меню на фрейм
-		menuBar.add(fileMenu);
+		menuBar.add(menuFile);
 		setJMenuBar(menuBar);
 		//Добавляем label и combobox для выбора номера группы
-		lblGroupNumber = new JLabel("Номер группы:");
+		jlblGroupNumber = new JLabel("Номер группы:");
 		cmbGroupNumber = new JComboBox<>(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
 		cmbGroupNumber.setPreferredSize(new Dimension(100, 30));
 		cmbGroupNumber.setMaximumSize(cmbGroupNumber.getPreferredSize());
@@ -76,121 +73,30 @@ public class MainWindow extends JFrame {
 		btnAddLab = new JButton("Добавить лабораторное занятие");
 		MainWindow mainWindow = this;
 
-		currDateCmb = new JComboBox<>(new DefaultComboBoxModel<>(MySQLConnector.getAllLabByGroupId(getCurrentGroup().getId()).toArray(new Lab[0])));
+		currDateCmb = new JComboBox<>(new DefaultComboBoxModel<>(LabDaoImpl.getInstance().getAllLabByGroupId(getCurrentGroup().getId()).toArray(new Lab[0])));
 		currDateCmb.setPreferredSize(new Dimension(200, 30));
 		currDateCmb.setMinimumSize(currDateCmb.getPreferredSize());
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
 		studentCardDialog = new StudentCardDialog(mainWindow, "Карточка студента", new Student());
-		btnAddPhoto.addActionListener(e -> {
-			if (studentTable.getSelectedRow() != -1) {
-				AddPhotoDialog addPhotoDialog = new AddPhotoDialog(mainWindow, getCurrentStudent());
-				addPhotoDialog.setVisible(true);
-			}
-		});
-		btnAddStudent.addActionListener(e -> {
-			AddStudentDialog addStudentDialog = new AddStudentDialog(mainWindow);
-			addStudentDialog.setVisible(true);
-		});
-		btnDeleteStudent.addActionListener(e -> {
-			int selectedRow = studentTable.getSelectedRow();
-			if (selectedRow != -1) {
-				String photoPath = ((StudentTableModel) studentTable.getModel())
-						.getStudentAt(selectedRow).getPhotoPath();
-				if (photoPath != null) {
-					File fileToDelete = new File(photoPath);
-					if (fileToDelete.delete()) {
-						System.out.println("File deleted successfully.");
-					} else {
-						System.out.println("Failed to delete the file.");
-					}
-				}
-				if (MySQLConnector.deleteStudent(((StudentTableModel) studentTable.getModel())
-						.getStudentAt(selectedRow).getId())) {
-					getCurrentGroup().getStudents().remove(getCurrentStudent());
-					System.out.println("Student was deleted");
-				}
-			}
-		});
-		btnAddGroup.addActionListener(e -> {
-			AddGroupDialog addGroupDialog = new AddGroupDialog(mainWindow);
-			addGroupDialog.setVisible(true);
-		});
-		btnDeleteGroup.addActionListener(e -> {
-			DeleteGroupDialog deleteGroupDialog = new DeleteGroupDialog(mainWindow);
-			deleteGroupDialog.setVisible(true);
-		});
-		btnAboutAuthor.addActionListener(e -> {
-			AboutDialog aboutAuthorDialog = new AboutDialog(mainWindow);
-			aboutAuthorDialog.setVisible(true);
-		});
-		btnAddLab.addActionListener(e -> {
-			AddLabDialog addLabDialog = new AddLabDialog(mainWindow);
-			addLabDialog.setVisible(true);
-			addLabDialog.getAddButton().addActionListener(e1 -> {
-				int selectedRow = studentTable.getSelectedRow();
-				long id = Long.parseLong(studentTable.getValueAt(selectedRow, 4).toString());
-			});
-		});
 		studentTable = new JTable(new StudentTableModel());
 		StudentTableModel studentTableModel = (StudentTableModel) studentTable.getModel();
-		studentTableModel.setData(((Group) cmbGroupNumber.getSelectedItem()).getStudents());
+		studentTableModel.setData(((Group) Objects.requireNonNull(cmbGroupNumber.getSelectedItem())).getStudents());
 		studentTable.setDefaultRenderer(StudentTableCellRender.class, new StudentTableCellRender());
 		JScrollPane scrollPane = new JScrollPane(studentTable);
 		studentTable.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_UP ||
-						e.getKeyCode() == KeyEvent.VK_DOWN)
-				{
+						e.getKeyCode() == KeyEvent.VK_DOWN) {
 					e.consume();
 				}
 			}
 		});
-
-
-		studentTable.getSelectionModel().addListSelectionListener(e -> {
-			int selectedRow = studentTable.getSelectedRow();
-			if(selectedRow != -1) {
-				Student selectedStudent = ((StudentTableModel) studentTable.getModel()).getStudentAt(selectedRow);
-				selectedStudent.setGroup(getCurrentGroup());
-				studentCardDialog.getStudentCardPanel().update(selectedStudent);
-				SwingUtilities.invokeLater(() -> studentCardDialog.setVisible(true));
-			}
-
-		});
-		studentCardDialog.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				studentCardDialog.setVisible(false);
-				studentTable.clearSelection();
-			}
-		});
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(event -> {
-			if (event.getID() == KeyEvent.KEY_RELEASED && (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN)) {
-				if (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN) {
-					// получаем текущую выделенную строку в таблице
-					int selectedRow = studentTable.getSelectedRow();
-					// вычисляем номер следующей строки в зависимости от нажатой клавиши
-					if (selectedRow != -1) {
-						int nextRow = event.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
-						// проверяем, что следующая строка существует
-						if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
-							// обновляем выделение строки в таблице
-							studentTable.setRowSelectionInterval(nextRow, nextRow);
-							// прокручиваем таблицу к следующей строке
-							studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
-						}
-					}
-				}
-			}
-			return false;
-		});
-
-
 		TableColumn column = studentTable.getColumnModel().getColumn(5);
 		column.setMinWidth(0);
 		column.setMaxWidth(0);
 		column.setWidth(0);
 		column.setPreferredWidth(0);
+
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(groupLayout);
 		groupLayout.setAutoCreateGaps(true);
@@ -198,7 +104,7 @@ public class MainWindow extends JFrame {
 		// Компановка главной панели
 		groupLayout.setHorizontalGroup(groupLayout.createParallelGroup()
 				.addGroup(groupLayout.createSequentialGroup()
-						.addComponent(lblGroupNumber)
+						.addComponent(jlblGroupNumber)
 						.addComponent(cmbGroupNumber)
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(lectureLbl)
@@ -223,7 +129,7 @@ public class MainWindow extends JFrame {
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGroup(groupLayout.createParallelGroup()
-								.addComponent(lblGroupNumber)
+								.addComponent(jlblGroupNumber)
 								.addComponent(cmbGroupNumber)
 								.addGroup(groupLayout.createSequentialGroup()
 										.addComponent(lectureLbl)
@@ -244,10 +150,16 @@ public class MainWindow extends JFrame {
 						.addComponent(btnAddLab))
 		);
 		// Добавление слушателей
-		cmbGroupNumber.addActionListener(e -> {
-			StudentTableModel studentTableModel1 = (StudentTableModel) studentTable.getModel();
-			studentTableModel1.setData(getCurrentGroup().getStudents());
-		});
+		MainWindowistener mainWindowistener = new MainWindowistener(this);
+		btnAddStudent.addActionListener(mainWindowistener);
+		btnAddGroup.addActionListener(mainWindowistener);
+		btnDeleteGroup.addActionListener(mainWindowistener);
+		btnDeleteStudent.addActionListener(mainWindowistener);
+		btnAboutAuthor.addActionListener(mainWindowistener);
+		btnAddPhoto.addActionListener(mainWindowistener);
+		btnAddLab.addActionListener(mainWindowistener);
+		studentTable.getSelectionModel().addListSelectionListener(mainWindowistener);
+		cmbGroupNumber.addActionListener(mainWindowistener);
 	}
 
 	public JComboBox<Group> getCmbGroupNumber() {
@@ -262,28 +174,11 @@ public class MainWindow extends JFrame {
 		return btnAddStudent;
 	}
 
-	protected long getSelectedStudentID() {
-		int selectedRow = studentTable.getSelectedRow();
-		long studentId = -1;
-		if (selectedRow != -1) {
-			studentId = ((StudentTableModel) studentTable.getModel()).getStudentAt(selectedRow).getId();
-		}
-		return studentId;
-	}
-
-	public static MainWindow getInstance() {
-		if (mainWindow == null) {
-			mainWindow = new MainWindow();
-		}
-		return mainWindow;
-	}
-
-	private Student getCurrentStudent() {
-
+	public Student getCurrentStudent() {
 		return ((StudentTableModel) studentTable.getModel()).getStudentAt(studentTable.getSelectedRow());
 	}
 
-	private Group getCurrentGroup() {
+	public Group getCurrentGroup() {
 		return (Group) cmbGroupNumber.getSelectedItem();
 	}
 
@@ -297,7 +192,48 @@ public class MainWindow extends JFrame {
 		mainFrame.setVisible(true);
 	}
 
+	public JButton getBtnAddGroup() {
+		return btnAddGroup;
+	}
+
+	public JButton getBtnDeleteGroup() {
+		return btnDeleteGroup;
+	}
+
+	public JButton getBtnAboutAuthor() {
+		return btnAboutAuthor;
+	}
+
+	public JButton getBtnDeleteStudent() {
+		return btnDeleteStudent;
+	}
+
+	public JButton getBtnAddPhoto() {
+		return btnAddPhoto;
+	}
+
+	public JButton getBtnAddLab() {
+		return btnAddLab;
+	}
+
 	public JComboBox<Lab> getCurrDateCmb() {
 		return currDateCmb;
+	}
+
+	public StudentCardDialog getStudentCardDialog() {
+		return studentCardDialog;
+	}
+
+	public void updateStudentTable() {
+		StudentTableModel studentTableModel = (StudentTableModel) studentTable.getModel();
+		studentTableModel.setData(getCurrentGroup().getStudents());
+	}
+
+	public void updateGroupCmb() {
+		cmbGroupNumber.setModel(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
+	}
+
+	public List<Group> getGroups() {
+		return groups;
 	}
 }

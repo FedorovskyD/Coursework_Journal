@@ -2,14 +2,11 @@ package dialogs;
 
 
 import MainFrame.Listener;
-import connection.MySQLConnector;
+import MainFrame.MainWindow;
 import entity.Group;
-import entity.Student;
-import utils.PhotoUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +17,7 @@ public class AddStudentDialog extends JDialog {
 	private JTextField lastNameField;
 	private JTextField middleNameField;
 	private JComboBox<Group> groupField;
-	private JTextField emailField,telephonefield;
+	private JTextField emailField, telephoneField;
 	private JLabel photoLabel;
 	private JButton photoButton;
 	private JButton okButton;
@@ -32,10 +29,6 @@ public class AddStudentDialog extends JDialog {
 		return photoPath;
 	}
 
-	public void setPhotoPath(File photoPath) {
-		this.photoPath = photoPath;
-	}
-
 	public JButton getOkButton() {
 		return okButton;
 	}
@@ -43,7 +36,6 @@ public class AddStudentDialog extends JDialog {
 	public AddStudentDialog(JFrame parent) {
 		super(parent, "Добавить студента", true);
 		JPanel panel = new JPanel(new GridBagLayout());
-		photoPath= new File("photos/default.jpg");
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.fill = GridBagConstraints.HORIZONTAL;
 		constraints.insets = new Insets(5, 5, 5, 5);
@@ -83,7 +75,7 @@ public class AddStudentDialog extends JDialog {
 		constraints.gridy = 3;
 		panel.add(groupLabel, constraints);
 
-		groupField = new JComboBox<>(MySQLConnector.getAllGroups().toArray(new Group[0]));
+		groupField = new JComboBox<>(((MainWindow)parent).getGroups().toArray(new Group[0]));
 		constraints.gridx = 1;
 		constraints.gridy = 3;
 		panel.add(groupField, constraints);
@@ -103,10 +95,12 @@ public class AddStudentDialog extends JDialog {
 		constraints.gridy = 5;
 		panel.add(telephoneLbl, constraints);
 
-		telephonefield = new JTextField(20);
+		telephoneField = new JTextField(20);
 		constraints.gridx = 1;
 		constraints.gridy = 5;
-		panel.add(telephonefield, constraints);
+		panel.add(telephoneField, constraints);
+
+
 
 		photoLabel = new JLabel("Фото:");
 		constraints.gridx = 0;
@@ -151,12 +145,7 @@ public class AddStudentDialog extends JDialog {
 		panel.add(okButton, constraints);
 
 		cancelButton = new JButton("Отмена");
-		cancelButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				dispose();
-			}
-		});
+		cancelButton.addActionListener(e -> dispose());
 		constraints.gridx = 2;
 		constraints.gridy = 7;
 		panel.add(cancelButton, constraints);
@@ -189,7 +178,7 @@ public class AddStudentDialog extends JDialog {
 		return groupField;
 	}
 
-	public String getTelephone(){return telephonefield.getText();}
+	public String getTelephone(){return telephoneField.getText();}
 
 	public ImageIcon getPhoto() {
 		return (ImageIcon) photoLabel.getIcon();

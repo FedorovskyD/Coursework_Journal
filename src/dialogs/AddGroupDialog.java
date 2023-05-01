@@ -1,7 +1,9 @@
 package dialogs;
 
 import MainFrame.MainWindow;
-import connection.MySQLConnector;
+import database.dao.impl.GroupDaoImpl;
+import entity.Group;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +35,11 @@ public class AddGroupDialog extends JDialog {
 		okButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			MySQLConnector.addGroup(groupNameField.getText());
+				Group group = new Group();
+				group.setName(groupNameField.getText());
+				group.setId(GroupDaoImpl.getInstance().save(group));
+				mainWindow.getGroups().add(group);
+				mainWindow.updateGroupCmb();
 				okPressed = true;
 				dispose(); // Закрываем диалоговое окно
 			}

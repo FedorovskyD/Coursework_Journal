@@ -1,7 +1,7 @@
 package dialogs;
 
 import MainFrame.MainWindow;
-import connection.MySQLConnector;
+import database.dao.impl.StudentDaoImpl;
 import entity.Student;
 import utils.PhotoUtils;
 
@@ -80,7 +80,7 @@ public class AddPhotoDialog extends JDialog implements ActionListener {
 			} catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
-			MySQLConnector.addPhotoPath(student.getPhotoPath(), student.getId());
+			StudentDaoImpl.getInstance().update(student);
 			dispose();
 		} else if (e.getSource() == cancelButton) {
 			selectedFile = null;

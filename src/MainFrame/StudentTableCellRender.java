@@ -8,15 +8,14 @@ import java.awt.*;
 
 public class StudentTableCellRender extends DefaultTableCellRenderer {
 	@Override
-	public Component getTableCellRendererComponent(JTable table, Object value,
-	                                               boolean isSelected, boolean hasFocus, int row, int column) {
-		Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-		if (value instanceof Student) {
-			Student student = (Student) value;
-			String text = student.getName() + " (" + student.getAge() + ", " + student.getMiddleName() + ")";
-			setText(text);
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		if (row % 2 == 0) {
+			c.setBackground(Color.LIGHT_GRAY);
+		} else {
+			c.setBackground(Color.WHITE);
 		}
-		return cell;
+		return c;
 	}
+
 }

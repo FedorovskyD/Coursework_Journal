@@ -2,13 +2,12 @@ package entity;
 
 public class Attendance {
 	private int id;
-	private Lab lab;
-	private Student student;
+	private long lab;
+	private long student;
 	private boolean isLecture;
 
-	public Attendance(Lab lab, Student student, boolean isLecture) {
+	public Attendance(long lab, long student, boolean isLecture) {
 		this.lab = lab;
-		this.student = student;
 		this.isLecture = isLecture;
 	}
 public Attendance(){}
@@ -16,11 +15,11 @@ public Attendance(){}
 		return id;
 	}
 
-	public Lab getLab() {
+	public long getLab() {
 		return lab;
 	}
 
-	public Student getStudent() {
+	public long getStudent() {
 		return student;
 	}
 
@@ -32,16 +31,17 @@ public Attendance(){}
 		this.id = id;
 	}
 
-	public void setLab(Lab lab) {
+	public void setLab(long lab) {
 		this.lab = lab;
 	}
 
-	public void setStudent(Student student) {
+	public void setStudent(long student) {
 		this.student = student;
 	}
 
 	public void setLecture(boolean lecture) {
 		isLecture = lecture;
 	}
+
 
 }

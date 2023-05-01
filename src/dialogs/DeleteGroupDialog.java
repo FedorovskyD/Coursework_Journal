@@ -1,7 +1,10 @@
 package dialogs;
 
 import MainFrame.MainWindow;
-import connection.MySQLConnector;
+
+import MainFrame.StudentTableModel;
+import database.dao.impl.GroupDaoImpl;
+import entity.Group;
 import entity.Student;
 
 import javax.swing.*;
@@ -10,39 +13,38 @@ import java.util.List;
 
 public class DeleteGroupDialog extends JDialog {
 
-	private JComboBox<String> groupComboBox;
-	private MainWindow mainWindow;
+	private final JComboBox<Group> groupComboBox;
+	private final MainWindow mainWindow;
 
 	public DeleteGroupDialog(JFrame parent) {
 		super(parent, "Delete Group", true);
 		mainWindow = (MainWindow) parent;
 
 		// Создаем JComboBox для выбора группы
-		groupComboBox = new JComboBox<>(MySQLConnector.getAllGroupNumbers().toArray(new String[0]));
-		// Заполняем JComboBox данными из базы данных или другого источника
-		// ...
+		groupComboBox = new JComboBox<>(mainWindow.getGroups().toArray(new Group[0]));
 
 		// Создаем кнопку для удаления группы
 		JButton deleteButton = new JButton("Удалить");
 		deleteButton.addActionListener(e -> {
 			// Получаем выбранную группу
-			String selectedGroup = (String) groupComboBox.getSelectedItem();
+			Group selectedGroup = (Group) groupComboBox.getSelectedItem();
 			// Удаляем группу из базы данных
 			// ...
-			MySQLConnector.deleteGroup(selectedGroup);
-			ComboBoxModel<String> newModel = new DefaultComboBoxModel<>(MySQLConnector.getAllGroupNumbers().toArray(new String[0]));
+			if (selectedGroup != null) {
+				GroupDaoImpl.getInstance().delete(selectedGroup);
+				mainWindow.getGroups().remove(selectedGroup);
+				mainWindow.updateGroupCmb();
+			}
+			ComboBoxModel<Group> newModel = new DefaultComboBoxModel<>((GroupDaoImpl.getInstance().findAll()).toArray(new Group[0]));
 			groupComboBox.setModel(newModel);
 			// Устанавливаем новую модель в JComboBox
-
-			String selectGroup = (String) mainWindow.getCmbGroupNumber().getSelectedItem();
-			List<Student> students = MySQLConnector.getAllStudentsByGroup(selectGroup);
-			DefaultTableModel model = (DefaultTableModel) mainWindow.getStudentTable().getModel();
-			model.setRowCount(0); // удаление всех строк
-			for (Student student : students) {
-				model.addRow(new Object[]{student.getSurname(), student.getName(), student.getMiddleName(),
-						student.getEmail(), student.getId()});
+			selectedGroup = (Group) groupComboBox.getSelectedItem();
+			List<Student> students = null;
+			if (selectedGroup != null) {
+				students = GroupDaoImpl.getInstance().getStudents(selectedGroup);
 			}
-
+			StudentTableModel model = (StudentTableModel) mainWindow.getStudentTable().getModel();
+			model.setData(students);
 			// Закрываем диалоговое окно
 			dispose();
 		});

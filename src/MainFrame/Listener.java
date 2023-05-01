@@ -1,6 +1,7 @@
 package MainFrame;
 
-import connection.MySQLConnector;
+import database.dao.impl.LabDaoImpl;
+import database.dao.impl.StudentDaoImpl;
 import dialogs.AddLabDialog;
 import dialogs.AddStudentDialog;
 import entity.Group;
@@ -34,18 +35,15 @@ public class Listener implements ActionListener {
 	}
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == mainWindow.getBtnAddStudent()) {
-			AddStudentDialog dialog = new AddStudentDialog(mainWindow);
-			dialog.setVisible(true);
-		}  else if (addStudentDialog != null && e.getSource() == addStudentDialog.getOkButton()) {
+		if (addStudentDialog != null && e.getSource() == addStudentDialog.getOkButton()) {
 			Student student = new Student();
 			student.setName(addStudentDialog.getFirstName());
 			student.setSurname(addStudentDialog.getLastName());
-			student.setGroup((Group) addStudentDialog.getGroupField().getSelectedItem());
 			student.setMiddleName(addStudentDialog.getMiddleName());
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
-			long id = MySQLConnector.addStudent(student);
+			student.setGroup(((Group)addStudentDialog.getGroupField().getSelectedItem()).getId());
+			long id = StudentDaoImpl.getInstance().save(student);;
 			System.out.println("Student with id = "+id+" was added");
 			student.setId(id);
 			if(addStudentDialog.getPhotoPath()!=null) {
@@ -54,15 +52,18 @@ public class Listener implements ActionListener {
 				} catch (IOException ex) {
 					throw new RuntimeException(ex);
 				}
-				MySQLConnector.addPhotoPath(student.getPhotoPath(), id);
-			}
-			String selectedGroup = (String) mainWindow.getCmbGroupNumber().getSelectedItem();
 
+			}else {
+				student.setPhotoPath("photos/default.jpg");
+			}
+			StudentDaoImpl.getInstance().update(student);
+			mainWindow.getCurrentGroup().getStudents().add(student);
+			mainWindow.updateStudentTable();
 		} else if (addLabDialog != null && e.getSource() == addLabDialog.getAddButton()) {
-			int groupID = MySQLConnector.getGroupIDByGroupNumber(Objects.requireNonNull(addLabDialog.getGroupComboBox().getSelectedItem()).toString());
+			long groupID = ((Group)addLabDialog.getGroupComboBox().getSelectedItem()).getId();
 			Lab lab = new Lab(addLabDialog.getRoomField().getText(),
 					addLabDialog.getDateChooser().getDate(),groupID,addLabDialog.getNameField().getText());
-			MySQLConnector.addLab(lab);
+			LabDaoImpl.getInstance().save(lab);
 		}
 	}
 }

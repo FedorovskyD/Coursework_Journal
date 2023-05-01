@@ -3,20 +3,20 @@ package entity;
 import java.util.Date;
 
 public class Lab {
-	private int id;
+	private long id;
 	private Date date;
 	private String classroom;
-	private int group;
+	private long group;
 	private String LabName;
 public Lab(){}
-	public Lab(String classroom, Date date, int group,String labName) {
+	public Lab(String classroom, Date date, long group,String labName) {
 		this.classroom = classroom;
 		this.date = date;
 		this.group = group;
 		this.LabName = labName;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -28,7 +28,7 @@ public Lab(){}
 		return classroom;
 	}
 
-	public int getGroup() {
+	public long getGroup() {
 		return group;
 	}
 
@@ -40,7 +40,7 @@ public Lab(){}
 		LabName = labName;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -52,7 +52,7 @@ public Lab(){}
 		this.classroom = classroom;
 	}
 
-	public void setGroup(int group) {
+	public void setGroup(long group) {
 		this.group = group;
 	}
 

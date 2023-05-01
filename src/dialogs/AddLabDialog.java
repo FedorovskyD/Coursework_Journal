@@ -2,7 +2,8 @@ package dialogs;
 
 import MainFrame.Listener;
 import com.toedter.calendar.JDateChooser;
-import connection.MySQLConnector;
+import database.dao.impl.GroupDaoImpl;
+import entity.Group;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +13,7 @@ public class AddLabDialog extends JDialog  {
 
 	private JLabel nameLabel, roomLabel, dateLabel, groupLabel;
 	private JTextField nameField, roomField;
-	private JComboBox<String> groupComboBox;
+	private JComboBox<Group> groupComboBox;
 	private JDateChooser dateChooser;
 	private JButton addButton, cancelButton;
 	private boolean isAddButtonPressed = false;
@@ -28,7 +29,7 @@ public class AddLabDialog extends JDialog  {
 		nameField = new JTextField(20);
 		roomField = new JTextField(20);
 
-		groupComboBox = new JComboBox<>(MySQLConnector.getAllGroupNumbers().toArray(new String[0]));
+		groupComboBox = new JComboBox<>(GroupDaoImpl.getInstance().findAll().toArray(new Group[0]));
 		dateChooser = new JDateChooser(new Date());
 
 		addButton = new JButton("Добавить");
@@ -51,7 +52,7 @@ public class AddLabDialog extends JDialog  {
 		dispose();
 		});
 
-addButton.addActionListener(new Listener(this,parent));
+	addButton.addActionListener(new Listener(this,parent));
 		this.setContentPane(panel);
 		this.pack();
 		this.setLocationRelativeTo(null);
@@ -89,7 +90,7 @@ addButton.addActionListener(new Listener(this,parent));
 		return roomField;
 	}
 
-	public JComboBox<String> getGroupComboBox() {
+	public JComboBox<Group> getGroupComboBox() {
 		return groupComboBox;
 	}
 

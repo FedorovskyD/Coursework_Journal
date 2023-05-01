@@ -1,21 +1,17 @@
 package MainFrame;
 
-import connection.MySQLConnector;
+import database.dao.impl.GradeDaoImpl;
+import database.dao.impl.LabDaoImpl;
+import entity.Grade;
 import entity.Lab;
 import entity.Student;
 import utils.PhotoUtils;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 
 public class StudentCardPanel extends JPanel {
 	public Student getStudent() {
@@ -24,7 +20,7 @@ public class StudentCardPanel extends JPanel {
 
 	private Student student;
 	private JLabel photoLabel;
-	private JLabel fullNameLabel;
+	private JTextField fullNameLabel;
 	private JLabel phoneLabel;
 	private JLabel emailLabel;
 	private JPanel calendarPanel;
@@ -33,9 +29,7 @@ public class StudentCardPanel extends JPanel {
 		return photoLabel;
 	}
 
-	public JLabel getFullNameLabel() {
-		return fullNameLabel;
-	}
+
 
 	public JLabel getPhoneLabel() {
 		return phoneLabel;
@@ -49,9 +43,7 @@ public class StudentCardPanel extends JPanel {
 		this.photoLabel = photoLabel;
 	}
 
-	public void setFullNameLabel(JLabel fullNameLabel) {
-		this.fullNameLabel = fullNameLabel;
-	}
+
 
 	public void setPhoneLabel(JLabel phoneLabel) {
 		this.phoneLabel = phoneLabel;
@@ -80,8 +72,10 @@ public class StudentCardPanel extends JPanel {
 		infoPanel.add(photoLabel, gbc);
 
 		// Добавление ФИО
-		fullNameLabel = new JLabel();
+		fullNameLabel = new JTextField();
 		fullNameLabel.setFont(new Font("Arial", Font.BOLD, 20));
+		fullNameLabel.setEditable(false);
+		fullNameLabel.setBorder(null);
 		gbc.gridx = 1;
 		gbc.gridheight = 1;
 		infoPanel.add(fullNameLabel, gbc);
@@ -146,19 +140,23 @@ public class StudentCardPanel extends JPanel {
 		} else {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
-		List<Lab> labs = MySQLConnector.getAllLabByGroupId(student.getGroup().getId());
+		List<Lab> labs = LabDaoImpl.getInstance().getAllLabByGroupId(student.getGroup());
 		getCalendarPanel().setLayout(new GridLayout(5, 5, 5, 5)); // задаем сетку для кнопок
 		// Создаем кнопки для каждой лабораторной работы и добавляем их на панель
 		for (Lab lab : labs) {
 
 			String labDate = lab.getDate().toString(); // получаем дату лабораторной работы
-			String labGrade = MySQLConnector.getGradeByLessonIDAndStudentID(lab.getId(), student.getId()); // получаем оценку студента за лабораторную работу
-
+			int labGrade = 0;
+			if(student.getGradeList().stream().anyMatch(grade -> grade.getLab() == lab.getId())){
+				 labGrade = student.getGradeList().stream().filter(grade -> grade.getLab() == lab.getId()).findFirst().get().getGrade();
+			}
 			// Создаем новую кнопку с датой и оценкой студента
 			JButton labButton = new JButton("<html>" + labDate + "<br> Оценка: " + labGrade + "</html>");
-			if (MySQLConnector.isAttendance(student.getId(), lab.getId())) {
-				labButton.setBackground(Color.GREEN);
-			} else {
+
+				if (student.getAttendanceList().stream()
+						.filter(attendance -> attendance.getLab() == lab.getId()).toList().size()>0) {
+					labButton.setBackground(Color.GREEN);
+				} else {
 				labButton.setBackground(Color.GRAY);
 			}
 			// Добавляем слушателя событий, который будет обрабатывать нажатие на кнопку и нажатие правой кнопки мыши
@@ -172,7 +170,6 @@ public class StudentCardPanel extends JPanel {
 						Color color = jButton.getBackground();
 						if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GRAY)) { // если была нажата левая кнопка мыши
 							labButton.setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
-							MySQLConnector.addAttendance(student.getId(), lab.getId());
 						} else if (e.getButton() == MouseEvent.BUTTON1 && color.equals(Color.GREEN)) {
 							labButton.setBackground(Color.GRAY);
 
@@ -184,6 +181,9 @@ public class StudentCardPanel extends JPanel {
 							setGradeMenuItem.addActionListener(e1 -> {
 								String grade = JOptionPane.showInputDialog("Введите оценку:"); // выводим диалоговое окно для ввода оценки
 								labButton.setText("<html>" + labDate + "<br> Оценка: " + grade + "</html>"); // изменяем текст кнопки, добавляя в него новую оценку
+								Grade grade1 = new Grade(lab.getId(),student.getId(),Integer.parseInt(grade));
+								student.getGradeList().add(grade1);
+								if(GradeDaoImpl.getInstance().save(grade1)!=-1) System.out.println("Оценка не добавлена");;
 							});
 
 							popupMenu.add(setGradeMenuItem); // добавляем пункт меню в контекстное меню
@@ -193,9 +193,6 @@ public class StudentCardPanel extends JPanel {
 				}
 			});
 			labButton.setPreferredSize(new Dimension(100, 30));
-			if(lab.getDate().equals(((Lab)MainWindow.getInstance().getCurrDateCmb().getSelectedItem()).getDate())) {
-			labButton.setSelected(true);
-			}
 			getCalendarPanel().add(labButton); // добавляем кнопку на панель
 		}
 		int remaining = 25 - labs.size();
