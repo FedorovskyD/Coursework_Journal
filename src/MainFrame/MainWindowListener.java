@@ -2,6 +2,7 @@ package MainFrame;
 
 import MainFrame.studentTable.StudentTableModel;
 import dialogs.*;
+import dialogs.studentCard.StudentCardDialog;
 import entity.Student;
 
 import javax.swing.*;
@@ -64,6 +65,8 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 		} else if (e.getSource() == mainWindow.getCmbGroupNumber()) {
 			StudentTableModel studentTableModel1 = (StudentTableModel) studentTable.getModel();
 			studentTableModel1.setData(mainWindow.getCurrentGroup().getStudents());
+			mainWindow.getStudentCardDialog().dispose();
+			mainWindow.studentCardDialog = new StudentCardDialog(mainWindow,"Карточка студента");
 		}
 	}
 
@@ -79,6 +82,7 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 					selectedStudent.setGroup(mainWindow.getCurrentGroup().getId());
 					studentCardDialog.update(selectedStudent);
 					SwingUtilities.invokeLater(() -> studentCardDialog.setVisible(true));
+					SwingUtilities.invokeLater(()->studentCardDialog.getCurrLabButton().requestFocus());
 				}
 			}
 		}

@@ -108,7 +108,7 @@ public class GradeDaoImpl implements GradeDao {
 		String query = SQL_DELETE_GRADE;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement statement = connection.prepareStatement(query)) {
-			statement.setInt(1, entity.getId());
+			statement.setLong(1, entity.getId());
 			int affectedRows = statement.executeUpdate();
 			return affectedRows != 0;
 		} catch (SQLException e) {

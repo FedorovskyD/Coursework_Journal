@@ -114,8 +114,8 @@ public class AttendanceDaoImpl implements AttendanceDao {
 		long generatedId = -1;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-			ps.setLong(1, entity.getLab());
-			ps.setLong(2, entity.getStudent());
+			ps.setLong(2, entity.getLab());
+			ps.setLong(1, entity.getStudent());
 			ps.executeUpdate();
 			ResultSet generatedKeys = ps.getGeneratedKeys();
 			if (generatedKeys.next()) {
@@ -145,9 +145,8 @@ public class AttendanceDaoImpl implements AttendanceDao {
 	public boolean delete(Attendance entity) {
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(DELETE_SQL)) {
-			ps.setInt(1, entity.getId());
-			ps.executeUpdate();
-			return true;
+			ps.setLong(1, entity.getId());
+			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

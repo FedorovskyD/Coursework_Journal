@@ -3,15 +3,13 @@ package MainFrame;
 import MainFrame.studentTable.StudentTable;
 import MainFrame.studentTable.StudentTableModel;
 import database.dao.impl.GroupDaoImpl;
-import dialogs.StudentCardDialog;
+import dialogs.studentCard.StudentCardDialog;
 import entity.Group;
 import entity.Lab;
 import entity.Student;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,7 +17,7 @@ public class MainWindow extends JFrame {
 	private final JButton btnAddStudent, btnAddLab,
 			btnAddGroup, btnDeleteGroup, btnAboutAuthor, btnAddPhoto;
 	private final StudentTable studentTable;
-	private final StudentCardDialog studentCardDialog;
+	protected StudentCardDialog studentCardDialog;
 	private final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc,radioBtnDec;
 	private final JComboBox<Group> cmbGroupNumber;
 	private final JComboBox<Lab> currDateCmb;
@@ -41,8 +39,7 @@ public class MainWindow extends JFrame {
 		cmbSort = new JComboBox<>(new DefaultComboBoxModel<>(new String[]{"алфавиту", "среднему баллу","посещаемости"}));
 		cmbSort.setPreferredSize(new Dimension(100,30));
 		cmbSort.setMaximumSize(cmbSort.getPreferredSize());
-
-		radioBtnLecture.setSelected(true);
+		radioBtnLab.setSelected(true);
 		// Создание меню
 		JMenu menuFile = new JMenu("Файл");
 		JMenuBar menuBar = new JMenuBar();
@@ -76,8 +73,6 @@ public class MainWindow extends JFrame {
 		currDateCmb.setPreferredSize(new Dimension(100, 30));
 		currDateCmb.setMinimumSize(currDateCmb.getPreferredSize());
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
-		//Создаем карточку для отображения информации о студенте
-		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
 		//Создаем таблицу для отображения списка студентов
 		studentTable = new StudentTable();
 		studentTable.setData(((Group) Objects.requireNonNull(cmbGroupNumber.getSelectedItem())).getStudents());
@@ -143,6 +138,8 @@ public class MainWindow extends JFrame {
 						.addComponent(btnAddPhoto)
 						.addComponent(btnAddLab))
 		);
+		//Создаем карточку для отображения информации о студенте
+		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
 		// Добавление слушателей
 		MainWindowListener mainWindowListener = new MainWindowListener(this);
 		btnAddStudent.addActionListener(mainWindowListener);
@@ -226,6 +223,7 @@ public class MainWindow extends JFrame {
 	public List<Group> getGroups() {
 		return groups;
 	}
+
 
 	public static void main(String[] args) {
 		JFrame mainFrame = new MainWindow();

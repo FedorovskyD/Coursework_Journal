@@ -1,7 +1,7 @@
 package entity;
 
 public class Grade {
-	private int id;
+	private long id;
 	private long lab;
 	private long student;
 	private int grade;
@@ -21,11 +21,11 @@ public class Grade {
 		return grade;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 

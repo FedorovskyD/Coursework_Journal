@@ -1,7 +1,5 @@
 package MainFrame.studentTable;
 
-import entity.Student;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
@@ -18,6 +16,7 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 		} else {
 			c.setBackground(Color.WHITE);
 		}
+		c.setFont(new Font("Arial",Font.PLAIN,25));
 		return c;
 	}
 

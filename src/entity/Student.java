@@ -118,4 +118,27 @@ public class Student {
 		}
 		return (double) sum/(gradeList.size()==0?1:gradeList.size());
 	}
+	public Grade getLabGrade(Lab lab){
+		for (Grade grade : gradeList){
+			if(grade.getLab() == lab.getId()){
+				return grade;
+			}
+		}
+		return null;
+	}
+	public Attendance getLabAttendance(Lab lab){
+		for (Attendance attendance : attendanceList){
+			if(attendance.getLab() == lab.getId()){
+				return attendance;
+			}
+		}
+		return null;
+	}
+	public boolean isAttendance(Lab lab){
+		for (Attendance attendance : attendanceList){
+			if(lab.getId()==attendance.getLab())
+				return true;
+		}
+		return false;
+	}
 }

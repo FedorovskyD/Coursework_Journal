@@ -1,7 +1,7 @@
 package entity;
 
 public class Attendance {
-	private int id;
+	private long id;
 	private long lab;
 	private long student;
 	private boolean isLecture;
@@ -9,9 +9,10 @@ public class Attendance {
 	public Attendance(long lab, long student, boolean isLecture) {
 		this.lab = lab;
 		this.isLecture = isLecture;
+		this.student = student;
 	}
 public Attendance(){}
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
@@ -27,7 +28,7 @@ public Attendance(){}
 		return isLecture;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
