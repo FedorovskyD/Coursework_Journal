@@ -1,37 +1,25 @@
-package MainFrame;
+package dialogs;
 
-import database.dao.impl.LabDaoImpl;
 import database.dao.impl.StudentDaoImpl;
-import dialogs.AddLabDialog;
 import dialogs.AddStudentDialog;
 import entity.Group;
-import entity.Lab;
 import entity.Student;
 import utils.PhotoUtils;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.util.Objects;
 
-public class Listener implements ActionListener {
-	private MainWindow mainWindow;
+public class AddStudentDialogListener implements ActionListener {
 	private AddStudentDialog addStudentDialog;
 
-	private AddLabDialog  addLabDialog;
-
-	public Listener(AddStudentDialog addStudentDialog, JFrame mainWindow) {
-		this.mainWindow = (MainWindow) mainWindow;
+	public AddStudentDialogListener(AddStudentDialog addStudentDialog) {
 		this.addStudentDialog = addStudentDialog;
 	}
-	public Listener(AddLabDialog addStudentDialog, JFrame mainWindow) {
-		this.mainWindow = (MainWindow) mainWindow;
-		this.addLabDialog = addStudentDialog;
-	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (addStudentDialog != null && e.getSource() == addStudentDialog.getOkButton()) {
+		if (e.getSource() == addStudentDialog.getOkButton()) {
 			Student student = new Student();
 			student.setName(addStudentDialog.getFirstName());
 			student.setSurname(addStudentDialog.getLastName());
@@ -50,13 +38,8 @@ public class Listener implements ActionListener {
 				}
 			}
 			StudentDaoImpl.getInstance().update(student);
-			mainWindow.getCurrentGroup().getStudents().add(student);
-			mainWindow.updateStudentTable();
-		} else if (addLabDialog != null && e.getSource() == addLabDialog.getAddButton()) {
-			long groupID = ((Group)addLabDialog.getGroupComboBox().getSelectedItem()).getId();
-			Lab lab = new Lab(addLabDialog.getRoomField().getText(),
-					addLabDialog.getDateChooser().getDate(),groupID,addLabDialog.getNameField().getText());
-			LabDaoImpl.getInstance().save(lab);
+			addStudentDialog.mainWindow.getCurrentGroup().getStudents().add(student);
+			addStudentDialog.mainWindow.updateStudentTable();
 		}
 	}
 }

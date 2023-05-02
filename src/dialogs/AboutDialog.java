@@ -61,12 +61,6 @@ public class AboutDialog extends JDialog {
 
         // Кнопка "Назад"
         JButton backButton = new JButton("Назад");
-        backButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                dispose();
-            }
-        });
         authorsPanel.add(backButton,BorderLayout.SOUTH);
         getContentPane().add(authorsPanel);
         setSize(700, 600);

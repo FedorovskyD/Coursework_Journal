@@ -2,7 +2,6 @@ package dialogs;
 
 import MainFrame.MainWindow;
 import database.dao.impl.GradeDaoImpl;
-import database.dao.impl.StudentDaoImpl;
 import entity.Grade;
 import entity.Lab;
 import entity.Student;
@@ -154,6 +153,9 @@ public class StudentCardDialog extends JDialog {
 		student.setPhotoPath("photos/default.jpg");
 		student.setAge(9);
 		update(student);
+		StudentCardDialogListener studentCardDialogListener = new StudentCardDialogListener(this);
+		deleteButton.addActionListener(studentCardDialogListener);
+		editButton.addActionListener(studentCardDialogListener);
 	}
 
 	public void update(Student student) {
@@ -233,9 +235,6 @@ public class StudentCardDialog extends JDialog {
 			JPanel filler = new JPanel();
 			getCalendarPanel().add(filler);
 		}
-		StudentCardDialogListener studentCardDialogListener = new StudentCardDialogListener(this);
-		deleteButton.addActionListener(studentCardDialogListener);
-		editButton.addActionListener(studentCardDialogListener);
 	}
 
 	public JLabel getPhotoLabel() {

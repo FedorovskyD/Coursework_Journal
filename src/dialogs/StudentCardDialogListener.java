@@ -1,6 +1,7 @@
 package dialogs;
 
 import database.dao.impl.StudentDaoImpl;
+import dialogs.StudentCardDialog;
 import entity.Student;
 
 import javax.swing.*;

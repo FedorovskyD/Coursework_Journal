@@ -1,6 +1,5 @@
 package dialogs;
 
-import MainFrame.Listener;
 import com.toedter.calendar.JDateChooser;
 import database.dao.impl.GroupDaoImpl;
 import entity.Group;
@@ -9,13 +8,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Date;
 
-public class AddLabDialog extends JDialog  {
+public class AddLabDialog extends JDialog {
 
 	private JLabel nameLabel, roomLabel, dateLabel, groupLabel;
 	private JTextField nameField, roomField;
 	private JComboBox<Group> groupComboBox;
 	private JDateChooser dateChooser;
-	private JButton addButton, cancelButton;
+	protected final JButton addButton, cancelButton;
 	private boolean isAddButtonPressed = false;
 
 	public AddLabDialog(JFrame parent) {
@@ -36,7 +35,6 @@ public class AddLabDialog extends JDialog  {
 		cancelButton = new JButton("Отмена");
 
 
-
 		JPanel panel = new JPanel(new GridLayout(5, 2));
 		panel.add(nameLabel);
 		panel.add(nameField);
@@ -48,38 +46,14 @@ public class AddLabDialog extends JDialog  {
 		panel.add(groupComboBox);
 		panel.add(addButton);
 		panel.add(cancelButton);
-		cancelButton.addActionListener(e-> {
-		dispose();
+		cancelButton.addActionListener(e -> {
+			dispose();
 		});
-
-	addButton.addActionListener(new Listener(this,parent));
+		AddLabDialogListener addLabDialogListener = new AddLabDialogListener(this);
+		addButton.addActionListener(addLabDialogListener);
 		this.setContentPane(panel);
 		this.pack();
 		this.setLocationRelativeTo(null);
-	}
-
-	public JButton getAddButton() {
-		return addButton;
-	}
-
-	public boolean isAddButtonPressed() {
-		return isAddButtonPressed;
-	}
-
-	public JLabel getNameLabel() {
-		return nameLabel;
-	}
-
-	public JLabel getRoomLabel() {
-		return roomLabel;
-	}
-
-	public JLabel getDateLabel() {
-		return dateLabel;
-	}
-
-	public JLabel getGroupLabel() {
-		return groupLabel;
 	}
 
 	public JTextField getNameField() {
@@ -98,7 +72,4 @@ public class AddLabDialog extends JDialog  {
 		return dateChooser;
 	}
 
-	public JButton getCancelButton() {
-		return cancelButton;
-	}
 }

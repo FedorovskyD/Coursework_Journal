@@ -1,7 +1,5 @@
 package dialogs;
 
-
-import MainFrame.Listener;
 import MainFrame.MainWindow;
 import entity.Group;
 
@@ -24,6 +22,7 @@ public class AddStudentDialog extends JDialog {
 	private JButton cancelButton;
 	private File photoPath ;
 	private boolean ok;
+	protected MainWindow mainWindow;
 
 	public File getPhotoPath() {
 		return photoPath;
@@ -35,6 +34,7 @@ public class AddStudentDialog extends JDialog {
 
 	public AddStudentDialog(JFrame parent) {
 		super(parent, "Добавить студента", true);
+		mainWindow = (MainWindow) parent;
 		photoPath = new File("photos/default.jpg");
 		JPanel panel = new JPanel(new GridBagLayout());
 		GridBagConstraints constraints = new GridBagConstraints();
@@ -150,7 +150,8 @@ public class AddStudentDialog extends JDialog {
 		constraints.gridx = 2;
 		constraints.gridy = 7;
 		panel.add(cancelButton, constraints);
-		okButton.addActionListener(new Listener(this,parent));
+		AddStudentDialogListener addStudentDialogListener = new AddStudentDialogListener(this);
+		okButton.addActionListener(addStudentDialogListener);
 
 		getContentPane().add(panel, BorderLayout.CENTER);
 
