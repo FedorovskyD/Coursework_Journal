@@ -7,10 +7,17 @@ import entity.Lab;
 import entity.Student;
 import utils.PhotoUtils;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,8 +34,8 @@ public class StudentCardDialog extends JDialog {
 	protected final JTextField txtFullName, txtEmail, txtPhone, txtGpa;
 	protected JLabel phoneLabel;
 	protected JLabel emailLabel;
-	protected final JButton deleteButton, editButton;
-	private final JPanel calendarPanel;
+	protected final JButton deleteButton, editButton,btnEditPhoto;
+	protected final JPanel calendarPanel;
 	protected LabButton currLabButton;
 	private final List<LabButton> labButtons;
 	protected final MainWindow mainWindow;
@@ -36,7 +43,7 @@ public class StudentCardDialog extends JDialog {
 	public StudentCardDialog(JFrame owner, String title) {
 		super(owner, title, true);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setSize(new Dimension(1000, 735));
+		setSize(new Dimension(1000, 800));
 		mainWindow = (MainWindow) owner;
 		labButtons = new ArrayList<>();
 		BoxLayout layout1 = new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS);
@@ -45,6 +52,7 @@ public class StudentCardDialog extends JDialog {
 		JPanel infoPanel = new JPanel();
 		// Создаем компоненты
 		photoLabel = new JLabel(new ImageIcon("photos/default.jpg"));
+		//photoLabel.setBorder(new LineBorder(Color.orange,10,true));
 		JLabel nameLabel = new JLabel("ФИО:");
 		Dimension txtFieldDimension = new Dimension(300, 20);
 		txtFullName = new JTextField(20);
@@ -69,22 +77,45 @@ public class StudentCardDialog extends JDialog {
 		deleteButton = new JButton("Удалить студента");
 		editButton = new JButton("Редактировать");
 		deleteButton.setVisible(false);
-		JButton btnEditPhoto = new JButton("Изменить фото");
+		btnEditPhoto = new JButton("Изменить фото");
 		btnEditPhoto.setVisible(false);
-		btnEditPhoto.setMaximumSize(new Dimension(10, 30));
+		btnEditPhoto.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser fileChooser = new JFileChooser();
+				int result = fileChooser.showOpenDialog(null);
+				if (result == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = fileChooser.getSelectedFile();
+					try {
+						PhotoUtils.getInstance().savePhoto(currStudent,selectedFile);
+						BufferedImage image = ImageIO.read(new File(currStudent.getPhotoPath()));
+						// Масштабируем изображение и создаем иконку
+						ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(),
+								photoLabel.getHeight(), Image.SCALE_SMOOTH));
+						// Устанавливаем иконку изображения в JLabel
+						photoLabel.setIcon(icon);
+					} catch (IOException ex) {
+						System.out.println("Не удалось сохранить фото");
+					}
+				}
+			}
+		});
+		btnEditPhoto.setMaximumSize(new Dimension(187, 25));
 		btnEditPhoto.setPreferredSize(btnEditPhoto.getMaximumSize());
-		JPanel photoPanel = new JPanel(new BorderLayout());
-		photoPanel.setPreferredSize(new Dimension(200, 240));
-		photoPanel.setMaximumSize(photoPanel.getPreferredSize());
-		photoPanel.setMinimumSize(photoPanel.getPreferredSize());
-		photoPanel.add(photoLabel, BorderLayout.CENTER);
-		photoPanel.add(btnEditPhoto, BorderLayout.SOUTH);
+		btnEditPhoto.setMinimumSize(btnEditPhoto.getMaximumSize());
+		photoLabel.setPreferredSize(new Dimension(187, 250));
+		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
+		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
 		// Создаем менеджер компоновки
 		GroupLayout layout = new GroupLayout(infoPanel);
 		infoPanel.setLayout(layout);
 		// Определяем горизонтальную группу
 		layout.setHorizontalGroup(layout.createSequentialGroup()
-				.addComponent(photoPanel)
+				.addGap(15)
+				.addGroup(layout.createParallelGroup()
+						.addComponent(photoLabel)
+						.addComponent(btnEditPhoto))
+				.addGap(15)
 				.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(nameLabel)
 						.addComponent(emailLabel)
@@ -99,8 +130,12 @@ public class StudentCardDialog extends JDialog {
 						.addComponent(deleteButton))
 		);
 		layout.setVerticalGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addComponent(photoPanel)
 				.addGroup(layout.createSequentialGroup()
+						.addGap(15)
+						.addComponent(photoLabel)
+						.addComponent(btnEditPhoto))
+				.addGroup(layout.createSequentialGroup()
+						.addGap(15)
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(nameLabel)
 								.addComponent(txtFullName))
@@ -116,12 +151,12 @@ public class StudentCardDialog extends JDialog {
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(gpaLabel)
 								.addComponent(txtGpa))
-						.addGap(60) // добавляем 10 пикселей расстояния между строками
+						.addGap(130) // добавляем 10 пикселей расстояния между строками
 						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(editButton)
 								.addComponent(deleteButton)))
 		);
-		infoPanel.setPreferredSize(new Dimension(800, 200));
+		infoPanel.setPreferredSize(new Dimension(1000, 300));
 		infoPanel.setMinimumSize(infoPanel.getPreferredSize());
 		infoPanel.setMaximumSize(infoPanel.getPreferredSize());
 		JPanel markPanel = new JPanel(new FlowLayout());
@@ -156,27 +191,25 @@ public class StudentCardDialog extends JDialog {
 			markPanel.add(jButton);
 		}
 		// Добавление панели календаря
-		calendarPanel = new JPanel(new BorderLayout());
-		calendarPanel.setBorder(BorderFactory.createTitledBorder(
+		calendarPanel = new JPanel(new GridLayout(0, 5, 5, 5));
+		JScrollPane scrollPane = new JScrollPane(calendarPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBorder(BorderFactory.createTitledBorder(
 				mainWindow.getRadioBtnLab().isSelected() ? "Лабораторные работы" : "Лекции"));
 		calendarPanel.setPreferredSize(new Dimension(800, 500));
 		calendarPanel.setMinimumSize(calendarPanel.getPreferredSize());
 		calendarPanel.setMaximumSize(calendarPanel.getPreferredSize());
-		photoLabel.setPreferredSize(new Dimension(200, 220));
-		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
-		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
-		getCalendarPanel().setLayout(new GridLayout(5, 5, 5, 5)); // задаем сетку для кнопок
-		// Создаем кнопки для каждой лабораторной работы и добавляем их на панель
-		infoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
-		add(infoPanel);
-
-		markPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
-		add(markPanel);
-
-		calendarPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 450));
-		add(calendarPanel);
 
 		createLabButtons(mainWindow.getCurrentGroup().getLabs());
+
+		add(infoPanel);
+
+
+		add(markPanel);
+
+
+		add(scrollPane);
+
 		StudentCardDialogListener studentCardDialogListener = new StudentCardDialogListener(this);
 		deleteButton.addActionListener(studentCardDialogListener);
 		editButton.addActionListener(studentCardDialogListener);
@@ -200,7 +233,7 @@ public class StudentCardDialog extends JDialog {
 		txtGpa.setText(String.valueOf(student.getMark()));
 		Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
 		if (image != null) {
-			photoLabel.setSize(new Dimension(200, 220));
+			photoLabel.setSize(new Dimension(187, 250));
 			ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(),
 					photoLabel.getHeight(), Image.SCALE_SMOOTH));
 			photoLabel.setIcon(icon);
@@ -208,17 +241,16 @@ public class StudentCardDialog extends JDialog {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
 		updateLabButtons(student);
-		calendarPanel.setBorder(BorderFactory.createTitledBorder(
-				mainWindow.getRadioBtnLab().isSelected() ? "Лабораторные работы" : "Лекции"));
 	}
 
 	private void createLabButtons(List<Lab> labs) {
 		for (Lab lab : labs) {
-			// получаем дату лабораторной работы
 			// Создаем новую кнопку с датой и оценкой студент
 			LabButton labButton = new LabButton(this, lab, false);
-			getCalendarPanel().add(labButton); // добавляем кнопку на панель
 			labButtons.add(labButton);
+			labButton.setToolTipText("<html>"+lab.getLabName()+
+					"<br>"+lab.getClassroom()+
+					"</html>");
 		}
 		int remaining = 25 - labs.size();
 		for (int i = 1; i <= remaining; i++) {
@@ -226,25 +258,29 @@ public class StudentCardDialog extends JDialog {
 			getCalendarPanel().add(filler);
 		}
 	}
-	private void updateLabButtons(Student student){
-		for (LabButton labButton : labButtons){
+
+	private void updateLabButtons(Student student) {
+		for (LabButton labButton : labButtons) {
 			Grade grade = student.getLabGrade(labButton.getLab());
-			if (grade!=null) {
+			if (grade != null) {
 				labButton.updateGrade(String.valueOf(grade.getGrade()));
-			}else {
+			} else {
 				labButton.updateGrade("Нет");
 			}
-			if(labButton.getLab()==mainWindow.getCurrDateCmb().getSelectedItem()){
+			labButton.setBorder(null);
+			labButton.selected(false);
+			if (labButton.getLab() == mainWindow.getCurrDateCmb().getSelectedItem()) {
 				currLabButton = labButton;
 				labButton.selected(true);
+				currLabButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
 			}
 			if (currStudent.isAttendance(labButton.getLab())) {
 				labButton.setBackground(Color.GREEN);
 			} else {
 				labButton.setBackground(Color.GRAY);
 			}
+			calendarPanel.add(labButton);
 		}
-		getCalendarPanel().repaint();
 	}
 
 	public JButton getDeleteButton() {
@@ -265,5 +301,9 @@ public class StudentCardDialog extends JDialog {
 
 	public LabButton getCurrLabButton() {
 		return currLabButton;
+	}
+
+	public void updateGpa(Student student) {
+		txtGpa.setText(String.valueOf(student.getMark()));
 	}
 }

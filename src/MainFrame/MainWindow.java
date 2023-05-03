@@ -10,12 +10,14 @@ import entity.Student;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Objects;
 
 public class MainWindow extends JFrame {
 	private final JButton btnAddStudent, btnAddLab,
-			btnAddGroup, btnDeleteGroup, btnAboutAuthor, btnAddPhoto;
+			btnAddGroup, btnDeleteGroup, btnAboutAuthor;
 	private final StudentTable studentTable;
 	protected StudentCardDialog studentCardDialog;
 	private final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc,radioBtnDec;
@@ -23,6 +25,7 @@ public class MainWindow extends JFrame {
 	private final JComboBox<Lab> currDateCmb;
 	private final JComboBox<String> cmbSort;
 	private final List<Group> groups;
+	private final MainWindowListener mainWindowListener;
 
 	private MainWindow() {
 		//Получаем данные о группах из базы данных
@@ -40,6 +43,31 @@ public class MainWindow extends JFrame {
 		cmbSort.setPreferredSize(new Dimension(100,30));
 		cmbSort.setMaximumSize(cmbSort.getPreferredSize());
 		radioBtnLab.setSelected(true);
+		radioBtnLab.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioBtnLecture.setSelected(false);
+			}
+		});
+		radioBtnInc.setSelected(true);
+		radioBtnInc.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioBtnDec.setSelected(false);
+			}
+		});
+		radioBtnDec.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioBtnInc.setSelected(false);
+			}
+		});
+		radioBtnLecture.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioBtnLab.setSelected(false);
+			}
+		});
 		// Создание меню
 		JMenu menuFile = new JMenu("Файл");
 		JMenuBar menuBar = new JMenuBar();
@@ -66,7 +94,6 @@ public class MainWindow extends JFrame {
 		btnAddGroup = new JButton("Добавить группу");
 		btnDeleteGroup = new JButton("Удалить группу");
 		btnAboutAuthor = new JButton("Об авторе");
-		btnAddPhoto = new JButton("Добавить фото студента");
 		btnAddLab = new JButton("Добавить лабораторное занятие");
 		//Создаем combobox для выбора даты занятия
 		currDateCmb = new JComboBox<>(new DefaultComboBoxModel<>(getCurrentGroup().getLabs().toArray(new Lab[0])));
@@ -107,7 +134,6 @@ public class MainWindow extends JFrame {
 								.addComponent(btnAddGroup)
 								.addComponent(btnDeleteGroup)
 								.addComponent(btnAboutAuthor)
-								.addComponent(btnAddPhoto)
 								.addComponent(btnAddLab))
 				)
 		);
@@ -135,23 +161,30 @@ public class MainWindow extends JFrame {
 						.addComponent(btnAddGroup)
 						.addComponent(btnDeleteGroup)
 						.addComponent(btnAboutAuthor)
-						.addComponent(btnAddPhoto)
 						.addComponent(btnAddLab))
 		);
 		//Создаем карточку для отображения информации о студенте
 		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
 		// Добавление слушателей
-		MainWindowListener mainWindowListener = new MainWindowListener(this);
+		mainWindowListener = new MainWindowListener(this);
 		btnAddStudent.addActionListener(mainWindowListener);
 		btnAddGroup.addActionListener(mainWindowListener);
 		btnDeleteGroup.addActionListener(mainWindowListener);
 		btnAboutAuthor.addActionListener(mainWindowListener);
-		btnAddPhoto.addActionListener(mainWindowListener);
 		btnAddLab.addActionListener(mainWindowListener);
 		studentTable.getSelectionModel().addListSelectionListener(mainWindowListener);
 		cmbGroupNumber.addActionListener(mainWindowListener);
+		SortActionListener sortActionListener = new SortActionListener();
+		radioBtnInc.addActionListener(sortActionListener);
+		radioBtnDec.addActionListener(sortActionListener);
+		cmbSort.addActionListener(sortActionListener);
 	}
+	private class SortActionListener implements ActionListener{
 
+		@Override
+		public void actionPerformed(ActionEvent e) {
+		}
+	}
 	public JComboBox<Group> getCmbGroupNumber() {
 		return cmbGroupNumber;
 	}
@@ -187,10 +220,6 @@ public class MainWindow extends JFrame {
 		return btnAboutAuthor;
 	}
 
-	public JButton getBtnAddPhoto() {
-		return btnAddPhoto;
-	}
-
 	public JButton getBtnAddLab() {
 		return btnAddLab;
 	}
@@ -224,6 +253,9 @@ public class MainWindow extends JFrame {
 		return groups;
 	}
 
+	public MainWindowListener getMainWindowListener() {
+		return mainWindowListener;
+	}
 
 	public static void main(String[] args) {
 		JFrame mainFrame = new MainWindow();

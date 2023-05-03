@@ -1,9 +1,7 @@
 package dialogs.studentCard;
 
-import database.dao.AttendanceDao;
 import database.dao.impl.AttendanceDaoImpl;
 import database.dao.impl.GradeDaoImpl;
-import database.dao.impl.GroupDaoImpl;
 import entity.Attendance;
 import entity.Grade;
 import entity.Lab;
@@ -12,8 +10,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 
 public class LabButton extends JButton {
@@ -35,6 +31,18 @@ public class LabButton extends JButton {
 				owner.currLabButton.isSelected = false;
 				owner.currLabButton.setBorder(null);
 				owner.currLabButton = this;
+			}
+		});
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				int keyCode = e.getKeyCode();
+				if (keyCode == KeyEvent.VK_UP ||
+						keyCode == KeyEvent.VK_DOWN ||
+						keyCode == KeyEvent.VK_LEFT ||
+						keyCode == KeyEvent.VK_RIGHT) {
+					e.consume(); // отмена действия для стрелочных клави
+				}
 			}
 		});
 		//Добавляем слушателя кнопки пробела с помощью абстрактного класса KeyAdapter
@@ -64,12 +72,12 @@ public class LabButton extends JButton {
 								if (AttendanceDaoImpl.getInstance().delete(attendance)) {
 									System.out.println("Запись о посещении удалена");
 									owner.currStudent.getAttendanceList().remove(attendance);
-									if (GradeDaoImpl.getInstance().delete(studentGrade)) {
+									if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
 										owner.currStudent.getGradeList().remove(studentGrade);
 										System.out.println("Оценка за лабораторную " + labDate + " удалена");
 									}
 									updateGrade("Нет");
-									owner.update(owner.currStudent);
+									owner.updateGpa(owner.currStudent);
 									setBackground(Color.GRAY);
 									setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
 								}

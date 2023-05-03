@@ -13,18 +13,19 @@ import java.awt.event.*;
 
 public class MainWindowListener implements ActionListener, ListSelectionListener {
 	private final MainWindow mainWindow;
+	private final KeyEventDispatcher keyEventDispatcher;
 
 	public MainWindowListener(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(event -> {
-			if (event.getID() == KeyEvent.KEY_RELEASED && (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN)) {
-				if (event.getKeyCode() == KeyEvent.VK_UP || event.getKeyCode() == KeyEvent.VK_DOWN) {
+		keyEventDispatcher = e -> {
+			if (e.getID() == KeyEvent.KEY_RELEASED && (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
 					// получаем текущую выделенную строку в таблице
 					JTable studentTable = mainWindow.getStudentTable();
 					int selectedRow = studentTable.getSelectedRow();
 					// вычисляем номер следующей строки в зависимости от нажатой клавиши
 					if (selectedRow != -1) {
-						int nextRow = event.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
+						int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
 						// проверяем, что следующая строка существует
 						if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
 							// обновляем выделение строки в таблице
@@ -36,7 +37,8 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 				}
 			}
 			return false;
-		});
+		};
+		keyboardListenerOn();
 	}
 
 	@Override
@@ -54,11 +56,6 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 		} else if (e.getSource() == mainWindow.getBtnAboutAuthor()) {
 			AboutDialog aboutAuthorDialog = new AboutDialog(mainWindow);
 			aboutAuthorDialog.setVisible(true);
-		} else if (e.getSource() == mainWindow.getBtnAddPhoto()) {
-			if (studentTable.getSelectedRow() != -1) {
-				AddPhotoDialog addPhotoDialog = new AddPhotoDialog(mainWindow, mainWindow.getCurrentStudent());
-				addPhotoDialog.setVisible(true);
-			}
 		} else if (e.getSource() == mainWindow.getBtnAddLab()) {
 			AddLabDialog addLabDialog = new AddLabDialog(mainWindow);
 			addLabDialog.setVisible(true);
@@ -81,10 +78,17 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 					Student selectedStudent = mainWindow.getStudentTable().getStudentAt(selectedRow);
 					selectedStudent.setGroup(mainWindow.getCurrentGroup().getId());
 					studentCardDialog.update(selectedStudent);
+					studentCardDialog.getCalendarPanel().repaint();
 					SwingUtilities.invokeLater(() -> studentCardDialog.setVisible(true));
 					SwingUtilities.invokeLater(()->studentCardDialog.getCurrLabButton().requestFocus());
 				}
 			}
 		}
+	}
+	public void keyboardListenerOn(){
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyEventDispatcher);
+	}
+	public void keyboardListenerOf(){
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher);
 	}
 }
