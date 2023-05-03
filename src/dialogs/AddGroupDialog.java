@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 public class AddGroupDialog extends JDialog {
 
 	private JTextField groupNameField;
-	private JButton okButton, cancelButton;
+	private JButton btnOk, btnCancel;
 	private boolean okPressed;
 	private MainWindow mainWindow;
 
@@ -28,11 +28,11 @@ public class AddGroupDialog extends JDialog {
 		groupNameField = new JTextField();
 
 		// Создаем кнопки
-		okButton = new JButton("OK");
-		cancelButton = new JButton("Cancel");
+		btnOk = new JButton("OK");
+		btnCancel = new JButton("Cancel");
 
 		// Добавляем обработчики событий для кнопок
-		okButton.addActionListener(new ActionListener() {
+		btnOk.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Group group = new Group();
@@ -45,7 +45,7 @@ public class AddGroupDialog extends JDialog {
 			}
 		});
 
-		cancelButton.addActionListener(new ActionListener() {
+		btnCancel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				okPressed = false;
@@ -54,19 +54,19 @@ public class AddGroupDialog extends JDialog {
 		});
 
 		// Создаем панель для компонентов ввода данных
-		JPanel inputPanel = new JPanel(new GridLayout(1, 2, 5, 5));
-		inputPanel.add(groupNameLabel);
-		inputPanel.add(groupNameField);
+		JPanel panelInput = new JPanel(new GridLayout(1, 2, 5, 5));
+		panelInput.add(groupNameLabel);
+		panelInput.add(groupNameField);
 
 		// Создаем панель для кнопок
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
-		buttonPanel.add(okButton);
-		buttonPanel.add(cancelButton);
+		JPanel panelButton = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+		panelButton.add(btnOk);
+		panelButton.add(btnCancel);
 
 		// Добавляем панели на диалоговое окно
 		getContentPane().setLayout(new BorderLayout(10, 10));
-		getContentPane().add(inputPanel, BorderLayout.CENTER);
-		getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+		getContentPane().add(panelInput, BorderLayout.CENTER);
+		getContentPane().add(panelButton, BorderLayout.SOUTH);
 	}
 
 	public String getGroupName() {

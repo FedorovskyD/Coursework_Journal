@@ -15,6 +15,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Objects;
 
+
 public class MainWindow extends JFrame {
 	private final JButton btnAddStudent, btnAddLab,
 			btnAddGroup, btnDeleteGroup, btnAboutAuthor;
