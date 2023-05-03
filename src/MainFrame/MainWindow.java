@@ -1,7 +1,7 @@
 package MainFrame;
 
+import MainFrame.studentTable.StudentLabTableModel;
 import MainFrame.studentTable.StudentTable;
-import MainFrame.studentTable.StudentTableModel;
 import database.dao.impl.GroupDaoImpl;
 import dialogs.studentCard.StudentCardDialog;
 import entity.Group;
@@ -55,18 +55,26 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				radioBtnDec.setSelected(false);
+				updateStudentTable();
 			}
 		});
 		radioBtnDec.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				radioBtnInc.setSelected(false);
+				updateStudentTable();
 			}
 		});
 		radioBtnLecture.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				radioBtnLab.setSelected(false);
+			}
+		});
+		cmbSort.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateStudentTable();
 			}
 		});
 		// Создание меню
@@ -102,8 +110,8 @@ public class MainWindow extends JFrame {
 		currDateCmb.setMinimumSize(currDateCmb.getPreferredSize());
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
 		//Создаем таблицу для отображения списка студентов
-		studentTable = new StudentTable();
-		studentTable.setData(((Group) Objects.requireNonNull(cmbGroupNumber.getSelectedItem())).getStudents());
+		studentTable = new StudentTable((Group)cmbGroupNumber.getSelectedItem());
+		updateStudentTable();
 		JScrollPane scrollPane = new JScrollPane(studentTable);
 		//Задаем расположение раннее заданным компонентам
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
@@ -201,7 +209,7 @@ public class MainWindow extends JFrame {
 	public Student getCurrentStudent() {
 		int selectedRow = studentTable.getSelectedRow();
 		if (selectedRow != -1)
-		return ((StudentTableModel) studentTable.getModel()).getStudentAt(studentTable.getSelectedRow());
+		return ((StudentLabTableModel) studentTable.getModel()).getStudentAt(studentTable.getSelectedRow());
 		return null;
 	}
 
@@ -242,10 +250,20 @@ public class MainWindow extends JFrame {
 	}
 
 	public void updateStudentTable() {
-		StudentTableModel studentTableModel = (StudentTableModel) studentTable.getModel();
-		studentTableModel.setData(getCurrentGroup().getStudents());
+		StudentLabTableModel studentTableModel = studentTable.getStudentTableModel();
+		sortTable();
+		studentTableModel.setStudents(getCurrentGroup().getStudents());
+		SwingUtilities.invokeLater(studentTable::repaint);
 	}
-
+	public void sortTable(){
+		boolean isInc = radioBtnInc.isSelected();
+		String option = (String) cmbSort.getSelectedItem();
+		switch (Objects.requireNonNull(option)) {
+			case "алфавиту" -> studentTable.getStudentTableModel().sortByAlphabet(isInc);
+			case "среднему баллу" -> studentTable.getStudentTableModel().sortByGrade(isInc);
+			case "посещаемости" -> studentTable.getStudentTableModel().sortByAttendance(isInc);
+		}
+	}
 	public void updateGroupCmb() {
 		cmbGroupNumber.setModel(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
 	}
@@ -256,6 +274,10 @@ public class MainWindow extends JFrame {
 
 	public MainWindowListener getMainWindowListener() {
 		return mainWindowListener;
+	}
+
+	public JComboBox<String> getCmbSort() {
+		return cmbSort;
 	}
 
 	public static void main(String[] args) {

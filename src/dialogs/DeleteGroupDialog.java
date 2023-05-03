@@ -2,7 +2,7 @@ package dialogs;
 
 import MainFrame.MainWindow;
 
-import MainFrame.studentTable.StudentTableModel;
+import MainFrame.studentTable.StudentLabTableModel;
 import database.dao.impl.GroupDaoImpl;
 import entity.Group;
 import entity.Student;
@@ -42,8 +42,8 @@ public class DeleteGroupDialog extends JDialog {
 			if (selectedGroup != null) {
 				students = GroupDaoImpl.getInstance().getStudents(selectedGroup);
 			}
-			StudentTableModel model = (StudentTableModel) mainWindow.getStudentTable().getModel();
-			model.setData(students);
+			StudentLabTableModel model = (StudentLabTableModel) mainWindow.getStudentTable().getModel();
+			model.setStudents(students);
 			// Закрываем диалоговое окно
 			dispose();
 		});

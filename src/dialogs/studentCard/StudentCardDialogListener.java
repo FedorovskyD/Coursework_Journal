@@ -41,6 +41,7 @@ public class StudentCardDialogListener implements ActionListener {
 					studentCardDialog.btnEditPhoto.setVisible(false);
 					studentCardDialog.mainWindow.getCurrentGroup().getStudents().remove(studentCardDialog.mainWindow.getCurrentStudent());
 					studentCardDialog.mainWindow.updateStudentTable();
+					studentCardDialog.mainWindow.getMainWindowListener().keyboardListenerOn();
 					System.out.println("Student was deleted");
 				}
 			}
@@ -62,8 +63,8 @@ public class StudentCardDialogListener implements ActionListener {
 					Student student1 = studentCardDialog.mainWindow.getCurrentStudent();
 					String fullName = studentCardDialog.txtFullName.getText();
 					String[] fio = fullName.split(" ");
-					student1.setName(fio[1]);
-					student1.setSurname(fio[0]);
+					student1.setFirstName(fio[1]);
+					student1.setLastName(fio[0]);
 					student1.setMiddleName(fio[2]);
 					student1.setTelephone(studentCardDialog.txtPhone.getText());
 					student1.setEmail(studentCardDialog.txtEmail.getText());

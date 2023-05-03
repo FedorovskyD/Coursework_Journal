@@ -47,8 +47,8 @@ public class StudentDaoImpl implements StudentDao {
 					String photoPath = resultSet.getString("PhotoPath");
 					student = new Student();
 					student.setId(id);
-					student.setName(firstName);
-					student.setSurname(lastName);
+					student.setFirstName(firstName);
+					student.setLastName(lastName);
 					student.setMiddleName(middleName);
 					student.setTelephone(telephone);
 					student.setEmail(email);
@@ -82,8 +82,8 @@ public class StudentDaoImpl implements StudentDao {
 		long id = Long.MAX_VALUE;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement statement = connection.prepareStatement(SQl_INSERT_STUDENT, Statement.RETURN_GENERATED_KEYS)) {
-			statement.setString(1, entity.getSurname());
-			statement.setString(2, entity.getName());
+			statement.setString(1, entity.getLastName());
+			statement.setString(2, entity.getFirstName());
 			statement.setString(3, entity.getMiddleName());
 			statement.setLong(4, entity.getGroup());
 			statement.setString(5, entity.getTelephone());
@@ -104,8 +104,8 @@ public class StudentDaoImpl implements StudentDao {
 	public boolean update(Student entity) {
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(SQL_UPDATE_STUDENT)) {
-			ps.setString(1, entity.getSurname());
-			ps.setString(2, entity.getName());
+			ps.setString(1, entity.getLastName());
+			ps.setString(2, entity.getFirstName());
 			ps.setString(3, entity.getMiddleName());
 			ps.setLong(4, entity.getGroup());
 			ps.setString(5, entity.getTelephone());
@@ -153,8 +153,8 @@ public class StudentDaoImpl implements StudentDao {
 			// Создание экземпляра класса-сущности и заполнение полей
 			Student student = new Student();
 			student.setId(rs.getInt("ID"));
-			student.setName(rs.getString("FirstName"));
-			student.setSurname(rs.getString("LastName"));
+			student.setFirstName(rs.getString("FirstName"));
+			student.setLastName(rs.getString("LastName"));
 			student.setMiddleName(rs.getString("MiddleName"));
 			student.setEmail(rs.getString("Email"));
 			student.setPhotoPath(rs.getString("PhotoPath"));

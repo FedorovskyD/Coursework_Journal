@@ -9,7 +9,6 @@ import utils.PhotoUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -18,7 +17,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -40,9 +39,10 @@ public class StudentCardDialog extends JDialog {
 	private final List<LabButton> labButtons;
 	protected final MainWindow mainWindow;
 
+
 	public StudentCardDialog(JFrame owner, String title) {
 		super(owner, title, true);
-		setDefaultCloseOperation(HIDE_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(new Dimension(1000, 800));
 		mainWindow = (MainWindow) owner;
 		labButtons = new ArrayList<>();
@@ -174,14 +174,16 @@ public class StudentCardDialog extends JDialog {
 							System.out.println("Оценка добавлена");
 							grade1.setId(id);
 							currStudent.getGradeList().add(grade1);
+							mainWindow.updateStudentTable();
 						}
 					} else {
 						grade.setGrade(Integer.parseInt(jButton.getText()));
+						mainWindow.updateStudentTable();
 						if (GradeDaoImpl.getInstance().update(grade)) {
 							System.out.println("Оценка изменена");
 						}
 					}
-					txtGpa.setText(String.valueOf(currStudent.getMark()));
+					txtGpa.setText(String.valueOf(currStudent.getAverageGrade()));
 				} else {
 					JOptionPane.showMessageDialog(mainWindow, "Перед выставлением оценки нужно отметить студента");
 				}
@@ -216,8 +218,14 @@ public class StudentCardDialog extends JDialog {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				super.windowClosing(e);
+				if (editButton.getText().equalsIgnoreCase("редактировать")) {
 				mainWindow.getStudentTable().clearSelection();
+				setVisible(false);
+				mainWindow.updateStudentTable();
+			}else {
+					JOptionPane.showMessageDialog(mainWindow, "Перед закрытием карточки нужно завершить редактирование");
+					setVisible(true);
+				}
 			}
 		});
 	}
@@ -226,11 +234,11 @@ public class StudentCardDialog extends JDialog {
 		currStudent = student;
 		this.setLocationRelativeTo(mainWindow);
 		calendarPanel.removeAll();
-		txtFullName.setText(student.getSurname() + " " + student.getName() +
+		txtFullName.setText(student.getLastName() + " " + student.getFirstName() +
 				" " + student.getMiddleName());
 		txtEmail.setText(student.getEmail());
 		txtPhone.setText(student.getTelephone());
-		txtGpa.setText(String.valueOf(student.getMark()));
+		txtGpa.setText(String.valueOf(student.getAverageGrade()));
 		Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
 		if (image != null) {
 			photoLabel.setSize(new Dimension(187, 250));
@@ -304,6 +312,6 @@ public class StudentCardDialog extends JDialog {
 	}
 
 	public void updateGpa(Student student) {
-		txtGpa.setText(String.valueOf(student.getMark()));
+		txtGpa.setText(String.valueOf(student.getAverageGrade()));
 	}
 }

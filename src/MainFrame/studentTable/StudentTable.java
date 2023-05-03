@@ -1,30 +1,27 @@
 package MainFrame.studentTable;
 
+import entity.Group;
 import entity.Student;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumn;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.List;
 
+/**
+ * проверен
+ */
 public class StudentTable extends JTable {
-	public StudentTable() {
-		super(new StudentTableModel());
-		setDefaultRenderer(Object.class,new StudentTableCellRender());
+	private final StudentLabTableModel model;
+
+	public StudentTable(Group group) {
+		super(new StudentLabTableModel(group));
+		model = (StudentLabTableModel) getModel();
+		setDefaultRenderer(Object.class, new StudentTableCellRender());
 		setRowHeight(35);
-		JTableHeader jtableHeader = getTableHeader();
-		jtableHeader.setFont(new Font("Arial", Font.PLAIN, 18));
-		//Скрываем колонку с ID студента
-		TableColumn column = getColumnModel().getColumn(5);
-		column.setMinWidth(0);
-		column.setMaxWidth(0);
-		column.setWidth(0);
-		column.setPreferredWidth(0);
-		//Отключаем стандартную обработку нажатия клавиш
+		disableArrowKeys();
+	}
+
+	private void disableArrowKeys() {
 		addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_UP ||
@@ -34,10 +31,11 @@ public class StudentTable extends JTable {
 			}
 		});
 	}
-	public void setData(List<Student> students){
-		((StudentTableModel)getModel()).setData(students);
+	public Student getStudentAt(int selectedRow) {
+		return model.getStudentAt(selectedRow);
 	}
-	public Student getStudentAt(int selectedRow){
-		return ((StudentTableModel)getModel()).getStudentAt(selectedRow);
+
+	public StudentLabTableModel getStudentTableModel() {
+		return model;
 	}
 }

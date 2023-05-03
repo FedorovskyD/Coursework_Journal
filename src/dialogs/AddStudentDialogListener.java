@@ -1,7 +1,6 @@
 package dialogs;
 
 import database.dao.impl.StudentDaoImpl;
-import dialogs.AddStudentDialog;
 import entity.Group;
 import entity.Student;
 import utils.PhotoUtils;
@@ -21,8 +20,8 @@ public class AddStudentDialogListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == addStudentDialog.getOkButton()) {
 			Student student = new Student();
-			student.setName(addStudentDialog.getFirstName());
-			student.setSurname(addStudentDialog.getLastName());
+			student.setFirstName(addStudentDialog.getFirstName());
+			student.setLastName(addStudentDialog.getLastName());
 			student.setMiddleName(addStudentDialog.getMiddleName());
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());

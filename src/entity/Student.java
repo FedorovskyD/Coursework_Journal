@@ -1,22 +1,19 @@
 package entity;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Student {
-	private  long id;
-	private  String name;
-	private  String surname;
-	private  String middleName;
-	private  String telephone;
-	private  String email;
-	private  String photoPath;
-	private  List<Attendance> attendanceList;
-	private  List<Grade> gradeList;
-	private  int age;
+	private long id;
+	private String firstName;
+	private String lastName;
+	private String middleName;
+	private String telephone;
+	private String email;
+	private String photoPath;
+	private List<Attendance> attendanceList;
+	private List<Grade> gradeList;
+	private int age;
 	private long group;
 
 	public Student() {
@@ -32,20 +29,20 @@ public class Student {
 		this.id = id;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public String getSurname() {
-		return surname;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setSurname(String surname) {
-		this.surname = surname;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getMiddleName() {
@@ -111,34 +108,51 @@ public class Student {
 	public void setAge(int age) {
 		this.age = age;
 	}
-	public double getMark(){
-		int sum = 0;
-		for (Grade grade:gradeList){
-			sum+=grade.getGrade();
-		}
-		return (double) sum/(gradeList.size()==0?1:gradeList.size());
+
+	public double getAverageGrade() {
+		return gradeList.stream()
+				.mapToInt(Grade::getGrade)
+				.average()
+				.orElse(0.0);
 	}
-	public Grade getLabGrade(Lab lab){
-		for (Grade grade : gradeList){
-			if(grade.getLab() == lab.getId()){
-				return grade;
-			}
+
+	public Grade getLabGrade(Lab lab) {
+		if (lab == null) {
+			return null;
 		}
-		return null;
+		return gradeList.stream()
+				.filter(grade -> grade.getLab() == lab.getId())
+				.findFirst()
+				.orElse(null);
 	}
-	public Attendance getLabAttendance(Lab lab){
-		for (Attendance attendance : attendanceList){
-			if(attendance.getLab() == lab.getId()){
-				return attendance;
-			}
+
+	public Attendance getLabAttendance(Lab lab) {
+		if (lab == null) {
+			return null;
 		}
-		return null;
+		return attendanceList.stream()
+				.filter(a -> a.getLab() == lab.getId())
+				.findFirst()
+				.orElse(null);
 	}
-	public boolean isAttendance(Lab lab){
-		for (Attendance attendance : attendanceList){
-			if(lab.getId()==attendance.getLab())
-				return true;
-		}
-		return false;
+
+
+	public boolean isAttendance(Lab lab) {
+		return attendanceList.stream().anyMatch(attendance -> attendance.getLab() == lab.getId());
+	}
+
+
+	public String getFullName() {
+		return lastName + " " +
+				firstName + " " +
+				middleName;
+	}
+	public int getCountLabAttendance(){
+		return attendanceList.size();
+	}
+
+	@Override
+	public String toString() {
+		return getFullName();
 	}
 }

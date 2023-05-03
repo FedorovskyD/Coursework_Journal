@@ -58,6 +58,8 @@ public class LabButton extends JButton {
 						if ((id = AttendanceDaoImpl.getInstance().save(attendance)) > 0) {
 							attendance.setId(id);
 							owner.currStudent.getAttendanceList().add(attendance);
+							owner.mainWindow.updateStudentTable();
+							SwingUtilities.invokeLater(()->owner.mainWindow.getStudentTable().repaint());
 							System.out.println("Запись о посещении добавлена");
 							setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
 							setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
@@ -72,6 +74,8 @@ public class LabButton extends JButton {
 								if (AttendanceDaoImpl.getInstance().delete(attendance)) {
 									System.out.println("Запись о посещении удалена");
 									owner.currStudent.getAttendanceList().remove(attendance);
+									owner.mainWindow.updateStudentTable();
+									SwingUtilities.invokeLater(()->owner.mainWindow.getStudentTable().repaint());
 									if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
 										owner.currStudent.getGradeList().remove(studentGrade);
 										System.out.println("Оценка за лабораторную " + labDate + " удалена");

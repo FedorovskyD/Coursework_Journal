@@ -1,6 +1,6 @@
 package MainFrame;
 
-import MainFrame.studentTable.StudentTableModel;
+import MainFrame.studentTable.StudentLabTableModel;
 import dialogs.*;
 import dialogs.studentCard.StudentCardDialog;
 import entity.Student;
@@ -60,10 +60,12 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 			AddLabDialog addLabDialog = new AddLabDialog(mainWindow);
 			addLabDialog.setVisible(true);
 		} else if (e.getSource() == mainWindow.getCmbGroupNumber()) {
-			StudentTableModel studentTableModel1 = (StudentTableModel) studentTable.getModel();
-			studentTableModel1.setData(mainWindow.getCurrentGroup().getStudents());
+			StudentLabTableModel studentTableModel1 = (StudentLabTableModel) studentTable.getModel();
+			studentTableModel1.setStudents(mainWindow.getCurrentGroup().getStudents());
+			SwingUtilities.invokeLater(()->mainWindow.getStudentTable().repaint());
 			mainWindow.getStudentCardDialog().dispose();
 			mainWindow.studentCardDialog = new StudentCardDialog(mainWindow,"Карточка студента");
+
 		}
 	}
 
@@ -79,6 +81,7 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 					selectedStudent.setGroup(mainWindow.getCurrentGroup().getId());
 					studentCardDialog.update(selectedStudent);
 					studentCardDialog.getCalendarPanel().repaint();
+					//
 					SwingUtilities.invokeLater(() -> studentCardDialog.setVisible(true));
 					SwingUtilities.invokeLater(()->studentCardDialog.getCurrLabButton().requestFocus());
 				}
