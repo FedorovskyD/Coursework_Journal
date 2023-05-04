@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Date;
 
-public class AddLabDialog extends JDialog {
+public class JDialogAddLab extends JDialog {
 
 	private JLabel nameLabel, roomLabel, dateLabel, groupLabel;
 	private JTextField nameField, roomField;
@@ -17,7 +17,7 @@ public class AddLabDialog extends JDialog {
 	protected final JButton addButton, cancelButton;
 	private boolean isAddButtonPressed = false;
 
-	public AddLabDialog(JFrame parent) {
+	public JDialogAddLab(JFrame parent) {
 		super(parent, "Добавление лабораторного занятия", true);
 
 		nameLabel = new JLabel("Название:");
@@ -49,8 +49,8 @@ public class AddLabDialog extends JDialog {
 		cancelButton.addActionListener(e -> {
 			dispose();
 		});
-		AddLabDialogListener addLabDialogListener = new AddLabDialogListener(this);
-		addButton.addActionListener(addLabDialogListener);
+		ListenerJDialogAddLab listenerJDialogAddLab = new ListenerJDialogAddLab(this);
+		addButton.addActionListener(listenerJDialogAddLab);
 		this.setContentPane(panel);
 		this.pack();
 		this.setLocationRelativeTo(null);

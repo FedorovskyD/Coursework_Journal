@@ -27,7 +27,7 @@ import java.util.List;
  *
  * @author Fedorovsky D. A.
  */
-public class StudentCardDialog extends JDialog {
+public class JDialogStudentCard extends JDialog {
 	protected Student currStudent;
 	protected JLabel photoLabel;
 	protected final JTextField txtFullName, txtEmail, txtPhone, txtGpa;
@@ -40,7 +40,7 @@ public class StudentCardDialog extends JDialog {
 	protected final MainWindow mainWindow;
 
 
-	public StudentCardDialog(JFrame owner, String title) {
+	public JDialogStudentCard(JFrame owner, String title) {
 		super(owner, title, true);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(new Dimension(1000, 800));
@@ -203,18 +203,13 @@ public class StudentCardDialog extends JDialog {
 		calendarPanel.setMaximumSize(calendarPanel.getPreferredSize());
 
 		createLabButtons(mainWindow.getCurrentGroup().getLabs());
-
 		add(infoPanel);
-
-
 		add(markPanel);
-
-
 		add(scrollPane);
 
-		StudentCardDialogListener studentCardDialogListener = new StudentCardDialogListener(this);
-		deleteButton.addActionListener(studentCardDialogListener);
-		editButton.addActionListener(studentCardDialogListener);
+		ListenerJDialogStudentCard listenerJDialogStudentCard = new ListenerJDialogStudentCard(this);
+		deleteButton.addActionListener(listenerJDialogStudentCard);
+		editButton.addActionListener(listenerJDialogStudentCard);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -230,7 +225,7 @@ public class StudentCardDialog extends JDialog {
 		});
 	}
 
-	public void update(Student student) {
+	public void updateStudentCard(Student student) {
 		currStudent = student;
 		this.setLocationRelativeTo(mainWindow);
 		calendarPanel.removeAll();
@@ -249,6 +244,8 @@ public class StudentCardDialog extends JDialog {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
 		updateLabButtons(student);
+		getContentPane().repaint();
+
 	}
 
 	private void createLabButtons(List<Lab> labs) {
@@ -289,6 +286,7 @@ public class StudentCardDialog extends JDialog {
 			}
 			calendarPanel.add(labButton);
 		}
+		SwingUtilities.invokeLater(currLabButton::requestFocus);
 	}
 
 	public JButton getDeleteButton() {

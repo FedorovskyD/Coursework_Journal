@@ -10,14 +10,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class AddGroupDialog extends JDialog {
+public class JDialogAddGroup extends JDialog {
 
 	private JTextField groupNameField;
 	private JButton btnOk, btnCancel;
 	private boolean okPressed;
 	private MainWindow mainWindow;
 
-	public AddGroupDialog(JFrame parent) {
+	public JDialogAddGroup(JFrame parent) {
 
 		super(parent, "Add Group", true); // Устанавливаем заголовок и режим модальности
 		setSize(300, 150);

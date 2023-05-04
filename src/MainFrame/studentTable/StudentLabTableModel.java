@@ -122,14 +122,18 @@ public class StudentLabTableModel extends AbstractTableModel {
 	}
 
 	public void sortByGrade(boolean isInc) {
-		students.sort(Comparator.comparingDouble(Student::getAverageGrade)
-				.thenComparing(Student::getFullName, isInc ? Comparator.naturalOrder() : Comparator.reverseOrder()));
-		fireTableDataChanged();
+		students.sort((o1, o2) -> {
+			int result = Double.compare(o1.getAverageGrade(),o2.getAverageGrade());
+			return isInc?result:result*(-1);
+		});
+				fireTableDataChanged();
 	}
 
 	public void sortByAttendance(boolean isInc) {
-		students.sort(Comparator.comparingInt(Student::getCountLabAttendance)
-				.thenComparing(Student::getFullName, isInc ? Comparator.naturalOrder() : Comparator.reverseOrder()));
+		students.sort((o1, o2) -> {
+			int result = Integer.compare(o1.getAttendanceList().size(),o2.getAttendanceList().size());
+			return isInc?result:result*(-1);
+		});
 		fireTableDataChanged();
 	}
 

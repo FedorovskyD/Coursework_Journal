@@ -3,7 +3,7 @@ package MainFrame;
 import MainFrame.studentTable.StudentLabTableModel;
 import MainFrame.studentTable.StudentTable;
 import database.dao.impl.GroupDaoImpl;
-import dialogs.studentCard.StudentCardDialog;
+import dialogs.studentCard.JDialogStudentCard;
 import entity.Group;
 import entity.Lab;
 import entity.Student;
@@ -20,8 +20,8 @@ public class MainWindow extends JFrame {
 	private final JButton btnAddStudent, btnAddLab,
 			btnAddGroup, btnDeleteGroup, btnAboutAuthor;
 	private final StudentTable studentTable;
-	protected StudentCardDialog studentCardDialog;
-	private final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc,radioBtnDec;
+	protected JDialogStudentCard jDialogStudentCard;
+	private final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc, radioBtnDec;
 	private final JComboBox<Group> cmbGroupNumber;
 	private final JComboBox<Lab> currDateCmb;
 	private final JComboBox<String> cmbSort;
@@ -40,43 +40,12 @@ public class MainWindow extends JFrame {
 		radioBtnInc = new JRadioButton("в порядке возрастания");
 		radioBtnDec = new JRadioButton("в поряке убывания");
 		JLabel lblSort = new JLabel("Сортировать по: ");
-		cmbSort = new JComboBox<>(new DefaultComboBoxModel<>(new String[]{"алфавиту", "среднему баллу","посещаемости"}));
-		cmbSort.setPreferredSize(new Dimension(100,30));
+		cmbSort = new JComboBox<>(new DefaultComboBoxModel<>(new String[]{"алфавиту", "среднему баллу", "посещаемости"}));
+		cmbSort.setPreferredSize(new Dimension(100, 30));
 		cmbSort.setMaximumSize(cmbSort.getPreferredSize());
 		radioBtnLab.setSelected(true);
-		radioBtnLab.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioBtnLecture.setSelected(false);
-			}
-		});
+		radioBtnLab.addActionListener(e -> radioBtnLecture.setSelected(false));
 		radioBtnInc.setSelected(true);
-		radioBtnInc.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioBtnDec.setSelected(false);
-				updateStudentTable();
-			}
-		});
-		radioBtnDec.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioBtnInc.setSelected(false);
-				updateStudentTable();
-			}
-		});
-		radioBtnLecture.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioBtnLab.setSelected(false);
-			}
-		});
-		cmbSort.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				updateStudentTable();
-			}
-		});
 		// Создание меню
 		JMenu menuFile = new JMenu("Файл");
 		JMenuBar menuBar = new JMenuBar();
@@ -110,7 +79,7 @@ public class MainWindow extends JFrame {
 		currDateCmb.setMinimumSize(currDateCmb.getPreferredSize());
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
 		//Создаем таблицу для отображения списка студентов
-		studentTable = new StudentTable((Group)cmbGroupNumber.getSelectedItem());
+		studentTable = new StudentTable((Group) cmbGroupNumber.getSelectedItem());
 		updateStudentTable();
 		JScrollPane scrollPane = new JScrollPane(studentTable);
 		//Задаем расположение раннее заданным компонентам
@@ -173,7 +142,7 @@ public class MainWindow extends JFrame {
 						.addComponent(btnAddLab))
 		);
 		//Создаем карточку для отображения информации о студенте
-		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
+		jDialogStudentCard = new JDialogStudentCard(this, "Карточка студента");
 		// Добавление слушателей
 		mainWindowListener = new MainWindowListener(this);
 		btnAddStudent.addActionListener(mainWindowListener);
@@ -183,17 +152,29 @@ public class MainWindow extends JFrame {
 		btnAddLab.addActionListener(mainWindowListener);
 		studentTable.getSelectionModel().addListSelectionListener(mainWindowListener);
 		cmbGroupNumber.addActionListener(mainWindowListener);
-		SortActionListener sortActionListener = new SortActionListener();
-		radioBtnInc.addActionListener(sortActionListener);
-		radioBtnDec.addActionListener(sortActionListener);
-		cmbSort.addActionListener(sortActionListener);
+		radioBtnInc.addActionListener(e -> {
+			radioBtnDec.setSelected(false);
+			sortTable();
+		});
+		radioBtnDec.addActionListener(e -> {
+			radioBtnInc.setSelected(false);
+			sortTable();
+		});
+		radioBtnLecture.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				radioBtnLab.setSelected(false);
+			}
+		});
+		cmbSort.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				sortTable();
+			}
+		});
+		KeyEventDispatcher
 	}
-	private class SortActionListener implements ActionListener{
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-		}
-	}
 	public JComboBox<Group> getCmbGroupNumber() {
 		return cmbGroupNumber;
 	}
@@ -209,7 +190,7 @@ public class MainWindow extends JFrame {
 	public Student getCurrentStudent() {
 		int selectedRow = studentTable.getSelectedRow();
 		if (selectedRow != -1)
-		return ((StudentLabTableModel) studentTable.getModel()).getStudentAt(studentTable.getSelectedRow());
+			return studentTable.getStudentAt(studentTable.getSelectedRow());
 		return null;
 	}
 
@@ -245,25 +226,31 @@ public class MainWindow extends JFrame {
 		return radioBtnLab;
 	}
 
-	public StudentCardDialog getStudentCardDialog() {
-		return studentCardDialog;
+	public JDialogStudentCard getStudentCardDialog() {
+		return jDialogStudentCard;
 	}
 
 	public void updateStudentTable() {
-		StudentLabTableModel studentTableModel = studentTable.getStudentTableModel();
-		sortTable();
-		studentTableModel.setStudents(getCurrentGroup().getStudents());
+		studentTable.getStudentTableModel().setStudents(getCurrentGroup().getStudents());
 		SwingUtilities.invokeLater(studentTable::repaint);
 	}
-	public void sortTable(){
+
+	public void sortTable() {
 		boolean isInc = radioBtnInc.isSelected();
 		String option = (String) cmbSort.getSelectedItem();
 		switch (Objects.requireNonNull(option)) {
-			case "алфавиту" -> studentTable.getStudentTableModel().sortByAlphabet(isInc);
-			case "среднему баллу" -> studentTable.getStudentTableModel().sortByGrade(isInc);
-			case "посещаемости" -> studentTable.getStudentTableModel().sortByAttendance(isInc);
+			case "алфавиту":
+				studentTable.getStudentTableModel().sortByAlphabet(isInc);
+				break;
+			case "среднему баллу":
+				studentTable.getStudentTableModel().sortByGrade(isInc);
+				break;
+			case "посещаемости":
+				studentTable.getStudentTableModel().sortByAttendance(isInc);
+				break;
 		}
 	}
+
 	public void updateGroupCmb() {
 		cmbGroupNumber.setModel(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
 	}

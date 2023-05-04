@@ -159,6 +159,7 @@ public class StudentDaoImpl implements StudentDao {
 			student.setEmail(rs.getString("Email"));
 			student.setPhotoPath(rs.getString("PhotoPath"));
 			student.setTelephone(rs.getString("Telephone"));
+			student.setGroup(rs.getInt("GroupID"));
 			student.setGradeList(GradeDaoImpl.getInstance().getGradesByStudent(student));
 			student.setAttendanceList(AttendanceDaoImpl.getInstance().getAttendancesByStudent(student));
 			students.add(student);

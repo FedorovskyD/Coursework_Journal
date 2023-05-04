@@ -10,12 +10,12 @@ import entity.Student;
 import javax.swing.*;
 import java.util.List;
 
-public class DeleteGroupDialog extends JDialog {
+public class JDialogDeleteGroup extends JDialog {
 
 	private final JComboBox<Group> groupComboBox;
 	private final MainWindow mainWindow;
 
-	public DeleteGroupDialog(JFrame parent) {
+	public JDialogDeleteGroup(JFrame parent) {
 		super(parent, "Delete Group", true);
 		mainWindow = (MainWindow) parent;
 

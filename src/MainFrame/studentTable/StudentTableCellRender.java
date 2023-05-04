@@ -9,7 +9,7 @@ import java.awt.*;
  */
 public class StudentTableCellRender extends DefaultTableCellRenderer {
 
-	private static final Color LIGHT_GRAY = new Color(240, 240, 240);
+	private static final Color LIGHT_GRAY = new Color(154, 150, 150);
 	private static final Color SELECTED_COLOR = new Color(255, 255, 150);
 	private static final Color ATTENDANCE_COLOR = new Color(144, 238, 144);
 

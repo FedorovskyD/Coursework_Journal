@@ -10,7 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 
-public class AddStudentDialog extends JDialog {
+public class JDialogAddStudent extends JDialog {
 	private JTextField firstNameField;
 	private JTextField lastNameField;
 	private JTextField middleNameField;
@@ -32,7 +32,7 @@ public class AddStudentDialog extends JDialog {
 		return okButton;
 	}
 
-	public AddStudentDialog(JFrame parent) {
+	public JDialogAddStudent(JFrame parent) {
 		super(parent, "Добавить студента", true);
 		mainWindow = (MainWindow) parent;
 		photoPath = new File("photos/default.jpg");
@@ -111,7 +111,7 @@ public class AddStudentDialog extends JDialog {
 		photoButton = new JButton("Выбрать файл");
 		photoButton.addActionListener(e -> {
 			JFileChooser fileChooser = new JFileChooser();
-			int result = fileChooser.showOpenDialog(AddStudentDialog.this);
+			int result = fileChooser.showOpenDialog(JDialogAddStudent.this);
 			if (result == JFileChooser.APPROVE_OPTION) {
 				photoPath = fileChooser.getSelectedFile();
 
@@ -150,8 +150,8 @@ public class AddStudentDialog extends JDialog {
 		constraints.gridx = 2;
 		constraints.gridy = 7;
 		panel.add(cancelButton, constraints);
-		AddStudentDialogListener addStudentDialogListener = new AddStudentDialogListener(this);
-		okButton.addActionListener(addStudentDialogListener);
+		ListenerJDialogAddStudent listenerJDialogAddStudent = new ListenerJDialogAddStudent(this);
+		okButton.addActionListener(listenerJDialogAddStudent);
 
 		getContentPane().add(panel, BorderLayout.CENTER);
 

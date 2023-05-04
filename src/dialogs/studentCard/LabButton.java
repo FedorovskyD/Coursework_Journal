@@ -16,7 +16,7 @@ public class LabButton extends JButton {
 	private final Lab lab; //Лабораторная работа за которую отвечает данная кнопка
 	private boolean isSelected; //Показывает активна ли данная кнопка
 
-	public LabButton(StudentCardDialog owner, Lab lab, boolean isSelected) {
+	public LabButton(JDialogStudentCard owner, Lab lab, boolean isSelected) {
 		this.lab = lab;
 		this.isSelected = isSelected;
 		//Получаем дату лабораторной работы для отображения на кнопке
@@ -63,6 +63,7 @@ public class LabButton extends JButton {
 							System.out.println("Запись о посещении добавлена");
 							setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
 							setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
+							owner.mainWindow.updateStudentTable();
 						}
 					} else if (e.getKeyCode() == KeyEvent.VK_SPACE && color.equals(Color.GREEN)) {
 						int choice = JOptionPane.showConfirmDialog(null, "Вы уверены, что хотите удалить запись о посещении?",
@@ -84,6 +85,7 @@ public class LabButton extends JButton {
 									owner.updateGpa(owner.currStudent);
 									setBackground(Color.GRAY);
 									setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
+									owner.mainWindow.updateStudentTable();
 								}
 							}
 						}
@@ -113,4 +115,3 @@ public class LabButton extends JButton {
 		isSelected = selected;
 	}
 }
-

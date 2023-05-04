@@ -4,11 +4,10 @@ import MainFrame.MainWindow;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 
-public class AboutDialog extends JDialog {
+public class JDialogAbout extends JDialog {
     private MainWindow mainWindow;
-    public AboutDialog(JFrame parent) {
+    public JDialogAbout(JFrame parent) {
         super(parent, "Delete Group", true);
         mainWindow = (MainWindow) parent;
 
@@ -70,7 +69,7 @@ public class AboutDialog extends JDialog {
 
 
 //    public static void main(String[] args) {
-//        AboutDialog aboutauthor=new AboutDialog();
+//        JDialogAbout aboutauthor=new JDialogAbout();
 //
 //        aboutauthor.setTitle("Authors");
 //    aboutauthor.setSize(800,600);
