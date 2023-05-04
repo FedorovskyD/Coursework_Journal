@@ -246,6 +246,8 @@ public class MainWindow extends JFrame {
 			int index = studentTable.getStudentTableModel().getRowIndex(currStudent);
 			if(index!=-1) {
 				studentTable.setRowSelectionInterval(index,index);
+				studentTable.revalidate();
+				studentTable.repaint();
 			}
 		}
 	}

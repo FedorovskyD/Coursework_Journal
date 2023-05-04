@@ -43,6 +43,7 @@ public class JDialogStudentCard extends JDialog {
 
 	public JDialogStudentCard(JFrame owner, String title) {
 		super(owner, title, true);
+		setLocationRelativeTo(null);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(new Dimension(1000, 800));
 		mainWindow = (MainWindow) owner;
@@ -189,7 +190,6 @@ public class JDialogStudentCard extends JDialog {
 		} else {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
-		setLocationRelativeTo(mainWindow);
 		calendarPanel.removeAll();
 		createLabButtons(mainWindow.getCurrentGroup().getLabs());
 	}
