@@ -1,6 +1,7 @@
 package entity;
 import entity.Student;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Group {
@@ -16,7 +17,10 @@ public class Group {
 		this.labs = labs;
 	}
 
-	public Group() {}
+	public Group() {
+		students = new ArrayList<>();
+		labs = new ArrayList<>();
+	}
 
 	public Long getId() {
 		return id;

@@ -19,7 +19,7 @@ import java.util.Objects;
 public class MainWindow extends JFrame {
 	private final JButton btnAddStudent, btnAddLab,
 			btnAddGroup, btnDeleteGroup, btnAboutAuthor;
-	private final StudentTable studentTable;
+	protected StudentTable studentTable;
 	protected JDialogStudentCard jDialogStudentCard;
 	private final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc, radioBtnDec;
 	private final JComboBox<Group> cmbGroupNumber;
@@ -27,6 +27,7 @@ public class MainWindow extends JFrame {
 	private final JComboBox<String> cmbSort;
 	private final List<Group> groups;
 	private final MainWindowListener mainWindowListener;
+	protected final JScrollPane scrollPane;
 
 	private MainWindow() {
 		//Получаем данные о группах из базы данных
@@ -81,7 +82,9 @@ public class MainWindow extends JFrame {
 		//Создаем таблицу для отображения списка студентов
 		studentTable = new StudentTable((Group) cmbGroupNumber.getSelectedItem());
 		updateStudentTable();
-		JScrollPane scrollPane = new JScrollPane(studentTable);
+		sortTable();
+		scrollPane = new JScrollPane(studentTable);
+		studentTable.setPreferredScrollableViewportSize(new Dimension(800, 200));
 		//Задаем расположение раннее заданным компонентам
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(groupLayout);
@@ -160,19 +163,8 @@ public class MainWindow extends JFrame {
 			radioBtnInc.setSelected(false);
 			sortTable();
 		});
-		radioBtnLecture.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				radioBtnLab.setSelected(false);
-			}
-		});
-		cmbSort.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				sortTable();
-			}
-		});
-		KeyEventDispatcher
+		radioBtnLecture.addActionListener(e -> radioBtnLab.setSelected(false));
+		cmbSort.addActionListener(e -> sortTable());
 	}
 
 	public JComboBox<Group> getCmbGroupNumber() {
@@ -231,28 +223,39 @@ public class MainWindow extends JFrame {
 	}
 
 	public void updateStudentTable() {
-		studentTable.getStudentTableModel().setStudents(getCurrentGroup().getStudents());
-		SwingUtilities.invokeLater(studentTable::repaint);
+		int selectedRow = studentTable.getSelectedRow();
+		Student currStudent = null;
+		if(selectedRow!=-1) {
+			currStudent = studentTable.getStudentAt(selectedRow);
+		}
+		studentTable.setModel(new StudentLabTableModel((Group) cmbGroupNumber.getSelectedItem()));
+		sortTable();
+		if(currStudent!=null){
+			int index = studentTable.getStudentTableModel().getRowIndex(currStudent);
+			if(index!=-1) {
+				studentTable.setRowSelectionInterval(index,index);
+			}
+		}
+		studentTable.repaint();
 	}
 
 	public void sortTable() {
 		boolean isInc = radioBtnInc.isSelected();
 		String option = (String) cmbSort.getSelectedItem();
 		switch (Objects.requireNonNull(option)) {
-			case "алфавиту":
-				studentTable.getStudentTableModel().sortByAlphabet(isInc);
-				break;
-			case "среднему баллу":
-				studentTable.getStudentTableModel().sortByGrade(isInc);
-				break;
-			case "посещаемости":
-				studentTable.getStudentTableModel().sortByAttendance(isInc);
-				break;
+			case "алфавиту" -> studentTable.getStudentTableModel().sortByAlphabet(isInc);
+			case "среднему баллу" -> studentTable.getStudentTableModel().sortByGrade(isInc);
+			case "посещаемости" -> studentTable.getStudentTableModel().sortByAttendance(isInc);
 		}
 	}
 
 	public void updateGroupCmb() {
 		cmbGroupNumber.setModel(new DefaultComboBoxModel<>(groups.toArray(new Group[0])));
+	}
+
+	public void updateCurrDateCmb() {
+		Group currGroup = (Group) cmbGroupNumber.getSelectedItem();
+		currDateCmb.setModel(new DefaultComboBoxModel<>(currGroup.getLabs().toArray(new Lab[0])));
 	}
 
 	public List<Group> getGroups() {
@@ -266,6 +269,7 @@ public class MainWindow extends JFrame {
 	public JComboBox<String> getCmbSort() {
 		return cmbSort;
 	}
+
 
 	public static void main(String[] args) {
 		JFrame mainFrame = new MainWindow();

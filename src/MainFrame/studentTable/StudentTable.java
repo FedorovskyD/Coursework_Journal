@@ -11,11 +11,9 @@ import java.awt.event.KeyEvent;
  * проверен
  */
 public class StudentTable extends JTable {
-	private final StudentLabTableModel model;
 
 	public StudentTable(Group group) {
 		super(new StudentLabTableModel(group));
-		model = (StudentLabTableModel) getModel();
 		setDefaultRenderer(Object.class, new StudentTableCellRender());
 		setRowHeight(35);
 		disableArrowKeys();
@@ -32,10 +30,10 @@ public class StudentTable extends JTable {
 		});
 	}
 	public Student getStudentAt(int selectedRow) {
-		return model.getStudentAt(selectedRow);
+		return getStudentTableModel().getStudentAt(selectedRow);
 	}
 
 	public StudentLabTableModel getStudentTableModel() {
-		return model;
+		return (StudentLabTableModel) getModel();
 	}
 }

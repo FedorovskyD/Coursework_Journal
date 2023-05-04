@@ -1,5 +1,6 @@
 package dialogs;
 
+import MainFrame.studentTable.StudentLabTableModel;
 import database.dao.impl.LabDaoImpl;
 import entity.Group;
 import entity.Lab;
@@ -15,10 +16,16 @@ public class ListenerJDialogAddLab implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == jDialogAddLab.addButton) {
-			long groupID = ((Group) jDialogAddLab.getGroupComboBox().getSelectedItem()).getId();
+			Group group = ((Group) jDialogAddLab.getGroupComboBox().getSelectedItem());
 			Lab lab = new Lab(jDialogAddLab.getRoomField().getText(),
-					jDialogAddLab.getDateChooser().getDate(),groupID, jDialogAddLab.getNameField().getText());
-			LabDaoImpl.getInstance().save(lab);
+					jDialogAddLab.getDateChooser().getDate(),group.getId(), jDialogAddLab.getNameField().getText());
+			long labID = LabDaoImpl.getInstance().save(lab);
+			if(labID!= -1){
+				lab.setId(labID);
+				group.getLabs().add(lab);
+				System.out.println("Лабораторная добавлена");
+				jDialogAddLab.mainWindow.getStudentTable().setModel(new StudentLabTableModel(group));
+			}
 		}
 	}
 }

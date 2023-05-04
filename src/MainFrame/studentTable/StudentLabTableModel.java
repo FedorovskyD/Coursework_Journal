@@ -58,10 +58,7 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 	public void setStudents(List<Student> students) {
 		this.students = students;
-	}
-
-	public void setLabs(List<Lab> labs) {
-		this.labs = labs;
+		fireTableDataChanged();
 	}
 
 	private JPanel getLabPanel(int rowIndex, int columnIndex) {
@@ -94,7 +91,10 @@ public class StudentLabTableModel extends AbstractTableModel {
 		}
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-		return dateFormat.format(labs.get(columnIndex - FIRST_LAB_COLUMN_INDEX).getDate());
+		if(columnIndex - FIRST_LAB_COLUMN_INDEX < labs.size()){
+			return dateFormat.format(labs.get(columnIndex - FIRST_LAB_COLUMN_INDEX).getDate());
+		}
+		return "";
 	}
 
 
@@ -110,6 +110,15 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 		return JPanel.class;
 	}
+	public int getRowIndex(Student student) {
+		for (int i = 0; i < students.size(); i++) {
+			if (students.get(i).equals(student)) {
+				return i;
+			}
+		}
+		return -1; // если студент не найден, вернуть -1
+	}
+
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {

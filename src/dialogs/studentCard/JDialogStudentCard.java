@@ -10,8 +10,6 @@ import utils.PhotoUtils;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
@@ -36,7 +34,6 @@ public class JDialogStudentCard extends JDialog {
 	protected final JButton deleteButton, editButton,btnEditPhoto;
 	protected final JPanel calendarPanel;
 	protected LabButton currLabButton;
-	private final List<LabButton> labButtons;
 	protected final MainWindow mainWindow;
 
 
@@ -45,7 +42,6 @@ public class JDialogStudentCard extends JDialog {
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(new Dimension(1000, 800));
 		mainWindow = (MainWindow) owner;
-		labButtons = new ArrayList<>();
 		BoxLayout layout1 = new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS);
 		getContentPane().setLayout(layout1);
 		// Создание панели информации о студенте
@@ -79,24 +75,21 @@ public class JDialogStudentCard extends JDialog {
 		deleteButton.setVisible(false);
 		btnEditPhoto = new JButton("Изменить фото");
 		btnEditPhoto.setVisible(false);
-		btnEditPhoto.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				int result = fileChooser.showOpenDialog(null);
-				if (result == JFileChooser.APPROVE_OPTION) {
-					File selectedFile = fileChooser.getSelectedFile();
-					try {
-						PhotoUtils.getInstance().savePhoto(currStudent,selectedFile);
-						BufferedImage image = ImageIO.read(new File(currStudent.getPhotoPath()));
-						// Масштабируем изображение и создаем иконку
-						ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(),
-								photoLabel.getHeight(), Image.SCALE_SMOOTH));
-						// Устанавливаем иконку изображения в JLabel
-						photoLabel.setIcon(icon);
-					} catch (IOException ex) {
-						System.out.println("Не удалось сохранить фото");
-					}
+		btnEditPhoto.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+			int result = fileChooser.showOpenDialog(null);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				File selectedFile = fileChooser.getSelectedFile();
+				try {
+					PhotoUtils.getInstance().savePhoto(currStudent,selectedFile);
+					BufferedImage image = ImageIO.read(new File(currStudent.getPhotoPath()));
+					// Масштабируем изображение и создаем иконку
+					ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(),
+							photoLabel.getHeight(), Image.SCALE_SMOOTH));
+					// Устанавливаем иконку изображения в JLabel
+					photoLabel.setIcon(icon);
+				} catch (IOException ex) {
+					System.out.println("Не удалось сохранить фото");
 				}
 			}
 		});
@@ -201,8 +194,8 @@ public class JDialogStudentCard extends JDialog {
 		calendarPanel.setPreferredSize(new Dimension(800, 500));
 		calendarPanel.setMinimumSize(calendarPanel.getPreferredSize());
 		calendarPanel.setMaximumSize(calendarPanel.getPreferredSize());
-
-		createLabButtons(mainWindow.getCurrentGroup().getLabs());
+		currStudent = new Student();
+		updateStudentCard(currStudent);
 		add(infoPanel);
 		add(markPanel);
 		add(scrollPane);
@@ -217,6 +210,7 @@ public class JDialogStudentCard extends JDialog {
 				mainWindow.getStudentTable().clearSelection();
 				setVisible(false);
 				mainWindow.updateStudentTable();
+				mainWindow.sortTable();
 			}else {
 					JOptionPane.showMessageDialog(mainWindow, "Перед закрытием карточки нужно завершить редактирование");
 					setVisible(true);
@@ -243,7 +237,7 @@ public class JDialogStudentCard extends JDialog {
 		} else {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
-		updateLabButtons(student);
+		createLabButtons(mainWindow.getCurrentGroup().getLabs());
 		getContentPane().repaint();
 
 	}
@@ -252,21 +246,10 @@ public class JDialogStudentCard extends JDialog {
 		for (Lab lab : labs) {
 			// Создаем новую кнопку с датой и оценкой студент
 			LabButton labButton = new LabButton(this, lab, false);
-			labButtons.add(labButton);
 			labButton.setToolTipText("<html>"+lab.getLabName()+
 					"<br>"+lab.getClassroom()+
 					"</html>");
-		}
-		int remaining = 25 - labs.size();
-		for (int i = 1; i <= remaining; i++) {
-			JPanel filler = new JPanel();
-			getCalendarPanel().add(filler);
-		}
-	}
-
-	private void updateLabButtons(Student student) {
-		for (LabButton labButton : labButtons) {
-			Grade grade = student.getLabGrade(labButton.getLab());
+			Grade grade = currStudent.getLabGrade(labButton.getLab());
 			if (grade != null) {
 				labButton.updateGrade(String.valueOf(grade.getGrade()));
 			} else {
@@ -285,8 +268,14 @@ public class JDialogStudentCard extends JDialog {
 				labButton.setBackground(Color.GRAY);
 			}
 			calendarPanel.add(labButton);
+
+			SwingUtilities.invokeLater(currLabButton::requestFocus);
 		}
-		SwingUtilities.invokeLater(currLabButton::requestFocus);
+		int remaining = 25 - labs.size();
+		for (int i = 1; i <= remaining; i++) {
+			JPanel filler = new JPanel();
+			getCalendarPanel().add(filler);
+		}
 	}
 
 	public JButton getDeleteButton() {

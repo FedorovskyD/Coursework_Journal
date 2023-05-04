@@ -1,5 +1,6 @@
 package dialogs;
 
+import MainFrame.MainWindow;
 import com.toedter.calendar.JDateChooser;
 import database.dao.impl.GroupDaoImpl;
 import entity.Group;
@@ -16,9 +17,11 @@ public class JDialogAddLab extends JDialog {
 	private JDateChooser dateChooser;
 	protected final JButton addButton, cancelButton;
 	private boolean isAddButtonPressed = false;
+	protected final MainWindow mainWindow;
 
 	public JDialogAddLab(JFrame parent) {
 		super(parent, "Добавление лабораторного занятия", true);
+		mainWindow = (MainWindow) parent;
 
 		nameLabel = new JLabel("Название:");
 		roomLabel = new JLabel("Аудитория:");
@@ -28,7 +31,8 @@ public class JDialogAddLab extends JDialog {
 		nameField = new JTextField(20);
 		roomField = new JTextField(20);
 
-		groupComboBox = new JComboBox<>(GroupDaoImpl.getInstance().findAll().toArray(new Group[0]));
+		groupComboBox = new JComboBox<>(new DefaultComboBoxModel<>(mainWindow.getGroups().toArray(new Group[0])));
+		groupComboBox.setSelectedItem(mainWindow.getCurrentGroup());
 		dateChooser = new JDateChooser(new Date());
 
 		addButton = new JButton("Добавить");

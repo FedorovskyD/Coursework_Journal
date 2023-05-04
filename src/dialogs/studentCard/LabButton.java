@@ -59,7 +59,7 @@ public class LabButton extends JButton {
 							attendance.setId(id);
 							owner.currStudent.getAttendanceList().add(attendance);
 							owner.mainWindow.updateStudentTable();
-							SwingUtilities.invokeLater(()->owner.mainWindow.getStudentTable().repaint());
+							owner.mainWindow.getStudentTable().repaint();
 							System.out.println("Запись о посещении добавлена");
 							setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
 							setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
@@ -93,6 +93,8 @@ public class LabButton extends JButton {
 				}
 			}
 		});
+		setPreferredSize(new Dimension(40,60));
+		setMaximumSize(getPreferredSize());
 	}
 	public void updateGrade(String grade) {
 		setText("<html>" + getStringLabDate() + "<br> Оценка: " + grade + "</html>");
