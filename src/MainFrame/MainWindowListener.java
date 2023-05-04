@@ -22,29 +22,30 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 	private final KeyEventDispatcher keyEventDispatcher;
 
 	public MainWindowListener(MainWindow mainWindow) {
-		this.mainWindow = mainWindow;
-		keyEventDispatcher = e -> {
+		this.mainWindow = mainWindow;keyEventDispatcher = e -> {
 			if (e.getID() == KeyEvent.KEY_RELEASED && (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN)) {
-				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
-					// получаем текущую выделенную строку в таблице
-					StudentTable studentTable = mainWindow.getStudentTable();
-					int selectedRow = studentTable.getSelectedRow();
-					// вычисляем номер следующей строки в зависимости от нажатой клавиши
-					if (selectedRow != -1) {
-						int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
-						// проверяем, что следующая строка существует
-						if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
-							// обновляем выделение строки в таблице
-							studentTable.setRowSelectionInterval(nextRow, nextRow);
-							// прокручиваем таблицу к следующей строке
-							studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
-						}
+				StudentTable studentTable = mainWindow.getStudentTable();
+				int selectedRow = studentTable.getSelectedRow();
+
+				if (selectedRow != -1) {
+					int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
+
+					while (nextRow >= 0 && nextRow < studentTable.getRowCount() && !studentTable.getStudentTableModel().isCellSelectable(nextRow, 0)) {
+						nextRow += e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1;
+					}
+
+					if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
+						studentTable.setRowSelectionInterval(nextRow, nextRow);
+						studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
 					}
 				}
 			}
 			return false;
 		};
+
 		enableKeyboardListener();
+
+
 	}
 
 	@Override
@@ -89,18 +90,26 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getSource() == mainWindow.studentTable.getSelectionModel()) {
-			if (mainWindow.studentTable.getSelectedRow() != -1) {
-				int selectedRowIndex = mainWindow.studentTable.getSelectedRow();
+			int selectedRowIndex = mainWindow.studentTable.getSelectedRow();
+			if (selectedRowIndex != -1 && mainWindow.studentTable.getStudentTableModel().isCellSelectable(selectedRowIndex, 0)) {
 				Student selectedStudent = mainWindow.studentTable.getStudentAt(selectedRowIndex);
 				mainWindow.studentTable.repaint();
-				if(mainWindow.currStudent != selectedStudent) {
+				if (mainWindow.currStudent != selectedStudent) {
 					mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
-					mainWindow.jDialogStudentCard.setVisible(true);
+					if (!mainWindow.jDialogStudentCard.isVisible()) {
+						mainWindow.jDialogStudentCard.setVisible(true);
+					}
 				}
-
+			} else {
+				// Выбранная ячейка не может быть выбрана пользователем, поэтому выбираем первую доступную ячейку
+				int row = mainWindow.studentTable.getStudentTableModel().getRowIndex(mainWindow.currStudent);
+				if (row != -1) {
+					mainWindow.studentTable.setRowSelectionInterval(row, row);
+				}
 			}
 		}
 	}
+
 
 	public void enableKeyboardListener() {
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyEventDispatcher);
