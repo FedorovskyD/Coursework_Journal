@@ -91,7 +91,7 @@ public class StudentLabTableModel extends AbstractTableModel {
 		}
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-		if(columnIndex - FIRST_LAB_COLUMN_INDEX < labs.size()){
+		if (columnIndex - FIRST_LAB_COLUMN_INDEX < labs.size()) {
 			return dateFormat.format(labs.get(columnIndex - FIRST_LAB_COLUMN_INDEX).getDate());
 		}
 		return "";
@@ -110,6 +110,7 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 		return JPanel.class;
 	}
+
 	public int getRowIndex(Student student) {
 		for (int i = 0; i < students.size(); i++) {
 			if (students.get(i).equals(student)) {
@@ -132,16 +133,16 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 	public void sortByGrade(boolean isInc) {
 		students.sort((o1, o2) -> {
-			int result = Double.compare(o1.getAverageGrade(),o2.getAverageGrade());
-			return isInc?result:result*(-1);
+			int result = Double.compare(o1.getAverageGrade(), o2.getAverageGrade());
+			return isInc ? result : result * (-1);
 		});
-				fireTableDataChanged();
+		fireTableDataChanged();
 	}
 
 	public void sortByAttendance(boolean isInc) {
 		students.sort((o1, o2) -> {
-			int result = Integer.compare(o1.getAttendanceList().size(),o2.getAttendanceList().size());
-			return isInc?result:result*(-1);
+			int result = Integer.compare(o1.getAttendanceList().size(), o2.getAttendanceList().size());
+			return isInc ? result : result * (-1);
 		});
 		fireTableDataChanged();
 	}

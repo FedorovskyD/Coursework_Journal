@@ -1,21 +1,25 @@
 package dialogs.studentCard;
 
 import MainFrame.MainWindow;
+import database.dao.impl.AttendanceDaoImpl;
 import database.dao.impl.GradeDaoImpl;
+import entity.Attendance;
 import entity.Grade;
 import entity.Lab;
 import entity.Student;
+import utils.Constants;
 import utils.PhotoUtils;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
 
 /**
@@ -48,7 +52,6 @@ public class JDialogStudentCard extends JDialog {
 		JPanel infoPanel = new JPanel();
 		// Создаем компоненты
 		photoLabel = new JLabel(new ImageIcon("photos/default.jpg"));
-		//photoLabel.setBorder(new LineBorder(Color.orange,10,true));
 		JLabel nameLabel = new JLabel("ФИО:");
 		Dimension txtFieldDimension = new Dimension(300, 20);
 		txtFullName = new JTextField(20);
@@ -75,24 +78,6 @@ public class JDialogStudentCard extends JDialog {
 		deleteButton.setVisible(false);
 		btnEditPhoto = new JButton("Изменить фото");
 		btnEditPhoto.setVisible(false);
-		btnEditPhoto.addActionListener(e -> {
-			JFileChooser fileChooser = new JFileChooser();
-			int result = fileChooser.showOpenDialog(null);
-			if (result == JFileChooser.APPROVE_OPTION) {
-				File selectedFile = fileChooser.getSelectedFile();
-				try {
-					PhotoUtils.getInstance().savePhoto(currStudent,selectedFile);
-					BufferedImage image = ImageIO.read(new File(currStudent.getPhotoPath()));
-					// Масштабируем изображение и создаем иконку
-					ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(),
-							photoLabel.getHeight(), Image.SCALE_SMOOTH));
-					// Устанавливаем иконку изображения в JLabel
-					photoLabel.setIcon(icon);
-				} catch (IOException ex) {
-					System.out.println("Не удалось сохранить фото");
-				}
-			}
-		});
 		btnEditPhoto.setMaximumSize(new Dimension(187, 25));
 		btnEditPhoto.setPreferredSize(btnEditPhoto.getMaximumSize());
 		btnEditPhoto.setMinimumSize(btnEditPhoto.getMaximumSize());
@@ -152,39 +137,8 @@ public class JDialogStudentCard extends JDialog {
 		infoPanel.setPreferredSize(new Dimension(1000, 300));
 		infoPanel.setMinimumSize(infoPanel.getPreferredSize());
 		infoPanel.setMaximumSize(infoPanel.getPreferredSize());
-		JPanel markPanel = new JPanel(new FlowLayout());
-		for (int i = 0; i < 11; i++) {
-			JButton jButton = new JButton(String.valueOf(i));
-			jButton.addActionListener(e -> {
-				if (currLabButton.getBackground().equals(Color.GREEN)) {
-					currLabButton.updateGrade(jButton.getText());
-					Grade grade = currStudent.getLabGrade(currLabButton.getLab());
-					if (grade == null) {
-						long id;
-						Grade grade1 = new Grade(currLabButton.getLab().getId(),
-								currStudent.getId(), Integer.parseInt(jButton.getText()));
-						if ((id = GradeDaoImpl.getInstance().save(grade1)) != -1) {
-							System.out.println("Оценка добавлена");
-							grade1.setId(id);
-							currStudent.getGradeList().add(grade1);
-							mainWindow.updateStudentTable();
-						}
-					} else {
-						grade.setGrade(Integer.parseInt(jButton.getText()));
-						mainWindow.updateStudentTable();
-						if (GradeDaoImpl.getInstance().update(grade)) {
-							System.out.println("Оценка изменена");
-						}
-					}
-					txtGpa.setText(String.valueOf(currStudent.getAverageGrade()));
-				} else {
-					JOptionPane.showMessageDialog(mainWindow, "Перед выставлением оценки нужно отметить студента");
-				}
-				SwingUtilities.invokeLater(currLabButton::requestFocus);
-			});
-			jButton.setPreferredSize(new Dimension(80, 30));
-			markPanel.add(jButton);
-		}
+		JPanel gradePanel = new JPanel(new FlowLayout());
+		createGradeButtons(gradePanel);
 		// Добавление панели календаря
 		calendarPanel = new JPanel(new GridLayout(0, 5, 5, 5));
 		JScrollPane scrollPane = new JScrollPane(calendarPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -194,35 +148,33 @@ public class JDialogStudentCard extends JDialog {
 		calendarPanel.setPreferredSize(new Dimension(800, 500));
 		calendarPanel.setMinimumSize(calendarPanel.getPreferredSize());
 		calendarPanel.setMaximumSize(calendarPanel.getPreferredSize());
-		currStudent = new Student();
-		updateStudentCard(currStudent);
 		add(infoPanel);
-		add(markPanel);
+		add(gradePanel);
 		add(scrollPane);
-
 		ListenerJDialogStudentCard listenerJDialogStudentCard = new ListenerJDialogStudentCard(this);
+		btnEditPhoto.addActionListener(e -> {
+			editPhoto();
+		});
 		deleteButton.addActionListener(listenerJDialogStudentCard);
 		editButton.addActionListener(listenerJDialogStudentCard);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if (editButton.getText().equalsIgnoreCase("редактировать")) {
-				mainWindow.getStudentTable().clearSelection();
+				mainWindow.refreshStudentTable();
 				setVisible(false);
-				mainWindow.updateStudentTable();
-				mainWindow.sortTable();
 			}else {
 					JOptionPane.showMessageDialog(mainWindow, "Перед закрытием карточки нужно завершить редактирование");
 					setVisible(true);
 				}
 			}
 		});
+
 	}
 
 	public void updateStudentCard(Student student) {
+		if(student == null)return;
 		currStudent = student;
-		this.setLocationRelativeTo(mainWindow);
-		calendarPanel.removeAll();
 		txtFullName.setText(student.getLastName() + " " + student.getFirstName() +
 				" " + student.getMiddleName());
 		txtEmail.setText(student.getEmail());
@@ -237,46 +189,85 @@ public class JDialogStudentCard extends JDialog {
 		} else {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
+		setLocationRelativeTo(mainWindow);
+		calendarPanel.removeAll();
 		createLabButtons(mainWindow.getCurrentGroup().getLabs());
-		getContentPane().repaint();
-
 	}
 
 	private void createLabButtons(List<Lab> labs) {
 		for (Lab lab : labs) {
-			// Создаем новую кнопку с датой и оценкой студент
-			LabButton labButton = new LabButton(this, lab, false);
-			labButton.setToolTipText("<html>"+lab.getLabName()+
-					"<br>"+lab.getClassroom()+
-					"</html>");
-			Grade grade = currStudent.getLabGrade(labButton.getLab());
-			if (grade != null) {
-				labButton.updateGrade(String.valueOf(grade.getGrade()));
-			} else {
-				labButton.updateGrade("Нет");
-			}
-			labButton.setBorder(null);
-			labButton.selected(false);
-			if (labButton.getLab() == mainWindow.getCurrDateCmb().getSelectedItem()) {
-				currLabButton = labButton;
-				labButton.selected(true);
-				currLabButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
-			}
-			if (currStudent.isAttendance(labButton.getLab())) {
-				labButton.setBackground(Color.GREEN);
-			} else {
-				labButton.setBackground(Color.GRAY);
-			}
+			LabButton labButton = new LabButton(currStudent,lab);
 			calendarPanel.add(labButton);
-
-			SwingUtilities.invokeLater(currLabButton::requestFocus);
+			calendarPanel.repaint();
+			if(labButton.isSelected()){
+				labButton.requestFocus();
+			}
+			labButton.addActionListener(e -> {
+				Object o = e.getSource();
+				if (o instanceof LabButton jButton) {
+					if (!jButton.isSelected) {
+						jButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
+						jButton.isSelected = true;
+						if(currLabButton != null) {
+							currLabButton.isSelected = false;
+							currLabButton.setBorder(null);
+						}
+						currLabButton = jButton;
+					}
+				}
+			});
+			labButton.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					Object o = e.getSource();
+					if (o instanceof LabButton jButton) {
+						Color color = jButton.getBackground();
+						if (e.getKeyCode() == KeyEvent.VK_SPACE && color.equals(Color.GRAY)) { // если запись о посещении не была добавлена
+							Attendance attendance = new Attendance(jButton.lab.getId(), currStudent.getId(), false);
+							long id;
+							if ((id = AttendanceDaoImpl.getInstance().save(attendance)) > 0) {
+								attendance.setId(id);
+								currStudent.getAttendanceList().add(attendance);
+								setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
+								System.out.println("Запись о посещении добавлена");
+								jButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
+								mainWindow.refreshStudentTable();
+							}
+						} else if (e.getKeyCode() == KeyEvent.VK_SPACE && color.equals(Constants.ATTENDANCE_COLOR)) {
+							int choice = JOptionPane.showConfirmDialog(null, "Вы уверены, что хотите удалить запись о посещении?",
+									"Подтверждение", JOptionPane.YES_NO_OPTION);
+							if (choice == JOptionPane.YES_OPTION) {
+								Attendance attendance = currStudent.getLabAttendance(jButton.lab);
+								Grade studentGrade = currStudent.getLabGrade(lab);
+								if (attendance != null) {
+									if (AttendanceDaoImpl.getInstance().delete(attendance)) {
+										System.out.println("Запись о посещении удалена");
+										currStudent.getAttendanceList().remove(attendance);
+										if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
+											currStudent.getGradeList().remove(studentGrade);
+											System.out.println("Оценка за лабораторную  удалена");
+										}
+										updateGpa(currStudent);
+										setBackground(Color.GRAY);
+										jButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
+										mainWindow.refreshStudentTable();
+									}
+								}
+							}
+						}
+					}
+				}
+			});
 		}
-		int remaining = 25 - labs.size();
+		int remaining = MAX_LAB_BUTTONS - labs.size();
 		for (int i = 1; i <= remaining; i++) {
 			JPanel filler = new JPanel();
 			getCalendarPanel().add(filler);
 		}
 	}
+
+
+	private static final int MAX_LAB_BUTTONS = 25;
 
 	public JButton getDeleteButton() {
 		return deleteButton;
@@ -300,5 +291,60 @@ public class JDialogStudentCard extends JDialog {
 
 	public void updateGpa(Student student) {
 		txtGpa.setText(String.valueOf(student.getAverageGrade()));
+	}
+	private void editPhoto(){
+		JFileChooser fileChooser = new JFileChooser();
+		int result = fileChooser.showOpenDialog(null);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File selectedFile = fileChooser.getSelectedFile();
+			try {
+				PhotoUtils.getInstance().savePhoto(currStudent,selectedFile);
+				BufferedImage image = ImageIO.read(new File(currStudent.getPhotoPath()));
+				// Масштабируем изображение и создаем иконку
+				ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(),
+						photoLabel.getHeight(), Image.SCALE_SMOOTH));
+				// Устанавливаем иконку изображения в JLabel
+				photoLabel.setIcon(icon);
+			} catch (IOException ex) {
+				System.out.println("Не удалось сохранить фото");
+			}
+		}
+	}
+	private void createGradeButtons(JPanel gradePanel){
+		for (int i = 0; i < 11; i++) {
+			JButton gradeButton = new JButton(String.valueOf(i));
+			gradeButton.addActionListener(e -> {
+				setGrade(gradeButton);
+			});
+			gradeButton.setPreferredSize(new Dimension(80, 30));
+			gradePanel.add(gradeButton);
+		}
+	}
+	private void setGrade(JButton gradeButton){
+		if (currLabButton.getBackground().equals(Constants.ATTENDANCE_COLOR)) {
+			currLabButton.setGrade(gradeButton.getText());
+			Grade grade = currStudent.getLabGrade(currLabButton.getLab());
+			if (grade == null) {
+				long id;
+				Grade grade1 = new Grade(currLabButton.getLab().getId(),
+						currStudent.getId(), Integer.parseInt(gradeButton.getText()));
+				if ((id = GradeDaoImpl.getInstance().save(grade1)) != -1) {
+					System.out.println("Оценка добавлена");
+					grade1.setId(id);
+					currStudent.getGradeList().add(grade1);
+					mainWindow.refreshStudentTable();
+				}
+			} else {
+				grade.setGrade(Integer.parseInt(gradeButton.getText()));
+				mainWindow.refreshStudentTable();
+				if (GradeDaoImpl.getInstance().update(grade)) {
+					System.out.println("Оценка изменена");
+				}
+			}
+			txtGpa.setText(String.valueOf(currStudent.getAverageGrade()));
+		} else {
+			JOptionPane.showMessageDialog(mainWindow, "Перед выставлением оценки нужно отметить студента");
+		}
+		currLabButton.requestFocus();
 	}
 }

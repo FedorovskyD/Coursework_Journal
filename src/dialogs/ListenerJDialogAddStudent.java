@@ -38,7 +38,7 @@ public class ListenerJDialogAddStudent implements ActionListener {
 			}
 			StudentDaoImpl.getInstance().update(student);
 			jDialogAddStudent.mainWindow.getCurrentGroup().getStudents().add(student);
-			jDialogAddStudent.mainWindow.updateStudentTable();
+			jDialogAddStudent.mainWindow.refreshStudentTable();
 		}
 	}
 }

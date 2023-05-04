@@ -40,7 +40,6 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 							studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
 						}
 					}
-					studentTable.repaint();
 				}
 			}
 			return false;
@@ -95,7 +94,9 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 				Student selectedStudent = mainWindow.studentTable.getStudentAt(selectedRowIndex);
 				mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
 				mainWindow.studentTable.repaint();
-				mainWindow.jDialogStudentCard.setVisible(true);
+				if(mainWindow.currStudent != selectedStudent) {
+					mainWindow.jDialogStudentCard.setVisible(true);
+				}
 
 			}
 		}

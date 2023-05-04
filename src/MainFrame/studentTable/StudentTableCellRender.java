@@ -1,5 +1,7 @@
 package MainFrame.studentTable;
 
+import utils.Constants;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
@@ -9,29 +11,25 @@ import java.awt.*;
  */
 public class StudentTableCellRender extends DefaultTableCellRenderer {
 
-	private static final Color LIGHT_GRAY = new Color(154, 150, 150);
-	private static final Color SELECTED_COLOR = new Color(255, 255, 150);
-	private static final Color ATTENDANCE_COLOR = new Color(144, 238, 144);
-
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
 		if (value instanceof JPanel panel) {
 			if (isSelected) {
-				panel.setBackground(SELECTED_COLOR);
-			} else if (panel.getBackground().equals(ATTENDANCE_COLOR)) {
-				panel.setBackground(ATTENDANCE_COLOR);
+				panel.setBackground(Constants.SELECTED_COLOR);
+			} else if (panel.getBackground().equals(Constants.ATTENDANCE_COLOR)) {
+				panel.setBackground(Constants.ATTENDANCE_COLOR);
 			} else {
-				panel.setBackground(row % 2 == 0 ? LIGHT_GRAY : Color.WHITE);
+				panel.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
 			}
 			return panel;
 		}
 
 		if (isSelected) {
-			cellComponent.setBackground(SELECTED_COLOR);
+			cellComponent.setBackground(Constants.SELECTED_COLOR);
 		} else {
-			cellComponent.setBackground(row % 2 == 0 ? LIGHT_GRAY : Color.WHITE);
+			cellComponent.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
 		}
 		return cellComponent;
 	}

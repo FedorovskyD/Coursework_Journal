@@ -40,7 +40,7 @@ public class ListenerJDialogStudentCard implements ActionListener {
 					jDialogStudentCard.editButton.setText("Редактировать");
 					jDialogStudentCard.btnEditPhoto.setVisible(false);
 					jDialogStudentCard.mainWindow.getCurrentGroup().getStudents().remove(jDialogStudentCard.mainWindow.getCurrentStudent());
-					jDialogStudentCard.mainWindow.updateStudentTable();
+					jDialogStudentCard.mainWindow.refreshStudentTable();
 					jDialogStudentCard.mainWindow.getMainWindowListener().enableKeyboardListener();
 					System.out.println("Student was deleted");
 				}
