@@ -24,7 +24,9 @@ public class ListenerJDialogAddLab implements ActionListener {
 				lab.setId(labID);
 				group.getLabs().add(lab);
 				System.out.println("Лабораторная добавлена");
-				jDialogAddLab.mainWindow.getStudentTable().setModel(new StudentLabTableModel(group));
+				jDialogAddLab.mainWindow.updateCurrDateCmb();
+				jDialogAddLab.mainWindow.refreshStudentTable();
+
 			}
 		}
 	}

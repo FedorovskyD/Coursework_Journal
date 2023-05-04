@@ -196,78 +196,89 @@ public class JDialogStudentCard extends JDialog {
 
 	private void createLabButtons(List<Lab> labs) {
 		for (Lab lab : labs) {
-			LabButton labButton = new LabButton(currStudent,lab);
+			LabButton labButton = new LabButton(currStudent, lab);
 			calendarPanel.add(labButton);
-			calendarPanel.repaint();
-			if(labButton.isSelected()){
-				labButton.requestFocus();
-			}
-			labButton.addActionListener(e -> {
-				Object o = e.getSource();
-				if (o instanceof LabButton jButton) {
-					if (!jButton.isSelected) {
-						jButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
-						jButton.isSelected = true;
-						if(currLabButton != null) {
-							currLabButton.isSelected = false;
-							currLabButton.setBorder(null);
-						}
-						currLabButton = jButton;
-					}
-				}
-			});
-			labButton.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
-					Object o = e.getSource();
-					if (o instanceof LabButton jButton) {
-						Color color = jButton.getBackground();
-						if (e.getKeyCode() == KeyEvent.VK_SPACE && color.equals(Color.GRAY)) { // если запись о посещении не была добавлена
-							Attendance attendance = new Attendance(jButton.lab.getId(), currStudent.getId(), false);
-							long id;
-							if ((id = AttendanceDaoImpl.getInstance().save(attendance)) > 0) {
-								attendance.setId(id);
-								currStudent.getAttendanceList().add(attendance);
-								setBackground(Color.GREEN); // меняем цвет кнопки на зеленый
-								System.out.println("Запись о посещении добавлена");
-								jButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
-								mainWindow.refreshStudentTable();
-							}
-						} else if (e.getKeyCode() == KeyEvent.VK_SPACE && color.equals(Constants.ATTENDANCE_COLOR)) {
-							int choice = JOptionPane.showConfirmDialog(null, "Вы уверены, что хотите удалить запись о посещении?",
-									"Подтверждение", JOptionPane.YES_NO_OPTION);
-							if (choice == JOptionPane.YES_OPTION) {
-								Attendance attendance = currStudent.getLabAttendance(jButton.lab);
-								Grade studentGrade = currStudent.getLabGrade(lab);
-								if (attendance != null) {
-									if (AttendanceDaoImpl.getInstance().delete(attendance)) {
-										System.out.println("Запись о посещении удалена");
-										currStudent.getAttendanceList().remove(attendance);
-										if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
-											currStudent.getGradeList().remove(studentGrade);
-											System.out.println("Оценка за лабораторную  удалена");
-										}
-										updateGpa(currStudent);
-										setBackground(Color.GRAY);
-										jButton.setBorder(BorderFactory.createLineBorder(Color.yellow, 5));
-										mainWindow.refreshStudentTable();
-									}
-								}
-							}
-						}
-					}
-				}
-			});
-		}
-		int remaining = MAX_LAB_BUTTONS - labs.size();
-		for (int i = 1; i <= remaining; i++) {
-			JPanel filler = new JPanel();
-			getCalendarPanel().add(filler);
+			setInitialSelection(labButton);
+			setButtonClickListener(labButton);
+			setButtonKeyListener(labButton);
 		}
 	}
-
-
-	private static final int MAX_LAB_BUTTONS = 25;
+	private void setInitialSelection(LabButton labButton) {
+		if (labButton.lab.equals(mainWindow.getCurrDate())) {
+			labButton.isSelected = true;
+			labButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
+			labButton.repaint();
+			currLabButton = labButton;
+			labButton.requestFocus();
+		}
+	}
+	private void setButtonClickListener(LabButton labButton) {
+		labButton.addActionListener(e -> {
+			LabButton button = (LabButton) e.getSource();
+			if (!button.isSelected) {
+				button.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
+				button.isSelected = true;
+				if (currLabButton != null) {
+					currLabButton.isSelected = false;
+					currLabButton.setBorder(null);
+					currLabButton.repaint();
+				}
+				currLabButton = button;
+			}
+		});
+	}
+	private void setButtonKeyListener(LabButton labButton) {
+		labButton.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				LabButton button = (LabButton) e.getSource();
+				Color color = button.getBackground();
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					handleSpaceKeyPressed(button, color);
+					SwingUtilities.invokeLater(button::repaint);
+					button.requestFocus();
+				}
+			}
+		});
+	}
+	private void handleSpaceKeyPressed(LabButton button, Color color) {
+		if (color.equals(Constants.NO_ATTENDANCE_COLOR)) {
+			addAttendance(button);
+		} else if (color.equals(Constants.ATTENDANCE_COLOR)) {
+			removeAttendance(button);
+		}
+	}
+	private void addAttendance(LabButton button) {
+		Attendance attendance = new Attendance(button.lab.getId(), currStudent.getId(), false);
+		long id = AttendanceDaoImpl.getInstance().save(attendance);
+		if (id > 0) {
+			attendance.setId(id);
+			currStudent.getAttendanceList().add(attendance);
+			button.setBackground(Constants.ATTENDANCE_COLOR);
+			System.out.println("Запись о посещении добавлена");
+			mainWindow.refreshStudentTable();
+		}
+	}
+	private void removeAttendance(LabButton button) {
+		int choice = JOptionPane.showConfirmDialog(null, "Вы уверены, что хотите удалить запись о посещении?", "Подтверждение", JOptionPane.YES_NO_OPTION);
+		if (choice == JOptionPane.YES_OPTION) {
+			Attendance attendance = currStudent.getLabAttendance(button.lab);
+			Grade studentGrade = currStudent.getLabGrade(button.lab);
+			if (attendance != null) {
+				if (AttendanceDaoImpl.getInstance().delete(attendance)) {
+					System.out.println("Запись о посещении удалена");
+					currStudent.getAttendanceList().remove(attendance);
+					if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
+						currStudent.getGradeList().remove(studentGrade);
+						System.out.println("Оценка за лабораторную удалена");
+					}
+					updateGpa(currStudent);
+					button.setBackground(Constants.NO_ATTENDANCE_COLOR);
+					mainWindow.refreshStudentTable();
+				}
+			}
+		}
+	}
 
 	public JButton getDeleteButton() {
 		return deleteButton;

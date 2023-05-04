@@ -92,9 +92,9 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 			if (mainWindow.studentTable.getSelectedRow() != -1) {
 				int selectedRowIndex = mainWindow.studentTable.getSelectedRow();
 				Student selectedStudent = mainWindow.studentTable.getStudentAt(selectedRowIndex);
-				mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
 				mainWindow.studentTable.repaint();
 				if(mainWindow.currStudent != selectedStudent) {
+					mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
 					mainWindow.jDialogStudentCard.setVisible(true);
 				}
 
