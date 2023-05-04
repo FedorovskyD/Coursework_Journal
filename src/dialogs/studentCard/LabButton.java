@@ -26,7 +26,6 @@ public class LabButton extends JButton {
 		} else {
 			setGrade("Нет");
 		}
-		setBorder(null);
 		isSelected = false;
 		if (currStudent.isAttendance(lab)) {
 			setBackground(Constants.ATTENDANCE_COLOR);
@@ -45,7 +44,7 @@ public class LabButton extends JButton {
 				}
 			}
 		});
-		setPreferredSize(new Dimension(40,60));
+		setPreferredSize(new Dimension(200,30));
 		setMaximumSize(getPreferredSize());
 	}
 	public void setGrade(String grade) {
