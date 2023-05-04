@@ -1,23 +1,50 @@
 package MainFrame;
 
 import MainFrame.studentTable.StudentLabTableModel;
+import MainFrame.studentTable.StudentTable;
+import MainFrame.studentTable.StudentTableCellRender;
 import database.dao.impl.GroupDaoImpl;
 import dialogs.*;
+import dialogs.studentCard.JDialogStudentCard;
 import entity.Group;
-import entity.Lesson;
+import entity.Lab;
 import entity.Student;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.*;
 
 public class MainWindowListener implements ActionListener, ListSelectionListener {
 
 	private final MainWindow mainWindow;
+	private final KeyEventDispatcher keyEventDispatcher;
 
 	public MainWindowListener(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
+		keyEventDispatcher = e -> {
+			if (e.getID() == KeyEvent.KEY_RELEASED && (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN)) {
+				if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
+					// получаем текущую выделенную строку в таблице
+					StudentTable studentTable = mainWindow.getStudentTable();
+					int selectedRow = studentTable.getSelectedRow();
+					// вычисляем номер следующей строки в зависимости от нажатой клавиши
+					if (selectedRow != -1) {
+						int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
+						// проверяем, что следующая строка существует
+						if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
+							// обновляем выделение строки в таблице
+							studentTable.setRowSelectionInterval(nextRow, nextRow);
+							// прокручиваем таблицу к следующей строке
+							studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
+						}
+					}
+				}
+			}
+			return false;
+		};
+		enableKeyboardListener();
 	}
 
 	@Override
@@ -42,39 +69,45 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 					groups,
 					groups[index]);
 			deleteGroup(selectedGroup);
-		} else if (e.getSource() == mainWindow.getBtnAddLab()) {
-			new JDialogAddLesson(mainWindow).setVisible(true);
-		} else if (e.getSource() == mainWindow.getCmbGroupNumber()) {
-			mainWindow.updateDateCmb();
-			mainWindow.refreshStudentTable();
-			mainWindow.jDialogStudentCard.getLabButtons().clear();
-			mainWindow.jDialogStudentCard.updateStudentCard(mainWindow.currStudent);
 
+		} else if (e.getSource() == mainWindow.getBtnAboutAuthor()) {
+			new JDialogAbout(mainWindow).setVisible(true);
+		} else if (e.getSource() == mainWindow.getBtnAddLab()) {
+			new JDialogAddLab(mainWindow).setVisible(true);
+		} else if (e.getSource() == mainWindow.getCmbGroupNumber()) {
+			Group group = (Group) mainWindow.getCmbGroupNumber().getSelectedItem();
+			mainWindow.getCurrDateCmb().setModel(new DefaultComboBoxModel<>(group.getLabs().toArray(new Lab[0])));
+			mainWindow.getStudentTable().setModel(new StudentLabTableModel(group));
+			mainWindow.updateCurrDateCmb();
+			mainWindow.sortTable();
 			mainWindow.studentTable.revalidate();
 			mainWindow.studentTable.repaint();
-			mainWindow.studentTable.requestFocus();
+
 		}
 	}
 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getSource() == mainWindow.studentTable.getSelectionModel()) {
-			int selectedRowIndex = mainWindow.studentTable.getSelectedRow();
-			if (selectedRowIndex != -1) {
-				Object value = mainWindow.studentTable.getValueAt(selectedRowIndex, 0); // Получаем значение в ячейке первого столбца строки
-				if (value == null) {
-					int index = mainWindow.studentTable.getStudentTableModel().getRowIndex(mainWindow.currStudent);
-					if(index!=-1) {
-						mainWindow.studentTable.setRowSelectionInterval(index, index);
-						mainWindow.jDialogStudentCard.setVisible(false);
-					}
-				} else {
-						Student selectedStudent = (Student)value;
-						mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
-						mainWindow.jDialogStudentCard.setVisible(true);
+			if (mainWindow.studentTable.getSelectedRow() != -1) {
+				int selectedRowIndex = mainWindow.studentTable.getSelectedRow();
+				Student selectedStudent = mainWindow.studentTable.getStudentAt(selectedRowIndex);
+				mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
+				mainWindow.studentTable.repaint();
+				if(mainWindow.currStudent != selectedStudent) {
+					mainWindow.jDialogStudentCard.setVisible(true);
 				}
+
 			}
 		}
+	}
+
+	public void enableKeyboardListener() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyEventDispatcher);
+	}
+
+	public void disableKeyboardListener() {
+		KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher);
 	}
 
 	private void addNewGroup(String groupName) {
@@ -95,7 +128,7 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 				// Устанавливаем новую модель в JComboBox
 				Group selectedGroup = mainWindow.getCurrentGroup();
 				if (selectedGroup != null && isUpdate) {
-					mainWindow.getStudentTable().setModel(new StudentLabTableModel(selectedGroup,mainWindow.radioBtnLecture.isSelected()));
+					mainWindow.getStudentTable().setModel(new StudentLabTableModel(selectedGroup));
 				}
 			}
 		}
