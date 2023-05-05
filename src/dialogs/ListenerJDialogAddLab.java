@@ -7,6 +7,8 @@ import entity.Lab;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ListenerJDialogAddLab implements ActionListener {
 	private JDialogAddLab jDialogAddLab;
@@ -23,6 +25,7 @@ public class ListenerJDialogAddLab implements ActionListener {
 			if(labID!= -1){
 				lab.setId(labID);
 				group.getLabs().add(lab);
+				Collections.sort(group.getLabs(), Comparator.comparing(Lab::getDate));
 				System.out.println("Лабораторная добавлена");
 				jDialogAddLab.mainWindow.updateCurrDateCmb();
 				jDialogAddLab.mainWindow.refreshStudentTable();

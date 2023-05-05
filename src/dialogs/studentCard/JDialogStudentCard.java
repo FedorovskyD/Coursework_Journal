@@ -20,6 +20,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,12 +39,12 @@ public class JDialogStudentCard extends JDialog {
 	protected final JButton deleteButton, editButton,btnEditPhoto;
 	protected final JPanel calendarPanel;
 	protected LabButton currLabButton;
+	private List<LabButton> labButtons;
 	protected final MainWindow mainWindow;
 
 
 	public JDialogStudentCard(JFrame owner, String title) {
 		super(owner, title, true);
-		setLocationRelativeTo(null);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(new Dimension(1000, 800));
 		mainWindow = (MainWindow) owner;
@@ -170,6 +171,7 @@ public class JDialogStudentCard extends JDialog {
 				}
 			}
 		});
+		setLocationRelativeTo(owner);
 
 	}
 
@@ -195,13 +197,16 @@ public class JDialogStudentCard extends JDialog {
 	}
 
 	private void createLabButtons(List<Lab> labs) {
+		labButtons = new ArrayList<>();
 		for (Lab lab : labs) {
 			LabButton labButton = new LabButton(currStudent, lab);
 			calendarPanel.add(labButton);
 			setInitialSelection(labButton);
 			setButtonClickListener(labButton);
 			setButtonKeyListener(labButton);
+			labButtons.add(labButton);
 		}
+		currLabButton.requestFocus();
 	}
 	private void setInitialSelection(LabButton labButton) {
 		if (labButton.lab.equals(mainWindow.getCurrDate())) {
@@ -209,7 +214,6 @@ public class JDialogStudentCard extends JDialog {
 			labButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
 			labButton.repaint();
 			currLabButton = labButton;
-			labButton.requestFocus();
 		}
 	}
 	private void setButtonClickListener(LabButton labButton) {
@@ -224,6 +228,7 @@ public class JDialogStudentCard extends JDialog {
 					currLabButton.repaint();
 				}
 				currLabButton = button;
+				currLabButton.requestFocus();
 			}
 		});
 	}
@@ -237,9 +242,21 @@ public class JDialogStudentCard extends JDialog {
 					handleSpaceKeyPressed(button, color);
 					SwingUtilities.invokeLater(button::repaint);
 					button.requestFocus();
+				} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+					int index = labButtons.indexOf(button);
+					if (index > 0) {
+						labButtons.get(index - 1).doClick();
+					}
+				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					int index = labButtons.indexOf(button);
+					if (index < labButtons.size() - 1) {
+						labButtons.get(index + 1).doClick();
+					}
 				}
 			}
 		});
+
+
 	}
 	private void handleSpaceKeyPressed(LabButton button, Color color) {
 		if (color.equals(Constants.NO_ATTENDANCE_COLOR)) {

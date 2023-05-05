@@ -84,8 +84,10 @@ public class MainWindow extends JFrame {
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
 		//Создаем таблицу для отображения списка студентов
 		studentTable = new StudentTable(getCurrGroup());
+		studentTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		refreshStudentTable();
 		scrollPane = new JScrollPane(studentTable);
+		studentTable.getColumnModel().getColumn(0).setPreferredWidth(300);
 		//Задаем расположение раннее заданным компонентам
 		GroupLayout groupLayout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(groupLayout);
@@ -169,9 +171,16 @@ public class MainWindow extends JFrame {
 		cmbSort.addActionListener(e -> refreshStudentTable());
 		studentTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 1 && currStudent != null) {
-					jDialogStudentCard.updateStudentCard(currStudent);
-					jDialogStudentCard.setVisible(true);
+				int row = studentTable.rowAtPoint(e.getPoint());
+				if (row >= 0) {
+					Object value = studentTable.getValueAt(row, 0);
+					// обработка щелчка на ячейке
+					if(value instanceof Student student){
+						if(student == currStudent){
+							jDialogStudentCard.updateStudentCard(student);
+							jDialogStudentCard.setVisible(true);
+						}
+					}
 				}
 			}
 		});
@@ -250,6 +259,7 @@ public class MainWindow extends JFrame {
 				studentTable.repaint();
 			}
 		}
+		studentTable.getColumnModel().getColumn(0).setPreferredWidth(300);
 	}
 
 	public void sortTable() {
