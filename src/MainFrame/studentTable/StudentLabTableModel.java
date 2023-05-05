@@ -19,8 +19,8 @@ public class StudentLabTableModel extends AbstractTableModel {
 	private static final int STUDENT_COLUMN_INDEX = 0;
 	private static final int AVERAGE_GRADE_COLUMN_INDEX = 1;
 	private static final int FIRST_LAB_COLUMN_INDEX = 2;
-	private static final int SEPARATOR = 4;
 	private static final Color ATTENDANCE_COLOR = new Color(144, 238, 144);
+	public static final int COUNT_SEPARATOR_ROW = 4;
 
 	private List<Student> students;
 	private List<Lab> labs;
@@ -32,10 +32,10 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		// Добавляем пустые строки каждые 4 строки таблицы
 		int rowCount = students.size();
 		if (rowCount > 0) {
-			rowCount += (rowCount - 1) / SEPARATOR;
+			// Add a blank row after every fourth student
+			rowCount += (rowCount - 1) / COUNT_SEPARATOR_ROW;
 		}
 		return rowCount;
 	}
@@ -47,26 +47,35 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if ((rowIndex + 1) % (SEPARATOR+1) == 0) { // проверяем, является ли строка пустой строкой
+		if (isBlankRow(rowIndex)) {
 			return null;
 		}
 
-		int studentIndex = rowIndex - rowIndex / (SEPARATOR+1); // вычисляем индекс студента в списке
-
 		if (columnIndex == STUDENT_COLUMN_INDEX) {
-			return students.get(studentIndex);
+			return students.get(getStudentIndex(rowIndex));
 		}
 
 		if (columnIndex == AVERAGE_GRADE_COLUMN_INDEX) {
-			return String.format("%.2f", students.get(studentIndex).getAverageGrade());
+			return String.format("%.2f", students.get(getStudentIndex(rowIndex)).getAverageGrade());
 		}
 
-		return getLabPanel(studentIndex, columnIndex);
+		return getLabPanel(getStudentIndex(rowIndex), columnIndex);
 	}
 
+	public boolean isBlankRow(int rowIndex) {
+		return (rowIndex +1 ) % (COUNT_SEPARATOR_ROW+1) == 0;
+	}
+
+	private int getStudentIndex(int rowIndex) {
+		return rowIndex - (rowIndex + 1) / (COUNT_SEPARATOR_ROW+1);
+	}
+
+
 	public Student getStudentAt(int selectedRow) {
-		int studentIndex = selectedRow - selectedRow / (SEPARATOR+1);
-		return students.get(studentIndex);
+		int index = getStudentIndex(selectedRow);
+		if(index>=0 && index<students.size())
+		return students.get(index);
+		return null;
 	}
 
 	public void setStudents(List<Student> students) {
@@ -75,8 +84,7 @@ public class StudentLabTableModel extends AbstractTableModel {
 	}
 
 	private JPanel getLabPanel(int rowIndex, int columnIndex) {
-		int studentIndex = rowIndex - rowIndex / (SEPARATOR+1);
-		Student student = students.get(studentIndex);
+		Student student = students.get(rowIndex);
 		Lab lab = labs.get(columnIndex - FIRST_LAB_COLUMN_INDEX);
 
 		boolean isAttendance = student.isAttendance(lab);
@@ -126,13 +134,14 @@ public class StudentLabTableModel extends AbstractTableModel {
 	}
 
 	public int getRowIndex(Student student) {
-		for (int i = 0; i < students.size(); i++) {
-			if (students.get(i - i/(SEPARATOR+1)).equals(student)) {
-				return  i ;
-			}
+		int studentIndex = students.indexOf(student);
+		if (studentIndex == -1) {
+			return -1; // если студент не найден, вернуть -1
 		}
-		return -1; // если студент не найден, вернуть -1
+		int rowIndex = (studentIndex / COUNT_SEPARATOR_ROW) * (COUNT_SEPARATOR_ROW + 1) + studentIndex % COUNT_SEPARATOR_ROW;
+		return rowIndex ; // возвращаем индекс строки, увеличенный на 1, так как строки в таблице начинаются с 1, а не с 0
 	}
+
 
 
 	@Override
@@ -140,10 +149,6 @@ public class StudentLabTableModel extends AbstractTableModel {
 		return false;
 	}
 
-	public boolean isCellSelectable(int rowIndex, int columnIndex) {
-		return (rowIndex + 1) % (SEPARATOR + 1) != 0; // пустые строки не являются выбираемыми
-// остальные строки можно выбирать
-	}
 	public void sortByAlphabet(boolean isInc) {
 		students.sort(Comparator.comparing(Student::getFullName, isInc ? Comparator.naturalOrder() : Comparator.reverseOrder()));
 		fireTableDataChanged();

@@ -22,7 +22,8 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 	private final KeyEventDispatcher keyEventDispatcher;
 
 	public MainWindowListener(MainWindow mainWindow) {
-		this.mainWindow = mainWindow;keyEventDispatcher = e -> {
+		this.mainWindow = mainWindow;
+		keyEventDispatcher = e -> {
 			if (e.getID() == KeyEvent.KEY_RELEASED && (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN)) {
 				StudentTable studentTable = mainWindow.getStudentTable();
 				int selectedRow = studentTable.getSelectedRow();
@@ -30,7 +31,7 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 				if (selectedRow != -1) {
 					int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
 
-					while (nextRow >= 0 && nextRow < studentTable.getRowCount() && !studentTable.getStudentTableModel().isCellSelectable(nextRow, 0)) {
+					while (nextRow >= 0 && nextRow < studentTable.getRowCount() && studentTable.getStudentTableModel().isBlankRow(nextRow)) {
 						nextRow += e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1;
 					}
 
@@ -78,7 +79,7 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 		} else if (e.getSource() == mainWindow.getCmbGroupNumber()) {
 			Group group = (Group) mainWindow.getCmbGroupNumber().getSelectedItem();
 			mainWindow.getCurrDateCmb().setModel(new DefaultComboBoxModel<>(group.getLabs().toArray(new Lab[0])));
-			mainWindow.getStudentTable().setModel(new StudentLabTableModel(group));
+			mainWindow.refreshStudentTable();
 			mainWindow.updateCurrDateCmb();
 			mainWindow.sortTable();
 			mainWindow.studentTable.revalidate();
@@ -91,20 +92,19 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getSource() == mainWindow.studentTable.getSelectionModel()) {
 			int selectedRowIndex = mainWindow.studentTable.getSelectedRow();
-			if (selectedRowIndex != -1 && mainWindow.studentTable.getStudentTableModel().isCellSelectable(selectedRowIndex, 0)) {
-				Student selectedStudent = mainWindow.studentTable.getStudentAt(selectedRowIndex);
-				mainWindow.studentTable.repaint();
-				if (mainWindow.currStudent != selectedStudent) {
-					mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
-					if (!mainWindow.jDialogStudentCard.isVisible()) {
-						mainWindow.jDialogStudentCard.setVisible(true);
+			if (selectedRowIndex != -1) {
+				Object value = mainWindow.studentTable.getValueAt(selectedRowIndex, 0); // Получаем значение в ячейке первого столбца строки
+				if (value == null) {
+					mainWindow.studentTable.clearSelection();
+				} else {
+					Student selectedStudent = mainWindow.studentTable.getStudentAt(selectedRowIndex);
+					mainWindow.studentTable.repaint();
+					if (mainWindow.currStudent != selectedStudent) {
+						mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
+						if (!mainWindow.jDialogStudentCard.isVisible()) {
+							mainWindow.jDialogStudentCard.setVisible(true);
+						}
 					}
-				}
-			} else {
-				// Выбранная ячейка не может быть выбрана пользователем, поэтому выбираем первую доступную ячейку
-				int row = mainWindow.studentTable.getStudentTableModel().getRowIndex(mainWindow.currStudent);
-				if (row != -1) {
-					mainWindow.studentTable.setRowSelectionInterval(row, row);
 				}
 			}
 		}
