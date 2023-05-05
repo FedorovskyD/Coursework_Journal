@@ -19,34 +19,9 @@ import java.awt.event.*;
 public class MainWindowListener implements ActionListener, ListSelectionListener {
 
 	private final MainWindow mainWindow;
-	private final KeyEventDispatcher keyEventDispatcher;
 
 	public MainWindowListener(MainWindow mainWindow) {
 		this.mainWindow = mainWindow;
-		keyEventDispatcher = e -> {
-			if (e.getID() == KeyEvent.KEY_RELEASED && (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN)) {
-				StudentTable studentTable = mainWindow.getStudentTable();
-				int selectedRow = studentTable.getSelectedRow();
-
-				if (selectedRow != -1) {
-					int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
-
-					while (nextRow >= 0 && nextRow < studentTable.getRowCount() && studentTable.getStudentTableModel().isBlankRow(nextRow)) {
-						nextRow += e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1;
-					}
-
-					if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
-						studentTable.setRowSelectionInterval(nextRow, nextRow);
-						studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
-					}
-				}
-			}
-			return false;
-		};
-
-		enableKeyboardListener();
-
-
 	}
 
 	@Override
@@ -79,12 +54,12 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 		} else if (e.getSource() == mainWindow.getCmbGroupNumber()) {
 			Group group = (Group) mainWindow.getCmbGroupNumber().getSelectedItem();
 			mainWindow.getCurrDateCmb().setModel(new DefaultComboBoxModel<>(group.getLabs().toArray(new Lab[0])));
+			mainWindow.studentTable.clearSelection();
 			mainWindow.refreshStudentTable();
+			mainWindow.jDialogStudentCard.updateStudentCard(mainWindow.currStudent);
 			mainWindow.updateCurrDateCmb();
-			mainWindow.sortTable();
 			mainWindow.studentTable.revalidate();
 			mainWindow.studentTable.repaint();
-
 		}
 	}
 
@@ -113,15 +88,6 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 				}
 			}
 		}
-	}
-
-
-	public void enableKeyboardListener() {
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(keyEventDispatcher);
-	}
-
-	public void disableKeyboardListener() {
-		KeyboardFocusManager.getCurrentKeyboardFocusManager().removeKeyEventDispatcher(keyEventDispatcher);
 	}
 
 	private void addNewGroup(String groupName) {

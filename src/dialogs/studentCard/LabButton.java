@@ -32,16 +32,6 @@ public class LabButton extends JButton {
 		} else {
 			setBackground(Constants.NO_ATTENDANCE_COLOR);
 		}
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				int keyCode = e.getKeyCode();
-				if (keyCode == KeyEvent.VK_UP ||
-						keyCode == KeyEvent.VK_DOWN) {
-					e.consume(); // отмена действия для стрелочных клави
-				}
-			}
-		});
 		setPreferredSize(new Dimension(200,30));
 		setMaximumSize(getPreferredSize());
 	}
