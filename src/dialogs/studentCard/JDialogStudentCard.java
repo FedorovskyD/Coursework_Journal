@@ -86,6 +86,7 @@ public class JDialogStudentCard extends JDialog {
 		photoLabel.setPreferredSize(new Dimension(187, 250));
 		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
 		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
+		labButtons = new ArrayList<>();
 		// Создаем менеджер компоновки
 		GroupLayout layout = new GroupLayout(infoPanel);
 		infoPanel.setLayout(layout);
@@ -197,7 +198,7 @@ public class JDialogStudentCard extends JDialog {
 	}
 
 	private void createLabButtons(List<Lab> labs) {
-		labButtons = new ArrayList<>();
+		labButtons.clear();
 		for (Lab lab : labs) {
 			LabButton labButton = new LabButton(currStudent, lab);
 			calendarPanel.add(labButton);
@@ -206,7 +207,6 @@ public class JDialogStudentCard extends JDialog {
 			setButtonKeyListener(labButton);
 			labButtons.add(labButton);
 		}
-		currLabButton.requestFocus();
 	}
 	private void setInitialSelection(LabButton labButton) {
 		if (labButton.lab.equals(mainWindow.getCurrDate())) {
@@ -214,6 +214,7 @@ public class JDialogStudentCard extends JDialog {
 			labButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
 			labButton.repaint();
 			currLabButton = labButton;
+			SwingUtilities.invokeLater(labButton::requestFocus);
 		}
 	}
 	private void setButtonClickListener(LabButton labButton) {

@@ -14,6 +14,11 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		if (column == 0) {
+			setFont(getFont().deriveFont(Font.ITALIC,14)); // Меняем шрифт на курсив
+		} else {
+			setFont(table.getFont()); // Используем шрифт по умолчанию для остальных колонок
+		}
 
 		if (value instanceof JPanel panel) {
 			if (isSelected) {
