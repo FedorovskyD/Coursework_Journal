@@ -20,7 +20,7 @@ public class StudentLabTableModel extends AbstractTableModel {
 	private static final int AVERAGE_GRADE_COLUMN_INDEX = 1;
 	private static final int FIRST_LAB_COLUMN_INDEX = 2;
 	private static final Color ATTENDANCE_COLOR = new Color(144, 238, 144);
-	public static final int COUNT_SEPARATOR_ROW = 4;
+	public static final int COUNT_SEPARATOR_ROW = 5;
 
 	private List<Student> students;
 	private List<Lab> labs;
