@@ -138,8 +138,7 @@ public class StudentLabTableModel extends AbstractTableModel {
 		if (studentIndex == -1) {
 			return -1; // если студент не найден, вернуть -1
 		}
-		int rowIndex = (studentIndex / COUNT_SEPARATOR_ROW) * (COUNT_SEPARATOR_ROW + 1) + studentIndex % COUNT_SEPARATOR_ROW;
-		return rowIndex ; // возвращаем индекс строки, увеличенный на 1, так как строки в таблице начинаются с 1, а не с 0
+		return studentIndex / COUNT_SEPARATOR_ROW * (COUNT_SEPARATOR_ROW + 1) + studentIndex % COUNT_SEPARATOR_ROW; // возвращаем индекс строки, увеличенный на 1, так как строки в таблице начинаются с 1, а не с 0
 	}
 
 

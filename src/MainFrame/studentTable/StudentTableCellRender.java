@@ -34,8 +34,12 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 		if (isSelected) {
 			cellComponent.setBackground(Constants.SELECTED_COLOR);
 		} else {
+			if (table.isColumnSelected(column)) {
+				cellComponent.setBackground(Constants.SELECTED_COLOR);
+			}
 			cellComponent.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
 		}
+
 		return cellComponent;
 	}
 }

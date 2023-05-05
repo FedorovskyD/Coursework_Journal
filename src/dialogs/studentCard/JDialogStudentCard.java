@@ -39,12 +39,12 @@ public class JDialogStudentCard extends JDialog {
 	protected final JButton deleteButton, editButton,btnEditPhoto;
 	protected final JPanel calendarPanel;
 	protected LabButton currLabButton;
-	private List<LabButton> labButtons;
+	private final List<LabButton> labButtons;
 	protected final MainWindow mainWindow;
 
 
 	public JDialogStudentCard(JFrame owner, String title) {
-		super(owner, title, true);
+		super(owner, title, false);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(new Dimension(1000, 800));
 		mainWindow = (MainWindow) owner;
@@ -230,6 +230,7 @@ public class JDialogStudentCard extends JDialog {
 				}
 				currLabButton = button;
 				currLabButton.requestFocus();
+				mainWindow.getCurrDateCmb().setSelectedItem(labButton.lab);
 			}
 		});
 	}
@@ -246,13 +247,37 @@ public class JDialogStudentCard extends JDialog {
 				} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 					int index = labButtons.indexOf(button);
 					if (index > 0) {
-						labButtons.get(index - 1).doClick();
+						LabButton nextLabButton =labButtons.get(index - 1);
+						nextLabButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR,5));
+						button.setBorder(null);
+						nextLabButton.requestFocus();
+						mainWindow.getCurrDateCmb().setSelectedItem(nextLabButton.lab);
 					}
 				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
 					int index = labButtons.indexOf(button);
 					if (index < labButtons.size() - 1) {
-						labButtons.get(index + 1).doClick();
+						LabButton nextLabButton = labButtons.get(index + 1);
+						nextLabButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR,5));
+						button.setBorder(null);
+						nextLabButton.requestFocus();
+						mainWindow.getCurrDateCmb().setSelectedItem(nextLabButton.lab);
 					}
+				} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
+					int selectedRow = mainWindow.getStudentTable().getSelectedRow();
+					if (selectedRow != -1) {
+						int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
+
+						while (nextRow >= 0 && nextRow < mainWindow.getStudentTable().getRowCount() && mainWindow.getStudentTable().getStudentTableModel().isBlankRow(nextRow)) {
+							nextRow += e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1;
+						}
+
+						if (nextRow >= 0 && nextRow < mainWindow.getStudentTable().getRowCount()) {
+							mainWindow.getStudentTable().setRowSelectionInterval(nextRow, nextRow);
+							mainWindow.getStudentTable().scrollRectToVisible(mainWindow.getStudentTable().getCellRect(nextRow, 0, true));
+							mainWindow.getStudentTable().repaint();
+						}
+					}
+					e.consume();
 				}
 			}
 		});

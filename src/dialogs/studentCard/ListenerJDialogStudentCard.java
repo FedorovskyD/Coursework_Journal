@@ -41,13 +41,12 @@ public class ListenerJDialogStudentCard implements ActionListener {
 					jDialogStudentCard.btnEditPhoto.setVisible(false);
 					jDialogStudentCard.mainWindow.getCurrentGroup().getStudents().remove(jDialogStudentCard.mainWindow.getCurrentStudent());
 					jDialogStudentCard.mainWindow.refreshStudentTable();
-					jDialogStudentCard.mainWindow.getMainWindowListener().enableKeyboardListener();
+
 					System.out.println("Student was deleted");
 				}
 			}
 		}else if(e.getSource() == jDialogStudentCard.editButton){
 			if (jDialogStudentCard.editButton.getText().equalsIgnoreCase("Редактировать")) {
-				jDialogStudentCard.mainWindow.getMainWindowListener().disableKeyboardListener();
 				jDialogStudentCard.txtFullName.setEditable(true);
 				jDialogStudentCard.txtEmail.setEditable(true);
 				jDialogStudentCard.txtPhone.setEditable(true);
@@ -79,7 +78,6 @@ public class ListenerJDialogStudentCard implements ActionListener {
 				jDialogStudentCard.editButton.setText("Редактировать");
 				jDialogStudentCard.calendarPanel.setEnabled(true);
 				jDialogStudentCard.btnEditPhoto.setVisible(false);
-				jDialogStudentCard.mainWindow.getMainWindowListener().enableKeyboardListener();
 				jDialogStudentCard.getCurrLabButton().requestFocus();
 			}
 		}

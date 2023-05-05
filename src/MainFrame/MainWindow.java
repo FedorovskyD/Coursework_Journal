@@ -11,6 +11,8 @@ import utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -35,21 +37,15 @@ public class MainWindow extends JFrame {
 		//Получаем данные о группах из базы данных
 		groups = GroupDaoImpl.getInstance().findAll();
 		//Создаем элементы гланого окна
-		JLabel lblLab = new JLabel("Лабораторные");
-		JLabel lblLecture = new JLabel("Лекции");
 		JLabel currDateLbl = new JLabel("Текущая дата");
-		radioBtnLab = new JRadioButton();
-		radioBtnLecture = new JRadioButton();
-		radioBtnInc = new JRadioButton("в порядке возрастания");
-		radioBtnDec = new JRadioButton("в поряке убывания");
+		radioBtnLab = new JRadioButton("Лекции",false);
+		radioBtnLecture = new JRadioButton("Лабораторные",true);
+		radioBtnInc = new JRadioButton("в порядке возрастания",true);
+		radioBtnDec = new JRadioButton("в поряке убывания",false);
 		JLabel lblSort = new JLabel("Сортировать по: ");
 		cmbSort = new JComboBox<>(new DefaultComboBoxModel<>(new String[]{Constants.SORT_BY_ALPHABET, Constants.SORT_BY_GRADE, Constants.SORT_BY_ATTENDANCE}));
 		cmbSort.setPreferredSize(new Dimension(100, 30));
 		cmbSort.setMaximumSize(cmbSort.getPreferredSize());
-		//По умолчанию отображаем посещаемость лабораторныъ
-		radioBtnLab.setSelected(true);
-		//По умолчанию сортируем по возрастанию
-		radioBtnInc.setSelected(true);
 		// Создание меню
 		JMenu menuFile = new JMenu("Файл");
 		JMenuBar menuBar = new JMenuBar();
@@ -86,6 +82,7 @@ public class MainWindow extends JFrame {
 		studentTable = new StudentTable(getCurrGroup());
 		studentTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		refreshStudentTable();
+
 		scrollPane = new JScrollPane(studentTable);
 		studentTable.getColumnModel().getColumn(0).setPreferredWidth(300);
 		//Задаем расположение раннее заданным компонентам
@@ -98,9 +95,6 @@ public class MainWindow extends JFrame {
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(lblGroupNumber)
 						.addComponent(cmbGroupNumber)
-						.addGroup(groupLayout.createParallelGroup()
-								.addComponent(lblLecture)
-								.addComponent(lblLab))
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(radioBtnLecture)
 								.addComponent(radioBtnLab))
@@ -126,9 +120,6 @@ public class MainWindow extends JFrame {
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(lblGroupNumber)
 								.addComponent(cmbGroupNumber)
-								.addGroup(groupLayout.createSequentialGroup()
-										.addComponent(lblLecture)
-										.addComponent(lblLab))
 								.addGroup(groupLayout.createSequentialGroup()
 										.addComponent(radioBtnLecture)
 										.addComponent(radioBtnLab))
@@ -158,6 +149,28 @@ public class MainWindow extends JFrame {
 		btnAddLab.addActionListener(mainWindowListener);
 		studentTable.getSelectionModel().addListSelectionListener(mainWindowListener);
 		cmbGroupNumber.addActionListener(mainWindowListener);
+		studentTable.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if ( e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
+					int selectedRow = studentTable.getSelectedRow();
+					if (selectedRow != -1) {
+						int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
+
+						while (nextRow >= 0 && nextRow < studentTable.getRowCount() && studentTable.getStudentTableModel().isBlankRow(nextRow)) {
+							nextRow += e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1;
+						}
+
+						if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
+							studentTable.setRowSelectionInterval(nextRow, nextRow);
+							studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, 0, true));
+							studentTable.repaint();
+						}
+					}
+
+				}
+			}
+		});
 		radioBtnLab.addActionListener(e -> radioBtnLecture.setSelected(false));
 		radioBtnInc.addActionListener(e -> {
 			radioBtnDec.setSelected(false);
@@ -166,6 +179,9 @@ public class MainWindow extends JFrame {
 		radioBtnDec.addActionListener(e -> {
 			radioBtnInc.setSelected(false);
 			refreshStudentTable();
+			if(jDialogStudentCard.isVisible()){
+				jDialogStudentCard.getCurrLabButton().requestFocus();
+			}
 		});
 		radioBtnLecture.addActionListener(e -> radioBtnLab.setSelected(false));
 		cmbSort.addActionListener(e -> refreshStudentTable());
@@ -257,6 +273,12 @@ public class MainWindow extends JFrame {
 				studentTable.setRowSelectionInterval(index,index);
 				studentTable.revalidate();
 				studentTable.repaint();
+			}
+		}else {
+			Student student = studentTable.getStudentAt(0);
+			if(student!=null){
+				currStudent = student;
+				studentTable.setRowSelectionInterval(0,0);
 			}
 		}
 		studentTable.getColumnModel().getColumn(0).setPreferredWidth(300);
