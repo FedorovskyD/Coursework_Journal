@@ -96,6 +96,11 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 				Object value = mainWindow.studentTable.getValueAt(selectedRowIndex, 0); // Получаем значение в ячейке первого столбца строки
 				if (value == null) {
 					mainWindow.studentTable.clearSelection();
+					int index = mainWindow.studentTable.getStudentTableModel().getRowIndex(mainWindow.currStudent);
+					if(index!=-1) {
+						mainWindow.studentTable.setRowSelectionInterval(index, index);
+						mainWindow.jDialogStudentCard.setVisible(false);
+					}
 				} else {
 					Student selectedStudent = mainWindow.studentTable.getStudentAt(selectedRowIndex);
 					mainWindow.studentTable.repaint();
