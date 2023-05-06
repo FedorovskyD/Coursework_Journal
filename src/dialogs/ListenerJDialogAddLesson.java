@@ -21,17 +21,13 @@ public class ListenerJDialogAddLesson implements ActionListener {
 			boolean isLecture = jDialogAddLesson.getRadioButtonLecture().isSelected();
 			Lesson lesson = new Lesson(jDialogAddLesson.getRoomField().getText(),
 					jDialogAddLesson.getDate(),group.getId(), jDialogAddLesson.getNameField().getText(),isLecture);
-			long lessonId = LessonDaoImpl.getInstance().save(lesson);
-			if(lessonId!= -1){
-				lesson.setId(lessonId);
-				group.getLessons().add(lesson);
-				group.getLessons().sort(Comparator.comparing(Lesson::getDate));
-				if(isLecture) {
-					System.out.println("Лекционное добавлено");
-				}else {
-					System.out.println("Лабораторное занятие добавлено");
-				}
-				jDialogAddLesson.mainWindow.updateDateCmb();
+			long labID = LessonDaoImpl.getInstance().save(lesson);
+			if(labID!= -1){
+				lesson.setId(labID);
+				group.getLabs().add(lesson);
+				Collections.sort(group.getLabs(), Comparator.comparing(Lesson::getDate));
+				System.out.println("Лабораторная добавлена");
+				jDialogAddLesson.mainWindow.updateCurrDateCmb();
 				jDialogAddLesson.mainWindow.refreshStudentTable();
 
 			}

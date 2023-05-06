@@ -11,15 +11,12 @@ public class Student {
 	private String telephone;
 	private String email;
 	private String photoPath;
-	private List<Attendance> lectureAttendanceList;
-	private List<Attendance> labAttendanceList;
-
+	private List<Attendance> attendanceList;
 	private List<Grade> gradeList;
 	private long groupId;
 
 	public Student() {
-		lectureAttendanceList = new ArrayList<>();
-		labAttendanceList = new ArrayList<>();
+		attendanceList = new ArrayList<>();
 		gradeList = new ArrayList<>();
 	}
 
@@ -87,20 +84,12 @@ public class Student {
 		this.photoPath = photoPath;
 	}
 
-	public List<Attendance> getLectureAttendanceList() {
-		return lectureAttendanceList;
+	public List<Attendance> getAttendanceList() {
+		return attendanceList;
 	}
 
-	public void setLectureAttendanceList(List<Attendance> lectureAttendanceList) {
-		this.lectureAttendanceList = lectureAttendanceList;
-	}
-
-	public List<Attendance> getLabAttendanceList() {
-		return labAttendanceList;
-	}
-
-	public void setLabAttendanceList(List<Attendance> labAttendanceList) {
-		this.labAttendanceList = labAttendanceList;
+	public void setAttendanceList(List<Attendance> attendanceList) {
+		this.attendanceList = attendanceList;
 	}
 
 	public List<Grade> getGradeList() {
@@ -132,21 +121,15 @@ public class Student {
 		if (lesson == null) {
 			return null;
 		}
-		return labAttendanceList.stream()
+		return attendanceList.stream()
 				.filter(a -> a.getLessonId() == lesson.getId())
 				.findFirst()
 				.orElse(null);
 	}
 
-	public boolean isAttendance(Lesson lesson) {
-		return isAttendanceOnLab(lesson) || isAttendanceOnLecture(lesson);
-	}
 
-	public boolean isAttendanceOnLab(Lesson lesson) {
-		return labAttendanceList.stream().anyMatch(attendance -> attendance.getLessonId() == lesson.getId());
-	}
-	public boolean isAttendanceOnLecture(Lesson lesson) {
-		return lectureAttendanceList.stream().anyMatch(attendance -> attendance.getLessonId() == lesson.getId());
+	public boolean isAttendance(Lesson lesson) {
+		return attendanceList.stream().anyMatch(attendance -> attendance.getLessonId() == lesson.getId());
 	}
 
 
@@ -155,9 +138,8 @@ public class Student {
 				firstName + " " +
 				middleName;
 	}
-
-	public int getCountLabAttendance() {
-		return labAttendanceList.size();
+	public int getCountLabAttendance(){
+		return attendanceList.size();
 	}
 
 	@Override

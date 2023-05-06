@@ -7,6 +7,7 @@ import java.util.List;
 import database.ConnectionFactory;
 import database.dao.AttendanceDao;
 import entity.Attendance;
+import entity.Lesson;
 import entity.Student;
 
 public class AttendanceDaoImpl implements AttendanceDao {
@@ -25,7 +26,7 @@ public class AttendanceDaoImpl implements AttendanceDao {
 	}
 
 	private static final String GET_ATTENDANCES_BY_STUDENT_SQL = "SELECT * FROM attendance WHERE student_id = ?";
-	private static final String GET_ATTENDANCES_BY_STUDENT_AND_LESSON_SQL = "SELECT *  FROM attendance a JOIN lesson l ON a.lesson_ID = l.ID WHERE a.student_ID = ? AND l.isLecture=?";
+	private static final String GET_ATTENDANCES_BY_LAB_SQL = "SELECT * FROM attendance WHERE lesson_ID = ?";
 	private static final String FIND_BY_ID_SQL = "SELECT * FROM attendance WHERE id = ?";
 	private static final String FIND_ALL_SQL = "SELECT * FROM attendance";
 	private static final String SAVE_SQL = "INSERT INTO attendance(student_id,lesson_ID) VALUES (?, ?)";
@@ -60,12 +61,11 @@ public class AttendanceDaoImpl implements AttendanceDao {
 	}
 
 	@Override
-	public List<Attendance> getLessonAttendancesByStudent(Student student, boolean isLecture) {
+	public List<Attendance> getAttendancesByLab(Lesson lesson) {
 		List<Attendance> attendances = new ArrayList<>();
 		try (Connection connection = ConnectionFactory.getConnection();
-		     PreparedStatement ps = connection.prepareStatement(GET_ATTENDANCES_BY_STUDENT_AND_LESSON_SQL)) {
-			ps.setLong(1, student.getId());
-			ps.setBoolean(2,isLecture);
+		     PreparedStatement ps = connection.prepareStatement(GET_ATTENDANCES_BY_LAB_SQL)) {
+			ps.setLong(1, lesson.getId());
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
 					attendances.add(createAttendanceFromResultSet(rs));
@@ -76,7 +76,6 @@ public class AttendanceDaoImpl implements AttendanceDao {
 		}
 		return attendances;
 	}
-
 
 	@Override
 	public Attendance findById(long id) {

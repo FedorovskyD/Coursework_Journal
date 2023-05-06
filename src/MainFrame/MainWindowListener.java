@@ -1,19 +1,15 @@
 package MainFrame;
 
 import MainFrame.studentTable.StudentLabTableModel;
-import MainFrame.studentTable.StudentTable;
-import MainFrame.studentTable.StudentTableCellRender;
 import database.dao.impl.GroupDaoImpl;
 import dialogs.*;
-import dialogs.studentCard.JDialogStudentCard;
 import entity.Group;
-import entity.Lab;
+import entity.Lesson;
 import entity.Student;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
 import java.awt.event.*;
 
 public class MainWindowListener implements ActionListener, ListSelectionListener {
@@ -46,14 +42,11 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 					groups,
 					groups[index]);
 			deleteGroup(selectedGroup);
-
-		} else if (e.getSource() == mainWindow.getBtnAboutAuthor()) {
-			new JDialogAbout(mainWindow).setVisible(true);
 		} else if (e.getSource() == mainWindow.getBtnAddLab()) {
-			new JDialogAddLab(mainWindow).setVisible(true);
+			new JDialogAddLesson(mainWindow).setVisible(true);
 		} else if (e.getSource() == mainWindow.getCmbGroupNumber()) {
 			Group group = (Group) mainWindow.getCmbGroupNumber().getSelectedItem();
-			mainWindow.getCurrDateCmb().setModel(new DefaultComboBoxModel<>(group.getLabs().toArray(new Lab[0])));
+			mainWindow.getCurrDateCmb().setModel(new DefaultComboBoxModel<>(group.getLabs().toArray(new Lesson[0])));
 			mainWindow.studentTable.clearSelection();
 			mainWindow.refreshStudentTable();
 			mainWindow.jDialogStudentCard.updateStudentCard(mainWindow.currStudent);

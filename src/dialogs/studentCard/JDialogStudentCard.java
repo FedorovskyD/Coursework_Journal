@@ -5,7 +5,7 @@ import database.dao.impl.AttendanceDaoImpl;
 import database.dao.impl.GradeDaoImpl;
 import entity.Attendance;
 import entity.Grade;
-import entity.Lab;
+import entity.Lesson;
 import entity.Student;
 import utils.Constants;
 import utils.PhotoUtils;
@@ -53,7 +53,7 @@ public class JDialogStudentCard extends JDialog {
 		// Создание панели информации о студенте
 		JPanel infoPanel = new JPanel();
 		// Создаем компоненты
-		photoLabel = new JLabel(new ImageIcon("photos/default.jpg"));
+		photoLabel = new JLabel();
 		JLabel nameLabel = new JLabel("ФИО:");
 		Dimension txtFieldDimension = new Dimension(300, 20);
 		txtFullName = new JTextField(20);
@@ -197,10 +197,10 @@ public class JDialogStudentCard extends JDialog {
 		createLabButtons(mainWindow.getCurrentGroup().getLabs());
 	}
 
-	private void createLabButtons(List<Lab> labs) {
+	private void createLabButtons(List<Lesson> lessons) {
 		labButtons.clear();
-		for (Lab lab : labs) {
-			LabButton labButton = new LabButton(currStudent, lab);
+		for (Lesson lesson : lessons) {
+			LabButton labButton = new LabButton(currStudent, lesson);
 			calendarPanel.add(labButton);
 			setInitialSelection(labButton);
 			setButtonClickListener(labButton);
@@ -209,7 +209,7 @@ public class JDialogStudentCard extends JDialog {
 		}
 	}
 	private void setInitialSelection(LabButton labButton) {
-		if (labButton.lab.equals(mainWindow.getCurrDate())) {
+		if (labButton.lesson.equals(mainWindow.getCurrDate())) {
 			labButton.isSelected = true;
 			labButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
 			labButton.repaint();
@@ -230,7 +230,7 @@ public class JDialogStudentCard extends JDialog {
 				}
 				currLabButton = button;
 				currLabButton.requestFocus();
-				mainWindow.getCurrDateCmb().setSelectedItem(labButton.lab);
+				mainWindow.getCurrDateCmb().setSelectedItem(labButton.lesson);
 			}
 		});
 	}
@@ -239,51 +239,42 @@ public class JDialogStudentCard extends JDialog {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				LabButton button = (LabButton) e.getSource();
-				Color color = button.getBackground();
-				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					handleSpaceKeyPressed(button, color);
-					SwingUtilities.invokeLater(button::repaint);
+				int keyCode = e.getKeyCode();
+				if (keyCode == KeyEvent.VK_SPACE) {
+					handleSpaceKeyPressed(button, button.getBackground());
 					button.requestFocus();
-				} else if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+					button.repaint();
+				} else if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT) {
 					int index = labButtons.indexOf(button);
-					if (index > 0) {
-						LabButton nextLabButton =labButtons.get(index - 1);
-						nextLabButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR,5));
+					int nextIndex = index + (keyCode == KeyEvent.VK_LEFT ? -1 : 1);
+					if (nextIndex >= 0 && nextIndex < labButtons.size()) {
+						LabButton nextLabButton = labButtons.get(nextIndex);
+						nextLabButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
 						button.setBorder(null);
+						button.repaint();
 						nextLabButton.requestFocus();
-						mainWindow.getCurrDateCmb().setSelectedItem(nextLabButton.lab);
+						mainWindow.getCurrDateCmb().setSelectedItem(nextLabButton.lesson);
 					}
-				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-					int index = labButtons.indexOf(button);
-					if (index < labButtons.size() - 1) {
-						LabButton nextLabButton = labButtons.get(index + 1);
-						nextLabButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR,5));
-						button.setBorder(null);
-						nextLabButton.requestFocus();
-						mainWindow.getCurrDateCmb().setSelectedItem(nextLabButton.lab);
-					}
-				} else if (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_DOWN) {
+				} else if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN) {
 					int selectedRow = mainWindow.getStudentTable().getSelectedRow();
 					if (selectedRow != -1) {
-						int nextRow = e.getKeyCode() == KeyEvent.VK_UP ? selectedRow - 1 : selectedRow + 1;
-
-						while (nextRow >= 0 && nextRow < mainWindow.getStudentTable().getRowCount() && mainWindow.getStudentTable().getStudentTableModel().isBlankRow(nextRow)) {
-							nextRow += e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1;
+						int nextRow = selectedRow + (keyCode == KeyEvent.VK_UP ? -1 : 1);
+						while (nextRow >= 0 && nextRow < mainWindow.getStudentTable().getRowCount() &&
+								mainWindow.getStudentTable().getStudentTableModel().isBlankRow(nextRow)) {
+							nextRow += (keyCode == KeyEvent.VK_UP ? -1 : 1);
 						}
-
 						if (nextRow >= 0 && nextRow < mainWindow.getStudentTable().getRowCount()) {
 							mainWindow.getStudentTable().setRowSelectionInterval(nextRow, nextRow);
 							mainWindow.getStudentTable().scrollRectToVisible(mainWindow.getStudentTable().getCellRect(nextRow, 0, true));
 							mainWindow.getStudentTable().repaint();
 						}
 					}
-					e.consume();
 				}
+				e.consume();
 			}
 		});
-
-
 	}
+
 	private void handleSpaceKeyPressed(LabButton button, Color color) {
 		if (color.equals(Constants.NO_ATTENDANCE_COLOR)) {
 			addAttendance(button);
@@ -292,7 +283,7 @@ public class JDialogStudentCard extends JDialog {
 		}
 	}
 	private void addAttendance(LabButton button) {
-		Attendance attendance = new Attendance(button.lab.getId(), currStudent.getId(), false);
+		Attendance attendance = new Attendance(button.lesson.getId(), currStudent.getId());
 		long id = AttendanceDaoImpl.getInstance().save(attendance);
 		if (id > 0) {
 			attendance.setId(id);
@@ -303,10 +294,8 @@ public class JDialogStudentCard extends JDialog {
 		}
 	}
 	private void removeAttendance(LabButton button) {
-		int choice = JOptionPane.showConfirmDialog(null, "Вы уверены, что хотите удалить запись о посещении?", "Подтверждение", JOptionPane.YES_NO_OPTION);
-		if (choice == JOptionPane.YES_OPTION) {
-			Attendance attendance = currStudent.getLabAttendance(button.lab);
-			Grade studentGrade = currStudent.getLabGrade(button.lab);
+			Attendance attendance = currStudent.getLabAttendance(button.lesson);
+			Grade studentGrade = currStudent.getLabGrade(button.lesson);
 			if (attendance != null) {
 				if (AttendanceDaoImpl.getInstance().delete(attendance)) {
 					System.out.println("Запись о посещении удалена");
@@ -320,7 +309,6 @@ public class JDialogStudentCard extends JDialog {
 					mainWindow.refreshStudentTable();
 				}
 			}
-		}
 	}
 
 	public JButton getDeleteButton() {
