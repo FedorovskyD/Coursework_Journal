@@ -7,7 +7,7 @@ import java.util.List;
 import database.ConnectionFactory;
 import database.dao.AttendanceDao;
 import entity.Attendance;
-import entity.Lab;
+import entity.Lesson;
 import entity.Student;
 
 public class AttendanceDaoImpl implements AttendanceDao {
@@ -37,9 +37,9 @@ public class AttendanceDaoImpl implements AttendanceDao {
 		Attendance attendance = new Attendance();
 		attendance.setId(rs.getInt("id"));
 
-		attendance.setLab(rs.getLong("lesson_ID"));
+		attendance.setLessonId(rs.getLong("lesson_ID"));
 
-		attendance.setStudent(rs.getLong("student_ID"));
+		attendance.setStudentId(rs.getLong("student_ID"));
 		return attendance;
 	}
 
@@ -61,11 +61,11 @@ public class AttendanceDaoImpl implements AttendanceDao {
 	}
 
 	@Override
-	public List<Attendance> getAttendancesByLab(Lab lab) {
+	public List<Attendance> getAttendancesByLab(Lesson lesson) {
 		List<Attendance> attendances = new ArrayList<>();
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(GET_ATTENDANCES_BY_LAB_SQL)) {
-			ps.setLong(1, lab.getId());
+			ps.setLong(1, lesson.getId());
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
 					attendances.add(createAttendanceFromResultSet(rs));
@@ -114,8 +114,8 @@ public class AttendanceDaoImpl implements AttendanceDao {
 		long generatedId = -1;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
-			ps.setLong(2, entity.getLab());
-			ps.setLong(1, entity.getStudent());
+			ps.setLong(2, entity.getLessonId());
+			ps.setLong(1, entity.getStudentId());
 			ps.executeUpdate();
 			ResultSet generatedKeys = ps.getGeneratedKeys();
 			if (generatedKeys.next()) {
@@ -131,8 +131,8 @@ public class AttendanceDaoImpl implements AttendanceDao {
 	public boolean update(Attendance entity) {
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(UPDATE_SQL)) {
-			ps.setLong(1, entity.getLab());
-			ps.setLong(2, entity.getStudent());
+			ps.setLong(1, entity.getLessonId());
+			ps.setLong(2, entity.getStudentId());
 			ps.executeUpdate();
 			return true;
 		} catch (SQLException e) {

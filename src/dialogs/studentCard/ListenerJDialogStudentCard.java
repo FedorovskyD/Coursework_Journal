@@ -65,7 +65,7 @@ public class ListenerJDialogStudentCard implements ActionListener {
 					student1.setFirstName(fio[1]);
 					student1.setLastName(fio[0]);
 					student1.setMiddleName(fio[2]);
-					student1.setGroup(jDialogStudentCard.currStudent.getGroup());
+					student1.setGroupId(jDialogStudentCard.currStudent.getGroupId());
 					student1.setTelephone(jDialogStudentCard.txtPhone.getText());
 					student1.setEmail(jDialogStudentCard.txtEmail.getText());
 					StudentDaoImpl.getInstance().update(student1);

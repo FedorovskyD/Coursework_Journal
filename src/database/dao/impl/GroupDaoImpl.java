@@ -16,9 +16,6 @@ public class GroupDaoImpl implements GroupDao {
 	private static final String SAVE_QUERY = "INSERT INTO `group` (GroupNumber) VALUES (?)";
 	private static final String UPDATE_QUERY = "UPDATE `group` SET GroupNumber = ? WHERE ID = ?";
 	private static final String DELETE_QUERY = "DELETE FROM `group` WHERE ID = ?";
-	private static final String GET_STUDENTS_QUERY = "SELECT * FROM student WHERE groupID = ?";
-	private static final String ADD_STUDENT_QUERY = "UPDATE student SET groupID = ? WHERE ID = ?";
-	private static final String REMOVE_STUDENT_QUERY = "UPDATE student SET groupID = NULL WHERE ID = ?";
 	private static GroupDaoImpl instance;
 
 	private GroupDaoImpl() {
@@ -124,7 +121,7 @@ public class GroupDaoImpl implements GroupDao {
 	private Group createGroupFromResultSet(ResultSet rs) throws SQLException {
 		long id = rs.getLong("ID");
 		String groupNumber = rs.getString("GroupNumber");
-		return new Group(id, groupNumber,StudentDaoImpl.getInstance().getStudentsByGroupId(id),LabDaoImpl.getInstance().getAllLabByGroupId(id));
+		return new Group(id, groupNumber,StudentDaoImpl.getInstance().getStudentsByGroupId(id), LessonDaoImpl.getInstance().getAllLabByGroupId(id));
 	}
 }
 

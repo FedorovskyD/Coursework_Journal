@@ -13,8 +13,7 @@ public class Student {
 	private String photoPath;
 	private List<Attendance> attendanceList;
 	private List<Grade> gradeList;
-	private int age;
-	private long group;
+	private long groupId;
 
 	public Student() {
 		attendanceList = new ArrayList<>();
@@ -69,12 +68,12 @@ public class Student {
 		this.email = email;
 	}
 
-	public long getGroup() {
-		return group;
+	public long getGroupId() {
+		return groupId;
 	}
 
-	public void setGroup(long group) {
-		this.group = group;
+	public void setGroupId(long groupId) {
+		this.groupId = groupId;
 	}
 
 	public String getPhotoPath() {
@@ -101,14 +100,6 @@ public class Student {
 		this.gradeList = gradeList;
 	}
 
-	public int getAge() {
-		return age;
-	}
-
-	public void setAge(int age) {
-		this.age = age;
-	}
-
 	public double getAverageGrade() {
 		return gradeList.stream()
 				.mapToInt(Grade::getGrade)
@@ -116,29 +107,29 @@ public class Student {
 				.orElse(0.0);
 	}
 
-	public Grade getLabGrade(Lab lab) {
-		if (lab == null) {
+	public Grade getLabGrade(Lesson lesson) {
+		if (lesson == null) {
 			return null;
 		}
 		return gradeList.stream()
-				.filter(grade -> grade.getLab() == lab.getId())
+				.filter(grade -> grade.getLessonId() == lesson.getId())
 				.findFirst()
 				.orElse(null);
 	}
 
-	public Attendance getLabAttendance(Lab lab) {
-		if (lab == null) {
+	public Attendance getLabAttendance(Lesson lesson) {
+		if (lesson == null) {
 			return null;
 		}
 		return attendanceList.stream()
-				.filter(a -> a.getLab() == lab.getId())
+				.filter(a -> a.getLessonId() == lesson.getId())
 				.findFirst()
 				.orElse(null);
 	}
 
 
-	public boolean isAttendance(Lab lab) {
-		return attendanceList.stream().anyMatch(attendance -> attendance.getLab() == lab.getId());
+	public boolean isAttendance(Lesson lesson) {
+		return attendanceList.stream().anyMatch(attendance -> attendance.getLessonId() == lesson.getId());
 	}
 
 

@@ -85,7 +85,7 @@ public class StudentDaoImpl implements StudentDao {
 			statement.setString(1, entity.getLastName());
 			statement.setString(2, entity.getFirstName());
 			statement.setString(3, entity.getMiddleName());
-			statement.setLong(4, entity.getGroup());
+			statement.setLong(4, entity.getGroupId());
 			statement.setString(5, entity.getTelephone());
 			statement.setString(6, entity.getEmail());
 			int rowsAffected = statement.executeUpdate();
@@ -107,7 +107,7 @@ public class StudentDaoImpl implements StudentDao {
 			ps.setString(1, entity.getLastName());
 			ps.setString(2, entity.getFirstName());
 			ps.setString(3, entity.getMiddleName());
-			ps.setLong(4, entity.getGroup());
+			ps.setLong(4, entity.getGroupId());
 			ps.setString(5, entity.getTelephone());
 			ps.setString(6, entity.getEmail());
 			ps.setString(7, entity.getPhotoPath());
@@ -159,7 +159,7 @@ public class StudentDaoImpl implements StudentDao {
 			student.setEmail(rs.getString("Email"));
 			student.setPhotoPath(rs.getString("PhotoPath"));
 			student.setTelephone(rs.getString("Telephone"));
-			student.setGroup(rs.getInt("GroupID"));
+			student.setGroupId(rs.getInt("GroupID"));
 			student.setGradeList(GradeDaoImpl.getInstance().getGradesByStudent(student));
 			student.setAttendanceList(AttendanceDaoImpl.getInstance().getAttendancesByStudent(student));
 			students.add(student);

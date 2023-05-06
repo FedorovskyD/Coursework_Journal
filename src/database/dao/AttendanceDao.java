@@ -2,7 +2,7 @@ package database.dao;
 
 
 import entity.Attendance;
-import entity.Lab;
+import entity.Lesson;
 import entity.Student;
 
 import java.util.List;
@@ -23,9 +23,9 @@ public interface AttendanceDao extends CrudDao<Attendance> {
 	/**
 	 * Возвращает список записей о посещении для определенной лабораторной работы.
 	 *
-	 * @param lab лабораторная работа
+	 * @param lesson лабораторная работа
 	 * @return список записей о посещении для данной лабораторной работы
 	 */
-	List<Attendance> getAttendancesByLab(Lab lab);
+	List<Attendance> getAttendancesByLab(Lesson lesson);
 }
 

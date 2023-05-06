@@ -1,5 +1,4 @@
 package entity;
-import entity.Student;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,18 +7,18 @@ public class Group {
 	private long id;
 	private String name;
 	private List<Student> students;
-	private List<Lab> labs;
+	private List<Lesson> lessons;
 
-	public Group(Long id, String name, List<Student> students,List<Lab> labs) {
+	public Group(Long id, String name, List<Student> students,List<Lesson> lessons) {
 		this.id = id;
 		this.name = name;
 		this.students = students;
-		this.labs = labs;
+		this.lessons = lessons;
 	}
 
 	public Group() {
 		students = new ArrayList<>();
-		labs = new ArrayList<>();
+		lessons = new ArrayList<>();
 	}
 
 	public Long getId() {
@@ -46,12 +45,12 @@ public class Group {
 		this.students = students;
 	}
 
-	public List<Lab> getLabs() {
-		return labs;
+	public List<Lesson> getLabs() {
+		return lessons;
 	}
 
-	public void setLabs(List<Lab> labs) {
-		this.labs = labs;
+	public void setLabs(List<Lesson> lessons) {
+		this.lessons = lessons;
 	}
 
 	@Override

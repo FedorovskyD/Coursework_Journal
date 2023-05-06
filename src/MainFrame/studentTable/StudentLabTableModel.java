@@ -2,7 +2,7 @@ package MainFrame.studentTable;
 
 import entity.Grade;
 import entity.Group;
-import entity.Lab;
+import entity.Lesson;
 import entity.Student;
 
 import javax.swing.*;
@@ -23,11 +23,11 @@ public class StudentLabTableModel extends AbstractTableModel {
 	public static final int COUNT_SEPARATOR_ROW = 5;
 
 	private List<Student> students;
-	private List<Lab> labs;
+	private List<Lesson> lessons;
 
 	public StudentLabTableModel(Group group) {
 		students = group.getStudents();
-		labs = group.getLabs();
+		lessons = group.getLabs();
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return labs.size() + 2;
+		return lessons.size() + 2;
 	}
 
 	@Override
@@ -85,15 +85,15 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 	private JPanel getLabPanel(int rowIndex, int columnIndex) {
 		Student student = students.get(rowIndex);
-		Lab lab = labs.get(columnIndex - FIRST_LAB_COLUMN_INDEX);
+		Lesson lesson = lessons.get(columnIndex - FIRST_LAB_COLUMN_INDEX);
 
-		boolean isAttendance = student.isAttendance(lab);
+		boolean isAttendance = student.isAttendance(lesson);
 
 		JPanel panelTableCell = new JPanel();
 		panelTableCell.setBackground(isAttendance ? ATTENDANCE_COLOR : Color.WHITE);
 
 		if (isAttendance) {
-			Grade grade = student.getLabGrade(lab);
+			Grade grade = student.getLabGrade(lesson);
 			String text = (grade != null) ? String.valueOf(grade.getGrade()) : "Нет оценки";
 
 			JLabel label = new JLabel(text);
@@ -113,8 +113,8 @@ public class StudentLabTableModel extends AbstractTableModel {
 		}
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-		if (columnIndex - FIRST_LAB_COLUMN_INDEX < labs.size()) {
-			return dateFormat.format(labs.get(columnIndex - FIRST_LAB_COLUMN_INDEX).getDate());
+		if (columnIndex - FIRST_LAB_COLUMN_INDEX < lessons.size()) {
+			return dateFormat.format(lessons.get(columnIndex - FIRST_LAB_COLUMN_INDEX).getDate());
 		}
 		return "";
 	}

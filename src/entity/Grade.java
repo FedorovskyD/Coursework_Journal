@@ -2,19 +2,19 @@ package entity;
 
 public class Grade {
 	private long id;
-	private long lab;
-	private long student;
+	private long lessonId;
+	private long studentId;
 	private int grade;
-	public Grade(long lab,long student, int gradeValue) {
-		this.lab = lab;
+	public Grade(long lessonId, long studentId, int gradeValue) {
+		this.lessonId = lessonId;
 		this.grade = gradeValue;
-		this.student = student;
+		this.studentId = studentId;
 	}
 	public Grade(){
 
 	}
-	public long getLab() {
-		return lab;
+	public long getLessonId() {
+		return lessonId;
 	}
 
 	public int getGrade() {
@@ -29,19 +29,19 @@ public class Grade {
 		this.id = id;
 	}
 
-	public void setLab(long lab) {
-		this.lab = lab;
+	public void setLessonId(long lessonId) {
+		this.lessonId = lessonId;
 	}
 
 	public void setGrade(int grade) {
 		this.grade = grade;
 	}
 
-	public long getStudent() {
-		return student;
+	public long getStudentId() {
+		return studentId;
 	}
 
-	public void setStudent(long student) {
-		this.student = student;
+	public void setStudentId(long studentId) {
+		this.studentId = studentId;
 	}
 }

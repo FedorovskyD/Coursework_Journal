@@ -1,7 +1,7 @@
 package database.dao;
 
 import entity.Grade;
-import entity.Lab;
+import entity.Lesson;
 import entity.Student;
 
 import java.util.List;
@@ -22,9 +22,9 @@ public interface GradeDao extends CrudDao<Grade> {
 	/**
 	 * Возвращает список оценок за лабораторную работу
 	 *
-	 * @param lab лабораторная работа, для которой нужно получить список оценок
+	 * @param lesson лабораторная работа, для которой нужно получить список оценок
 	 * @return список оценок за лабораторную работу
 	 */
-	List<Grade> getGradesByLab(Lab lab);
+	List<Grade> getGradesByLab(Lesson lesson);
 }
 

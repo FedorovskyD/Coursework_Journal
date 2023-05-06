@@ -1,50 +1,39 @@
 package dialogs.studentCard;
 
-import database.dao.impl.AttendanceDaoImpl;
-import database.dao.impl.GradeDaoImpl;
-import entity.Attendance;
 import entity.Grade;
-import entity.Lab;
+import entity.Lesson;
 import entity.Student;
 import utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 
 public class LabButton extends JButton {
-	protected final Lab lab; //Лабораторная работа за которую отвечает данная кнопка
+	protected final Lesson lesson; //Лабораторная работа за которую отвечает данная кнопка
 	protected boolean isSelected; //Показывает активна ли данная кнопка
 
-	public LabButton(Student currStudent, Lab lab) {
-		this.lab = lab;
-		Grade grade = currStudent.getLabGrade(lab);
-		if (grade != null) {
-			setGrade(String.valueOf(grade.getGrade()));
-		} else {
-			setGrade("Нет");
-		}
+	public LabButton(Student currStudent, Lesson lesson) {
+		this.lesson = lesson;
+		Grade grade = currStudent.getLabGrade(lesson);
+		String gradeStr = (grade != null) ? String.valueOf(grade.getGrade()) : "Нет";
+		setGrade(gradeStr);
 		isSelected = false;
-		if (currStudent.isAttendance(lab)) {
-			setBackground(Constants.ATTENDANCE_COLOR);
-		} else {
-			setBackground(Constants.NO_ATTENDANCE_COLOR);
-		}
-		setPreferredSize(new Dimension(200,30));
+		Color color = currStudent.isAttendance(lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
+		setBackground(color);
+		setPreferredSize(new Dimension(200, 30));
 		setMaximumSize(getPreferredSize());
 	}
 	public void setGrade(String grade) {
 		setText("<html>" + getStringLabDate() + "<br> Оценка: " + grade + "</html>");
 	}
 
-	public Lab getLab() {
-		return lab;
+	public Lesson getLab() {
+		return lesson;
 	}
 
 	public String getStringLabDate() {
-		return new SimpleDateFormat("dd.MM.yyyy").format(lab.getDate());
+		return new SimpleDateFormat("dd.MM.yyyy").format(lesson.getDate());
 	}
 
 	@Override

@@ -2,47 +2,36 @@ package entity;
 
 public class Attendance {
 	private long id;
-	private long lab;
-	private long student;
-	private boolean isLecture;
+	private long lessonId;
+	private long studentId;
 
-	public Attendance(long lab, long student, boolean isLecture) {
-		this.lab = lab;
-		this.isLecture = isLecture;
-		this.student = student;
+	public Attendance(long lessonId, long studentId) {
+		this.lessonId = lessonId;
+		this.studentId = studentId;
 	}
 public Attendance(){}
 	public long getId() {
 		return id;
 	}
 
-	public long getLab() {
-		return lab;
+	public long getLessonId() {
+		return lessonId;
 	}
 
-	public long getStudent() {
-		return student;
-	}
-
-	public boolean isLecture() {
-		return isLecture;
+	public long getStudentId() {
+		return studentId;
 	}
 
 	public void setId(long id) {
 		this.id = id;
 	}
 
-	public void setLab(long lab) {
-		this.lab = lab;
+	public void setLessonId(long lessonId) {
+		this.lessonId = lessonId;
 	}
 
-	public void setStudent(long student) {
-		this.student = student;
+	public void setStudentId(long studentId) {
+		this.studentId = studentId;
 	}
-
-	public void setLecture(boolean lecture) {
-		isLecture = lecture;
-	}
-
 
 }

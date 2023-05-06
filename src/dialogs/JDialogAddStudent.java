@@ -14,13 +14,14 @@ public class JDialogAddStudent extends JDialog {
 	private JTextField firstNameField;
 	private JTextField lastNameField;
 	private JTextField middleNameField;
+	private JTextField photoPathField;
 	private JComboBox<Group> groupField;
 	private JTextField emailField, telephoneField;
 	private JLabel photoLabel;
 	private JButton photoButton;
 	private JButton okButton;
 	private JButton cancelButton;
-	private File photoPath ;
+	private File photoPath;
 	private boolean ok;
 	protected MainWindow mainWindow;
 
@@ -36,124 +37,70 @@ public class JDialogAddStudent extends JDialog {
 		super(parent, "Добавить студента", true);
 		mainWindow = (MainWindow) parent;
 		photoPath = new File("photos/default.jpg");
-		JPanel panel = new JPanel(new GridBagLayout());
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.insets = new Insets(5, 5, 5, 5);
-
 		JLabel firstNameLabel = new JLabel("Имя:");
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		panel.add(firstNameLabel, constraints);
-
 		firstNameField = new JTextField(20);
-		constraints.gridx = 1;
-		constraints.gridy = 0;
-		panel.add(firstNameField, constraints);
-
 		JLabel lastNameLabel = new JLabel("Фамилия:");
-		constraints.gridx = 0;
-		constraints.gridy = 1;
-		panel.add(lastNameLabel, constraints);
-
 		lastNameField = new JTextField(20);
-		constraints.gridx = 1;
-		constraints.gridy = 1;
-		panel.add(lastNameField, constraints);
-
 		JLabel middleNameLabel = new JLabel("Отчество:");
-		constraints.gridx = 0;
-		constraints.gridy = 2;
-		panel.add(middleNameLabel, constraints);
-
 		middleNameField = new JTextField(20);
-		constraints.gridx = 1;
-		constraints.gridy = 2;
-		panel.add(middleNameField, constraints);
-
 		JLabel groupLabel = new JLabel("Группа:");
-		constraints.gridx = 0;
-		constraints.gridy = 3;
-		panel.add(groupLabel, constraints);
-
-		groupField = new JComboBox<>(((MainWindow)parent).getGroups().toArray(new Group[0]));
-		constraints.gridx = 1;
-		constraints.gridy = 3;
-		panel.add(groupField, constraints);
-
+		groupField = new JComboBox<>(((MainWindow) parent).getGroups().toArray(new Group[0]));
+		groupField.setSelectedItem(mainWindow.getCurrentGroup());
 		JLabel emailLabel = new JLabel("Email:");
-		constraints.gridx = 0;
-		constraints.gridy = 4;
-		panel.add(emailLabel, constraints);
-
 		emailField = new JTextField(20);
-		constraints.gridx = 1;
-		constraints.gridy = 4;
-		panel.add(emailField, constraints);
-
 		JLabel telephoneLbl = new JLabel("Telephone:");
-		constraints.gridx = 0;
-		constraints.gridy = 5;
-		panel.add(telephoneLbl, constraints);
-
 		telephoneField = new JTextField(20);
-		constraints.gridx = 1;
-		constraints.gridy = 5;
-		panel.add(telephoneField, constraints);
-
-
-
-		photoLabel = new JLabel("Фото:");
-		constraints.gridx = 0;
-		constraints.gridy = 6;
-		panel.add(photoLabel, constraints);
-
+		photoLabel = new JLabel("Путь к фото:");
 		photoButton = new JButton("Выбрать файл");
+		photoPathField = new JTextField(20);
+
+		JPanel studentDataPanel = new JPanel(new GridLayout(10,2));
+		studentDataPanel.add(lastNameLabel);
+		studentDataPanel.add(lastNameField);
+		studentDataPanel.add(firstNameLabel);
+		studentDataPanel.add(firstNameField);
+		studentDataPanel.add(middleNameLabel);
+		studentDataPanel.add(middleNameField);
+		studentDataPanel.add(groupLabel);
+		studentDataPanel.add(groupField);
+		studentDataPanel.add(emailLabel);
+		studentDataPanel.add(emailField);
+		studentDataPanel.add(telephoneLbl);
+		studentDataPanel.add(telephoneField);
+		studentDataPanel.add(photoLabel);
+		studentDataPanel.add(photoPathField);
+		studentDataPanel.add(new JLabel());
+		studentDataPanel.add(photoButton);
+		studentDataPanel.add(new JLabel());
+		studentDataPanel.add(new JLabel());
+
+
+		setLayout(new BorderLayout());
+	getContentPane().add(studentDataPanel,BorderLayout.CENTER);
+
+
 		photoButton.addActionListener(e -> {
 			JFileChooser fileChooser = new JFileChooser();
 			int result = fileChooser.showOpenDialog(JDialogAddStudent.this);
 			if (result == JFileChooser.APPROVE_OPTION) {
 				photoPath = fileChooser.getSelectedFile();
-
-				try {
-					BufferedImage image = ImageIO.read(photoPath);
-					// Масштабируем изображение и создаем иконку
-					ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(), photoLabel.getHeight(), Image.SCALE_SMOOTH));
-					// Устанавливаем иконку изображения в JLabel
-					photoLabel.setIcon(icon);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
+				photoPathField.setText(photoPath.getPath());
 			}
 		});
-		constraints.gridx = 1;
-		constraints.gridy = 6;
-		panel.add(photoButton, constraints);
-
-		photoLabel = new JLabel();
-		constraints.gridx = 2;
-		constraints.gridy = 6;
-		photoLabel.setPreferredSize(new Dimension(160, 200));
-		panel.add(photoLabel, constraints);
 
 		okButton = new JButton("ОК");
 		okButton.addActionListener(e -> {
 			ok = true;
 			dispose();
 		});
-		constraints.gridx = 1;
-		constraints.gridy = 7;
-		panel.add(okButton, constraints);
+
 
 		cancelButton = new JButton("Отмена");
 		cancelButton.addActionListener(e -> dispose());
-		constraints.gridx = 2;
-		constraints.gridy = 7;
-		panel.add(cancelButton, constraints);
+		studentDataPanel.add(okButton);
+		studentDataPanel.add(cancelButton);
 		ListenerJDialogAddStudent listenerJDialogAddStudent = new ListenerJDialogAddStudent(this);
 		okButton.addActionListener(listenerJDialogAddStudent);
-
-		getContentPane().add(panel, BorderLayout.CENTER);
 
 		pack();
 		setLocationRelativeTo(parent);
@@ -180,7 +127,9 @@ public class JDialogAddStudent extends JDialog {
 		return groupField;
 	}
 
-	public String getTelephone(){return telephoneField.getText();}
+	public String getTelephone() {
+		return telephoneField.getText();
+	}
 
 	public ImageIcon getPhoto() {
 		return (ImageIcon) photoLabel.getIcon();

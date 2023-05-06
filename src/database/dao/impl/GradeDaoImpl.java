@@ -3,7 +3,7 @@ package database.dao.impl;
 import database.ConnectionFactory;
 import database.dao.GradeDao;
 import entity.Grade;
-import entity.Lab;
+import entity.Lesson;
 import entity.Student;
 
 import java.sql.*;
@@ -70,8 +70,8 @@ public class GradeDaoImpl implements GradeDao {
 		long id = -1;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement statement = connection.prepareStatement(SQL_INSERT_GRADE, Statement.RETURN_GENERATED_KEYS)) {
-			statement.setLong(1, grade.getLab());
-			statement.setLong(2, grade.getStudent());
+			statement.setLong(1, grade.getLessonId());
+			statement.setLong(2, grade.getStudentId());
 			statement.setInt(3, grade.getGrade());
 			statement.executeUpdate();
 			ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -89,8 +89,8 @@ public class GradeDaoImpl implements GradeDao {
 		boolean result = false;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement statement = connection.prepareStatement(SQL_UPDATE_GRADE)) {
-			statement.setLong(1, grade.getLab());
-			statement.setLong(2, grade.getStudent());
+			statement.setLong(1, grade.getLessonId());
+			statement.setLong(2, grade.getStudentId());
 			statement.setInt(3, grade.getGrade());
 			statement.setLong(4, grade.getId());
 			int rowsAffected = statement.executeUpdate();
@@ -137,12 +137,12 @@ public class GradeDaoImpl implements GradeDao {
 
 
 	@Override
-	public List<Grade> getGradesByLab(Lab lab) {
+	public List<Grade> getGradesByLab(Lesson lesson) {
 		List<Grade> grades = new ArrayList<>();
 		try (Connection connection = ConnectionFactory.getConnection()) {
 			String sql = "SELECT * FROM grade WHERE labID = ?";
 			PreparedStatement statement = connection.prepareStatement(sql);
-			statement.setLong(1, lab.getId());
+			statement.setLong(1, lesson.getId());
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next()) {
 				Grade grade = createGradeFromResultSet(resultSet);

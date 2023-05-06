@@ -25,7 +25,7 @@ public class ListenerJDialogAddStudent implements ActionListener {
 			student.setMiddleName(jDialogAddStudent.getMiddleName());
 			student.setEmail(jDialogAddStudent.getEmail());
 			student.setTelephone(jDialogAddStudent.getTelephone());
-			student.setGroup(((Group) jDialogAddStudent.getGroupField().getSelectedItem()).getId());
+			student.setGroupId(((Group) jDialogAddStudent.getGroupField().getSelectedItem()).getId());
 			long id = StudentDaoImpl.getInstance().save(student);;
 			System.out.println("Student with id = "+id+" was added");
 			student.setId(id);
