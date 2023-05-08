@@ -1,4 +1,4 @@
-package dialogs.studentCard;
+package MainFrame.studentCard;
 
 import database.dao.impl.StudentDaoImpl;
 import entity.Student;
@@ -78,7 +78,7 @@ public class ListenerJDialogStudentCard implements ActionListener {
 				jDialogStudentCard.editButton.setText("Редактировать");
 				jDialogStudentCard.calendarPanel.setEnabled(true);
 				jDialogStudentCard.btnEditPhoto.setVisible(false);
-				jDialogStudentCard.getCurrLabButton().requestFocus();
+				jDialogStudentCard.getCurrLessonButton().requestFocus();
 			}
 		}
 	}

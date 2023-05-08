@@ -45,12 +45,10 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 		} else if (e.getSource() == mainWindow.getBtnAddLab()) {
 			new JDialogAddLesson(mainWindow).setVisible(true);
 		} else if (e.getSource() == mainWindow.getCmbGroupNumber()) {
-			Group group = (Group) mainWindow.getCmbGroupNumber().getSelectedItem();
-			mainWindow.getCurrDateCmb().setModel(new DefaultComboBoxModel<>(group.getLabs().toArray(new Lesson[0])));
-			mainWindow.studentTable.clearSelection();
+			mainWindow.updateDateCmb();
 			mainWindow.refreshStudentTable();
+			mainWindow.jDialogStudentCard.getLabButtons().clear();
 			mainWindow.jDialogStudentCard.updateStudentCard(mainWindow.currStudent);
-			mainWindow.updateCurrDateCmb();
 			mainWindow.studentTable.revalidate();
 			mainWindow.studentTable.repaint();
 		}
@@ -71,12 +69,9 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 					}
 				} else {
 					Student selectedStudent = mainWindow.studentTable.getStudentAt(selectedRowIndex);
-					mainWindow.studentTable.repaint();
 					if (mainWindow.currStudent != selectedStudent) {
 						mainWindow.jDialogStudentCard.updateStudentCard(selectedStudent);
-						if (!mainWindow.jDialogStudentCard.isVisible()) {
-							mainWindow.jDialogStudentCard.setVisible(true);
-						}
+						mainWindow.jDialogStudentCard.setVisible(true);
 					}
 				}
 			}
@@ -101,7 +96,7 @@ public class MainWindowListener implements ActionListener, ListSelectionListener
 				// Устанавливаем новую модель в JComboBox
 				Group selectedGroup = mainWindow.getCurrentGroup();
 				if (selectedGroup != null && isUpdate) {
-					mainWindow.getStudentTable().setModel(new StudentLabTableModel(selectedGroup));
+					mainWindow.getStudentTable().setModel(new StudentLabTableModel(selectedGroup,mainWindow.radioBtnLecture.isSelected()));
 				}
 			}
 		}

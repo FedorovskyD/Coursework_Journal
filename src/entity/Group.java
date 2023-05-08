@@ -41,18 +41,27 @@ public class Group {
 		return students;
 	}
 
-	public void setStudents(List<Student> students) {
-		this.students = students;
-	}
-
-	public List<Lesson> getLabs() {
+	public List<Lesson> getLessons(){
 		return lessons;
 	}
-
-	public void setLabs(List<Lesson> lessons) {
-		this.lessons = lessons;
+	public List<Lesson> getLabs() {
+		List<Lesson> labs = new ArrayList<>();
+		for (Lesson lesson: lessons){
+			if(!lesson.isLecture()){
+				labs.add(lesson);
+			}
+		}
+		return labs;
 	}
-
+	public List<Lesson> getLectures(){
+		List<Lesson> lectures = new ArrayList<>();
+		for (Lesson lesson: lessons){
+			if(lesson.isLecture()){
+				lectures.add(lesson);
+			}
+		}
+		return lectures;
+	}
 	@Override
 	public String toString() {
 		return name;

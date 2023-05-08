@@ -23,11 +23,15 @@ public class StudentLabTableModel extends AbstractTableModel {
 	public static final int COUNT_SEPARATOR_ROW = 5;
 
 	private List<Student> students;
-	private List<Lesson> lessons;
+	private final List<Lesson> lessons;
 
-	public StudentLabTableModel(Group group) {
+	public StudentLabTableModel(Group group,boolean isLecture) {
 		students = group.getStudents();
-		lessons = group.getLabs();
+		if(isLecture) {
+			lessons = group.getLectures();
+		}else {
+			lessons = group.getLabs();
+		}
 	}
 
 	@Override
@@ -161,11 +165,14 @@ public class StudentLabTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 
-	public void sortByAttendance(boolean isInc) {
-		students.sort((o1, o2) -> {
-			int result = Integer.compare(o1.getAttendanceList().size(), o2.getAttendanceList().size());
-			return isInc ? result : result * (-1);
-		});
+	public void sortByAttendance(boolean isLecture,boolean isInc) {
+		if(isLecture){
+			students.sort((o1, o2) -> {
+				int result = Integer.compare(o1.getAttendanceList().size(), o2.getAttendanceList().size());
+				return isInc ? result : result * (-1);
+			});
+		}
+
 		fireTableDataChanged();
 	}
 
