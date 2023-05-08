@@ -11,8 +11,8 @@ import java.awt.event.*;
  */
 public class StudentTable extends JTable {
 
-	public StudentTable(Group group) {
-		super(new StudentLabTableModel(group));
+	public StudentTable(Group group,boolean isLecture) {
+		super(new StudentLabTableModel(group,isLecture));
 		setDefaultRenderer(Object.class, new StudentTableCellRender());
 		setRowHeight(35);
 

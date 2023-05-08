@@ -12,6 +12,7 @@ public class Student {
 	private String email;
 	private String photoPath;
 	private List<Attendance> attendanceList;
+
 	private List<Grade> gradeList;
 	private long groupId;
 
@@ -145,5 +146,10 @@ public class Student {
 	@Override
 	public String toString() {
 		return getFullName();
+	}
+	public void getCountOfLectureAttendance(){
+		for(Attendance attendance: attendanceList){
+
+		}
 	}
 }

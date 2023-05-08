@@ -174,12 +174,6 @@ public class JDialogStudentCard extends JDialog {
 		});
 		gradePanel.setVisible(mainWindow.getRadioBtnLab().isSelected());
 		setLocationRelativeTo(owner);
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowActivated(WindowEvent e) {
-				currLessonButton.requestFocus();
-			}
-		});
 	}
 
 	public void updateStudentCard(Student student) {
@@ -232,6 +226,7 @@ public class JDialogStudentCard extends JDialog {
 
 	private void createLessonButtons(List<Lesson> lessons) {
 		calendarPanel.removeAll();
+		lessonButtons.clear();
 		for (Lesson lesson : lessons) {
 			LessonButton lessonButton = new LessonButton(lesson);
 			Grade grade = currStudent.getLabGrade(lesson);
@@ -239,11 +234,11 @@ public class JDialogStudentCard extends JDialog {
 			lessonButton.setGrade(gradeInfo);
 			Color color = currStudent.isAttendance(lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
 			lessonButton.setBackground(color);
+			setInitialSelection(lessonButton);
 			setButtonClickListener(lessonButton);
 			setButtonKeyListener(lessonButton);
 			lessonButtons.add(lessonButton);
 			calendarPanel.add(lessonButton);
-			setInitialSelection(lessonButton);
 		}
 	}
 
@@ -257,6 +252,7 @@ public class JDialogStudentCard extends JDialog {
 				lessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
 			}
 			currLessonButton = lessonButton;
+			currLessonButton.requestFocus();
 		}
 	}
 
@@ -272,6 +268,7 @@ public class JDialogStudentCard extends JDialog {
 					currLessonButton.repaint();
 				}
 				currLessonButton = button;
+				currLessonButton.requestFocus();
 				mainWindow.getCurrDateCmb().setSelectedItem(lessonButton.lesson);
 			}
 		});
@@ -296,7 +293,6 @@ public class JDialogStudentCard extends JDialog {
 						button.setBorder(null);
 						button.repaint();
 						nextLessonButton.requestFocus();
-						currLessonButton = nextLessonButton;
 						mainWindow.getCurrDateCmb().setSelectedItem(nextLessonButton.lesson);
 					}
 				} else if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN) {
@@ -332,12 +328,7 @@ public class JDialogStudentCard extends JDialog {
 		long id = AttendanceDaoImpl.getInstance().save(attendance);
 		if (id > 0) {
 			attendance.setId(id);
-			if(button.lesson.isLecture()){
-				currStudent.getLectureAttendanceList().add(attendance);
-			}else {
-				currStudent.getLabAttendanceList().add(attendance);
-			}
-
+			currStudent.getAttendanceList().add(attendance);
 			button.setBackground(Constants.ATTENDANCE_COLOR);
 			System.out.println("Запись о посещении добавлена");
 			mainWindow.refreshStudentTable();
@@ -350,12 +341,7 @@ public class JDialogStudentCard extends JDialog {
 		if (attendance != null) {
 			if (AttendanceDaoImpl.getInstance().delete(attendance)) {
 				System.out.println("Запись о посещении удалена");
-				if(button.lesson.isLecture()){
-					currStudent.getLectureAttendanceList().remove(attendance);
-				}else {
-					currStudent.getLabAttendanceList().remove(attendance);
-				}
-
+				currStudent.getAttendanceList().remove(attendance);
 				if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
 					currStudent.getGradeList().remove(studentGrade);
 					System.out.println("Оценка за лабораторную удалена");

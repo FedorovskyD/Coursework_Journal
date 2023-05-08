@@ -162,6 +162,7 @@ public class LessonDaoImpl implements LessonDao {
 		String classroom = resultSet.getString("classroom");
 		int groupId = resultSet.getInt("groupID");
 		String labName = resultSet.getString("lesson_name");
+		boolean isLecture = resultSet.getBoolean("isLecture");
 
 		Lesson lesson = new Lesson();
 		lesson.setId(id);
@@ -169,6 +170,7 @@ public class LessonDaoImpl implements LessonDao {
 		lesson.setClassroom(classroom);
 		lesson.setGroupId(groupId);
 		lesson.setLessonName(labName);
+		lesson.setLecture(isLecture);
 		return lesson;
 	}
 
