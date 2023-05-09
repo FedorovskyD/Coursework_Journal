@@ -22,7 +22,13 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 
 		if (value instanceof JPanel panel) {
 			if (isSelected) {
-				panel.setBackground(Constants.SELECTED_COLOR);
+				if(panel.getBackground().equals(Constants.ATTENDANCE_COLOR)){
+					panel.setBackground(new Color(200,247,147));
+					table.getTableHeader().getColumnModel().getColumn(column).setCellRenderer(this);
+				}else {
+					panel.setBackground(Constants.SELECTED_COLOR);
+				}
+
 			} else if (panel.getBackground().equals(Constants.ATTENDANCE_COLOR)) {
 				panel.setBackground(Constants.ATTENDANCE_COLOR);
 			} else {

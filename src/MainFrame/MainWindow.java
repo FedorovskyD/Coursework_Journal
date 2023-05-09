@@ -141,6 +141,11 @@ public class MainWindow extends JFrame {
 		//Создаем карточку для отображения информации о студенте
 		jDialogStudentCard = new JDialogStudentCard(this, "Карточка студента");
 		// Добавление слушателей
+		addWindowListener(new WindowAdapter() {
+			public void windowOpened(WindowEvent e) {
+				studentTable.requestFocus();
+			}
+		});
 		MainWindowListener mainWindowListener = new MainWindowListener(this);
 		btnAddStudent.addActionListener(mainWindowListener);
 		btnAddGroup.addActionListener(mainWindowListener);
@@ -148,9 +153,7 @@ public class MainWindow extends JFrame {
 		btnAddLab.addActionListener(mainWindowListener);
 		studentTable.getSelectionModel().addListSelectionListener(mainWindowListener);
 		cmbGroupNumber.addActionListener(mainWindowListener);
-		radioBtnDec.addActionListener(e -> {
-			refreshStudentTable();
-		});
+		radioBtnDec.addActionListener(e -> {refreshStudentTable();studentTable.requestFocus();});
 		radioBtnLecture.addActionListener(e -> {
 			jDialogStudentCard.getScrollPane().setBorder(BorderFactory.createTitledBorder("Лекции"));
 			jDialogStudentCard.getTxtAverageGrade().setText(" ");
@@ -163,6 +166,7 @@ public class MainWindow extends JFrame {
 			updateDateCmb();
 			updateSortCmb();
 			refreshStudentTable();
+			studentTable.requestFocus();
 		});
 		radioBtnLab.addActionListener(e -> {
 			jDialogStudentCard.getScrollPane().setBorder(BorderFactory.createTitledBorder("Лабораторные"));
@@ -176,11 +180,13 @@ public class MainWindow extends JFrame {
 			updateDateCmb();
 			updateSortCmb();
 			refreshStudentTable();
+			studentTable.requestFocus();
 		});
 		radioBtnInc.addActionListener(e -> {
 			refreshStudentTable();
+			studentTable.requestFocus();
 		});
-		cmbSort.addActionListener(e -> refreshStudentTable());
+		cmbSort.addActionListener(e -> {refreshStudentTable();studentTable.requestFocus();});
 		studentTable.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				int row = studentTable.rowAtPoint(e.getPoint());
@@ -191,6 +197,7 @@ public class MainWindow extends JFrame {
 						if (student == currStudent) {
 							jDialogStudentCard.updateStudentCard(student);
 							jDialogStudentCard.setVisible(true);
+
 						}
 					}
 				}
@@ -255,10 +262,6 @@ public class MainWindow extends JFrame {
 		return radioBtnLab;
 	}
 
-	public JDialogStudentCard getStudentCardDialog() {
-		return jDialogStudentCard;
-	}
-
 	public void refreshStudentTable() {
 		currStudent = getCurrentStudent();
 		studentTable.setModel(new StudentLabTableModel(getCurrGroup(), radioBtnLecture.isSelected()));
@@ -269,14 +272,22 @@ public class MainWindow extends JFrame {
 				studentTable.setRowSelectionInterval(index, index);
 				studentTable.revalidate();
 				studentTable.repaint();
+			}else {
+				Student student = studentTable.getStudentAt(0);
+				if (student != null) {
+					studentTable.setRowSelectionInterval(0, 0);
+					currStudent = student;
+					jDialogStudentCard.setVisible(false);
+				}
 			}
-		} else {
+		}else {
 			Student student = studentTable.getStudentAt(0);
 			if (student != null) {
-				currStudent = student;
 				studentTable.setRowSelectionInterval(0, 0);
+				currStudent = student;
 			}
 		}
+
 		studentTable.getColumnModel().getColumn(0).setPreferredWidth(300);
 	}
 
@@ -286,7 +297,7 @@ public class MainWindow extends JFrame {
 		switch (Objects.requireNonNull(option)) {
 			case Constants.SORT_BY_ALPHABET -> studentTable.getStudentTableModel().sortByAlphabet(isInc);
 			case Constants.SORT_BY_GRADE -> studentTable.getStudentTableModel().sortByGrade(isInc);
-			case Constants.SORT_BY_ATTENDANCE -> studentTable.getStudentTableModel().sortByAttendance(true,isInc);
+			case Constants.SORT_BY_ATTENDANCE -> studentTable.getStudentTableModel().sortByAttendance(radioBtnLecture.isSelected(),isInc);
 		}
 	}
 

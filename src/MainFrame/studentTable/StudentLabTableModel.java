@@ -22,11 +22,13 @@ public class StudentLabTableModel extends AbstractTableModel {
 	private static final Color ATTENDANCE_COLOR = new Color(144, 238, 144);
 	public static final int COUNT_SEPARATOR_ROW = 5;
 
-	private List<Student> students;
+	private final List<Student> students;
 	private final List<Lesson> lessons;
+	private final boolean isLecture;
 
 	public StudentLabTableModel(Group group,boolean isLecture) {
 		students = group.getStudents();
+		this.isLecture=isLecture;
 		if(isLecture) {
 			lessons = group.getLectures();
 		}else {
@@ -82,10 +84,6 @@ public class StudentLabTableModel extends AbstractTableModel {
 		return null;
 	}
 
-	public void setStudents(List<Student> students) {
-		this.students = students;
-		fireTableDataChanged();
-	}
 
 	private JPanel getLabPanel(int rowIndex, int columnIndex) {
 		Student student = students.get(rowIndex);
@@ -98,7 +96,13 @@ public class StudentLabTableModel extends AbstractTableModel {
 
 		if (isAttendance) {
 			Grade grade = student.getLabGrade(lesson);
-			String text = (grade != null) ? String.valueOf(grade.getGrade()) : "Нет оценки";
+			String text = "";
+			if(!isLecture) {
+				text = (grade != null) ? String.valueOf(grade.getGrade()) : "Нет оценки";
+			}else {
+				text = "+";
+			}
+
 
 			JLabel label = new JLabel(text);
 			panelTableCell.add(label);
@@ -168,7 +172,12 @@ public class StudentLabTableModel extends AbstractTableModel {
 	public void sortByAttendance(boolean isLecture,boolean isInc) {
 		if(isLecture){
 			students.sort((o1, o2) -> {
-				int result = Integer.compare(o1.getAttendanceList().size(), o2.getAttendanceList().size());
+				int result = Integer.compare(o1.getLectureAttendanceList().size(), o2.getLectureAttendanceList().size());
+				return isInc ? result : result * (-1);
+			});
+		}else {
+			students.sort((o1, o2) -> {
+				int result = Integer.compare(o1.getLabAttendanceList().size(), o2.getLabAttendanceList().size());
 				return isInc ? result : result * (-1);
 			});
 		}
