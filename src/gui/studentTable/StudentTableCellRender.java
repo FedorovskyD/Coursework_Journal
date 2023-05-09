@@ -1,4 +1,4 @@
-package MainFrame.studentTable;
+package gui.studentTable;
 
 import utils.Constants;
 

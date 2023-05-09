@@ -1,19 +1,18 @@
-package dialogs;
+package gui.dialogs;
 
-import MainFrame.MainWindow;
+import gui.MainFrame;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class JDialogAbout extends JDialog {
-    private MainWindow mainWindow;
-    public JDialogAbout(JFrame parent) {
+public class AboutDialog extends JDialog {
+    private MainFrame mainFrame;
+    public AboutDialog(JFrame parent) {
         super(parent, "Delete Group", true);
-        mainWindow = (MainWindow) parent;
+        mainFrame = (MainFrame) parent;
 
         // Общая панель
         JPanel authorsPanel = new JPanel(new BorderLayout());
-//        authorsPanel.setPreferredSize(new Dimension(400, 250));
         JLabel center=new JLabel("Информация об авторах");
         center.setHorizontalAlignment(JLabel.CENTER);
         authorsPanel.add(center,BorderLayout.NORTH);
@@ -66,15 +65,4 @@ public class JDialogAbout extends JDialog {
         setLocationRelativeTo(parent);
         setVisible(true);
     }
-
-
-//    public static void main(String[] args) {
-//        JDialogAbout aboutauthor=new JDialogAbout();
-//
-//        aboutauthor.setTitle("Authors");
-//    aboutauthor.setSize(800,600);
-//        aboutauthor.setLocationRelativeTo(null);
-//        aboutauthor.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//        aboutauthor.setVisible(true);
-//    }
 }

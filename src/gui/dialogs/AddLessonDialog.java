@@ -1,34 +1,34 @@
-package dialogs;
+package gui.dialogs;
 
-import MainFrame.MainWindow;
+import gui.MainFrame;
 import entity.Group;
+import listeners.JDialogAddLessonListener;
 
 import javax.swing.*;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class JDialogAddLesson extends JDialog {
+public class AddLessonDialog extends JDialog {
 
 	private final JTextField nameField;
-	private JRadioButton radioButtonLab;
-	private JRadioButton radioButtonLecture;
-	private JSpinner dateSpinner;
-	private JTextField roomField;
-	private JComboBox<Group> groupComboBox;
-	protected final JButton addButton, cancelButton;
-	private boolean isAddButtonPressed = false;
-	protected final MainWindow mainWindow;
+	private final JRadioButton radioButtonLecture;
+	private final JSpinner dateSpinner;
+	private final JTextField roomField;
+	private final JComboBox<Group> groupComboBox;
+	private final JButton addButton;
 
-	public JDialogAddLesson(JFrame parent) {
-		super(parent, "Добавление лабораторного занятия", true);
-		mainWindow = (MainWindow) parent;
+	private final MainFrame mainFrame;
+
+	public AddLessonDialog(JFrame parent) {
+		super(parent, "Добавление занятия", true);
+		mainFrame = (MainFrame) parent;
 		JLabel lessonTypeLabel = new JLabel("Тип занятия:");
 		JLabel nameLabel = new JLabel("Название:");
 		JLabel roomLabel = new JLabel("Аудитория:");
 		JLabel dateLabel = new JLabel("Дата:");
 		JLabel groupLabel = new JLabel("Группа:");
-		radioButtonLab = new JRadioButton("Лабораторная",true);
+		JRadioButton radioButtonLab = new JRadioButton("Лабораторная", true);
 		radioButtonLecture = new JRadioButton("Лекция");
 		ButtonGroup buttonGroupLessonType = new ButtonGroup();
 		buttonGroupLessonType.add(radioButtonLab);
@@ -38,8 +38,8 @@ public class JDialogAddLesson extends JDialog {
 		panelLessonType.add(radioButtonLecture);
 		nameField = new JTextField(20);
 		roomField = new JTextField(20);
-		groupComboBox = new JComboBox<>(new DefaultComboBoxModel<>(mainWindow.getGroups().toArray(new Group[0])));
-		groupComboBox.setSelectedItem(mainWindow.getCurrentGroup());
+		groupComboBox = new JComboBox<>(new DefaultComboBoxModel<>(mainFrame.getGroups().toArray(new Group[0])));
+		groupComboBox.setSelectedItem(mainFrame.getCurrentGroup());
 		SpinnerDateModel dateModel = new SpinnerDateModel();
 		dateSpinner = new JSpinner(dateModel);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
@@ -47,7 +47,7 @@ public class JDialogAddLesson extends JDialog {
 		dateSpinner.setEditor(dateEditor);
 
 		addButton = new JButton("Добавить");
-		cancelButton = new JButton("Отмена");
+		JButton cancelButton = new JButton("Отмена");
 
 		JPanel panel = new JPanel(new GridLayout(6, 2));
 		panel.add(lessonTypeLabel);
@@ -65,8 +65,8 @@ public class JDialogAddLesson extends JDialog {
 		cancelButton.addActionListener(e -> {
 			dispose();
 		});
-		ListenerJDialogAddLesson listenerJDialogAddLesson = new ListenerJDialogAddLesson(this);
-		addButton.addActionListener(listenerJDialogAddLesson);
+		JDialogAddLessonListener JDialogAddLessonListener = new JDialogAddLessonListener(this);
+		addButton.addActionListener(JDialogAddLessonListener);
 		this.setContentPane(panel);
 		this.pack();
 		this.setLocationRelativeTo(null);
@@ -88,11 +88,15 @@ public class JDialogAddLesson extends JDialog {
 		return ((SpinnerDateModel)dateSpinner.getModel()).getDate();
 	}
 
-	public JRadioButton getRadioButtonLab() {
-		return radioButtonLab;
-	}
-
 	public JRadioButton getRadioButtonLecture() {
 		return radioButtonLecture;
+	}
+
+	public JButton getAddButton() {
+		return addButton;
+	}
+
+	public MainFrame getMainWindow() {
+		return mainFrame;
 	}
 }

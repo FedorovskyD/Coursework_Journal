@@ -1,10 +1,9 @@
-package MainFrame.studentTable;
+package gui.studentTable;
 
 import entity.Group;
 import entity.Student;
 
 import javax.swing.*;
-import java.awt.event.*;
 
 /**
  * проверен
@@ -24,4 +23,5 @@ public class StudentTable extends JTable {
 	public StudentLabTableModel getStudentTableModel() {
 		return (StudentLabTableModel) getModel();
 	}
+
 }

@@ -1,9 +1,8 @@
-package MainFrame.studentCard;
+package gui.studentTable.studentCard;
 
 import entity.Lesson;
 
 import javax.swing.*;
-import java.awt.*;
 import java.text.SimpleDateFormat;
 
 public class LessonButton extends JButton {

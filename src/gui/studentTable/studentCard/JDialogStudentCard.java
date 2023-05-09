@@ -1,12 +1,13 @@
-package MainFrame.studentCard;
+package gui.studentTable.studentCard;
 
-import MainFrame.MainWindow;
+import gui.MainFrame;
 import database.dao.impl.AttendanceDaoImpl;
 import database.dao.impl.GradeDaoImpl;
 import entity.Attendance;
 import entity.Grade;
 import entity.Lesson;
 import entity.Student;
+import listeners.JDialogStudentCardListener;
 import utils.Constants;
 import utils.PhotoUtils;
 
@@ -28,7 +29,6 @@ import java.util.List;
  * @author Fedorovsky D. A.
  */
 public class JDialogStudentCard extends JDialog {
-	protected Student currStudent;
 	protected JLabel photoLabel;
 	protected final JTextField txtFullName, txtEmail, txtPhone;
 	protected final JLabel txtAverageGrade;
@@ -39,16 +39,16 @@ public class JDialogStudentCard extends JDialog {
 	protected final JPanel calendarPanel;
 	protected LessonButton currLessonButton;
 	private final List<LessonButton> lessonButtons;
-	protected final MainWindow mainWindow;
+	protected final MainFrame mainFrame;
 	private final JScrollPane scrollPane;
-	private JPanel gradePanel;
+	private final JPanel gradePanel;
 
 
 	public JDialogStudentCard(JFrame owner, String title) {
 		super(owner, title, true);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(new Dimension(1000, 800));
-		mainWindow = (MainWindow) owner;
+		mainFrame = (MainFrame) owner;
 		BoxLayout layout = new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS);
 		getContentPane().setLayout(layout);
 		// Создание панели информации о студенте
@@ -71,8 +71,7 @@ public class JDialogStudentCard extends JDialog {
 		txtPhone.setMaximumSize(txtFieldDimension);
 		txtPhone.setEditable(false);
 		txtPhone.setBorder(null);
-		currStudent = mainWindow.getCurrentStudent();
-		gpaLabel = new JLabel(mainWindow.getRadioBtnLab().isSelected()?"Средний балл:":" ");
+		gpaLabel = new JLabel(mainFrame.getRadioBtnLab().isSelected()?"Средний балл:":" ");
 		txtAverageGrade = new JLabel();
 		deleteButton = new JButton("Удалить студента");
 		editButton = new JButton("Редактировать");
@@ -147,49 +146,50 @@ public class JDialogStudentCard extends JDialog {
 		scrollPane = new JScrollPane(calendarPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(BorderFactory.createTitledBorder(
-				mainWindow.getRadioBtnLab().isSelected() ? "Лабораторные работы" : "Лекции"));
+				mainFrame.getRadioBtnLab().isSelected() ? "Лабораторные работы" : "Лекции"));
 		calendarPanel.setPreferredSize(new Dimension(800, 500));
 		calendarPanel.setMinimumSize(calendarPanel.getPreferredSize());
 		calendarPanel.setMaximumSize(calendarPanel.getPreferredSize());
 		add(infoPanel);
 		add(gradePanel);
 		add(scrollPane);
-		ListenerJDialogStudentCard listenerJDialogStudentCard = new ListenerJDialogStudentCard(this);
+		JDialogStudentCardListener JDialogStudentCardListener = new JDialogStudentCardListener(this);
 		btnEditPhoto.addActionListener(e -> {
 			editPhoto();
 		});
-		deleteButton.addActionListener(listenerJDialogStudentCard);
-		editButton.addActionListener(listenerJDialogStudentCard);
+		deleteButton.addActionListener(JDialogStudentCardListener);
+		editButton.addActionListener(JDialogStudentCardListener);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if (editButton.getText().equalsIgnoreCase("редактировать")) {
-					mainWindow.refreshStudentTable();
+					mainFrame.refreshStudentTable();
 					setVisible(false);
 				} else {
-					JOptionPane.showMessageDialog(mainWindow, "Перед закрытием карточки нужно завершить редактирование");
+					JOptionPane.showMessageDialog(mainFrame, "Перед закрытием карточки нужно завершить редактирование");
 					setVisible(true);
 				}
 			}
 		});
-		gradePanel.setVisible(mainWindow.getRadioBtnLab().isSelected());
+		gradePanel.setVisible(mainFrame.getRadioBtnLab().isSelected());
 		setLocationRelativeTo(owner);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
-				currLessonButton.requestFocus();
+				if(currLessonButton != null) {
+					currLessonButton.requestFocus();
+				}
 			}
 		});
 	}
 
 	public void updateStudentCard(Student student) {
 		if (student == null) return;
-		currStudent = student;
 		txtFullName.setText(student.getLastName() + " " + student.getFirstName() +
 				" " + student.getMiddleName());
 		txtEmail.setText(student.getEmail());
 		txtPhone.setText(student.getTelephone());
-		if(!mainWindow.getRadioBtnLecture().isSelected()) {
+		if(!mainFrame.getRadioBtnLecture().isSelected()) {
 			txtAverageGrade.setText(String.valueOf(student.getAverageGrade()));
 		}
 		Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
@@ -202,30 +202,29 @@ public class JDialogStudentCard extends JDialog {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
 		List<Lesson> lessons;
-		if(mainWindow.getRadioBtnLecture().isSelected()){
-			lessons = mainWindow.getCurrGroup().getLectures();
+		if(mainFrame.getRadioBtnLecture().isSelected()){
+			lessons = mainFrame.getCurrGroup().getLectures();
 		}else {
-			lessons = mainWindow.getCurrentGroup().getLabs();
+			lessons = mainFrame.getCurrentGroup().getLabs();
 		}
 		if (lessonButtons.size() == 0) {
 			createLessonButtons(lessons);
 		} else {
 			updateLessonButtons(lessonButtons);
 		}
-		mainWindow.repaint();
-		repaint();
-
+		mainFrame.getStudentTable().repaint();
 	}
 
 	private void updateLessonButtons(List<LessonButton> lessonButtons) {
 		for (LessonButton lessonButton : lessonButtons) {
 			SwingUtilities.invokeLater(() -> {
-				Grade grade = currStudent.getLabGrade(lessonButton.lesson);
+				Grade grade = mainFrame.getCurrStudent().getLabGrade(lessonButton.lesson);
 				String gradeInfo = grade != null ? String.valueOf(grade.getGrade()) : "Нет";
 				lessonButton.setGrade(gradeInfo);
-				Color color = currStudent.isAttendance(lessonButton.lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
+				Color color = mainFrame.getCurrStudent().isAttendance(lessonButton.lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
 				lessonButton.setBackground(color);
 				setInitialSelection(lessonButton);
+				lessonButton.repaint();
 			});
 		}
 	}
@@ -234,10 +233,10 @@ public class JDialogStudentCard extends JDialog {
 		calendarPanel.removeAll();
 		for (Lesson lesson : lessons) {
 			LessonButton lessonButton = new LessonButton(lesson);
-			Grade grade = currStudent.getLabGrade(lesson);
+			Grade grade = mainFrame.getCurrStudent().getLabGrade(lesson);
 			String gradeInfo = grade != null ? String.valueOf(grade.getGrade()) : "Нет";
 			lessonButton.setGrade(gradeInfo);
-			Color color = currStudent.isAttendance(lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
+			Color color = mainFrame.getCurrStudent().isAttendance(lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
 			lessonButton.setBackground(color);
 			setButtonClickListener(lessonButton);
 			setButtonKeyListener(lessonButton);
@@ -248,7 +247,7 @@ public class JDialogStudentCard extends JDialog {
 	}
 
 	private void setInitialSelection(LessonButton lessonButton) {
-		if (lessonButton.lesson.equals(mainWindow.getCurrDate())) {
+		if (lessonButton.lesson.equals(mainFrame.getCurrDate())) {
 			lessonButton.isSelected = true;
 			if(currLessonButton!=null){
 				currLessonButton.setBorder(null);
@@ -272,7 +271,7 @@ public class JDialogStudentCard extends JDialog {
 					currLessonButton.repaint();
 				}
 				currLessonButton = button;
-				mainWindow.getCurrDateCmb().setSelectedItem(lessonButton.lesson);
+				mainFrame.getCurrDateCmb().setSelectedItem(lessonButton.lesson);
 			}
 		});
 	}
@@ -297,20 +296,20 @@ public class JDialogStudentCard extends JDialog {
 						button.repaint();
 						nextLessonButton.requestFocus();
 						currLessonButton = nextLessonButton;
-						mainWindow.getCurrDateCmb().setSelectedItem(nextLessonButton.lesson);
+						mainFrame.getCurrDateCmb().setSelectedItem(nextLessonButton.lesson);
 					}
 				} else if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN) {
-					int selectedRow = mainWindow.getStudentTable().getSelectedRow();
+					int selectedRow = mainFrame.getStudentTable().getSelectedRow();
 					if (selectedRow != -1) {
 						int nextRow = selectedRow + (keyCode == KeyEvent.VK_UP ? -1 : 1);
-						while (nextRow >= 0 && nextRow < mainWindow.getStudentTable().getRowCount() &&
-								mainWindow.getStudentTable().getStudentTableModel().isBlankRow(nextRow)) {
+						while (nextRow >= 0 && nextRow < mainFrame.getStudentTable().getRowCount() &&
+								mainFrame.getStudentTable().getStudentTableModel().isBlankRow(nextRow)) {
 							nextRow += (keyCode == KeyEvent.VK_UP ? -1 : 1);
 						}
-						if (nextRow >= 0 && nextRow < mainWindow.getStudentTable().getRowCount()) {
-							mainWindow.getStudentTable().setRowSelectionInterval(nextRow, nextRow);
-							mainWindow.getStudentTable().scrollRectToVisible(mainWindow.getStudentTable().getCellRect(nextRow, 0, true));
-							mainWindow.getStudentTable().repaint();
+						if (nextRow >= 0 && nextRow < mainFrame.getStudentTable().getRowCount()) {
+							mainFrame.getStudentTable().setRowSelectionInterval(nextRow, nextRow);
+							mainFrame.getStudentTable().scrollRectToVisible(mainFrame.getStudentTable().getCellRect(nextRow, 0, true));
+							mainFrame.getStudentTable().repaint();
 						}
 					}
 				}
@@ -328,42 +327,42 @@ public class JDialogStudentCard extends JDialog {
 	}
 
 	private void addAttendance(LessonButton button) {
-		Attendance attendance = new Attendance(button.lesson.getId(), currStudent.getId());
+		Attendance attendance = new Attendance(button.lesson.getId(), mainFrame.getCurrStudent().getId());
 		long id = AttendanceDaoImpl.getInstance().save(attendance);
 		if (id > 0) {
 			attendance.setId(id);
 			if(button.lesson.isLecture()){
-				currStudent.getLectureAttendanceList().add(attendance);
+				mainFrame.getCurrStudent().getLectureAttendanceList().add(attendance);
 			}else {
-				currStudent.getLabAttendanceList().add(attendance);
+				mainFrame.getCurrStudent().getLabAttendanceList().add(attendance);
 			}
 
 			button.setBackground(Constants.ATTENDANCE_COLOR);
 			System.out.println("Запись о посещении добавлена");
-			mainWindow.refreshStudentTable();
+			mainFrame.refreshStudentTable();
 		}
 	}
 
 	private void removeAttendance(LessonButton button) {
-		Attendance attendance = currStudent.getLabAttendance(button.lesson);
-		Grade studentGrade = currStudent.getLabGrade(button.lesson);
+		Attendance attendance = mainFrame.getCurrStudent().getLabAttendance(button.lesson);
+		Grade studentGrade = mainFrame.getCurrStudent().getLabGrade(button.lesson);
 		if (attendance != null) {
 			if (AttendanceDaoImpl.getInstance().delete(attendance)) {
 				System.out.println("Запись о посещении удалена");
 				if(button.lesson.isLecture()){
-					currStudent.getLectureAttendanceList().remove(attendance);
+					mainFrame.getCurrStudent().getLectureAttendanceList().remove(attendance);
 				}else {
-					currStudent.getLabAttendanceList().remove(attendance);
+					mainFrame.getCurrStudent().getLabAttendanceList().remove(attendance);
 				}
 
 				if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
-					currStudent.getGradeList().remove(studentGrade);
+					mainFrame.getCurrStudent().getGradeList().remove(studentGrade);
 					System.out.println("Оценка за лабораторную удалена");
 				}
-				updateGpa(currStudent);
+				updateGpa(mainFrame.getCurrStudent());
 				button.setBackground(Constants.NO_ATTENDANCE_COLOR);
 				button.setGrade("Нет");
-				mainWindow.refreshStudentTable();
+				mainFrame.refreshStudentTable();
 			}
 		}
 	}
@@ -384,10 +383,6 @@ public class JDialogStudentCard extends JDialog {
 		return lessonButtons;
 	}
 
-	public Student getStudent() {
-		return currStudent;
-	}
-
 	public LessonButton getCurrLessonButton() {
 		return currLessonButton;
 	}
@@ -406,8 +401,8 @@ public class JDialogStudentCard extends JDialog {
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
 			try {
-				PhotoUtils.getInstance().savePhoto(currStudent, selectedFile);
-				BufferedImage image = ImageIO.read(new File(currStudent.getPhotoPath()));
+				PhotoUtils.getInstance().savePhoto(mainFrame.getCurrStudent(), selectedFile);
+				BufferedImage image = ImageIO.read(new File(mainFrame.getCurrStudent().getPhotoPath()));
 				// Масштабируем изображение и создаем иконку
 				ImageIcon icon = new ImageIcon(image.getScaledInstance(photoLabel.getWidth(),
 						photoLabel.getHeight(), Image.SCALE_SMOOTH));
@@ -441,35 +436,70 @@ public class JDialogStudentCard extends JDialog {
 	private void setGrade(JButton gradeButton) {
 		if (currLessonButton.getBackground().equals(Constants.ATTENDANCE_COLOR)) {
 			currLessonButton.setGrade(gradeButton.getText());
-			Grade grade = currStudent.getLabGrade(currLessonButton.getLab());
+			Grade grade = mainFrame.getCurrStudent().getLabGrade(currLessonButton.getLab());
 			if (grade == null) {
 				long id;
 				Grade grade1 = new Grade(currLessonButton.getLab().getId(),
-						currStudent.getId(), Integer.parseInt(gradeButton.getText()));
+						mainFrame.getCurrStudent().getId(), Integer.parseInt(gradeButton.getText()));
 				if ((id = GradeDaoImpl.getInstance().save(grade1)) != -1) {
 					System.out.println("Оценка добавлена");
 					grade1.setId(id);
-					currStudent.getGradeList().add(grade1);
-					mainWindow.refreshStudentTable();
+					mainFrame.getCurrStudent().getGradeList().add(grade1);
+					mainFrame.refreshStudentTable();
 				}
 			} else {
 				grade.setGrade(Integer.parseInt(gradeButton.getText()));
-				mainWindow.refreshStudentTable();
+				mainFrame.refreshStudentTable();
 				if (GradeDaoImpl.getInstance().update(grade)) {
 					System.out.println("Оценка изменена");
 				}
 			}
-			if(mainWindow.getRadioBtnLab().isSelected()) {
-				txtAverageGrade.setText(String.valueOf(currStudent.getAverageGrade()));
+			if(mainFrame.getRadioBtnLab().isSelected()) {
+				txtAverageGrade.setText(String.valueOf(mainFrame.getCurrStudent().getAverageGrade()));
 			}
 		} else {
-			JOptionPane.showMessageDialog(mainWindow, "Перед выставлением оценки нужно отметить студента");
+			JOptionPane.showMessageDialog(mainFrame, "Перед выставлением оценки нужно отметить студента");
 		}
 		currLessonButton.requestFocus();
+	}
+
+	public Student getCurrStudent() {
+		return mainFrame.getCurrStudent();
+	}
+
+	public JTextField getTxtFullName() {
+		return txtFullName;
+	}
+
+	public JTextField getTxtEmail() {
+		return txtEmail;
+	}
+
+	public JTextField getTxtPhone() {
+		return txtPhone;
+	}
+
+	public JLabel getPhoneLabel() {
+		return phoneLabel;
+	}
+
+	public JButton getBtnEditPhoto() {
+		return btnEditPhoto;
+	}
+
+	public JLabel getEmailLabel() {
+		return emailLabel;
+	}
+
+	public MainFrame getMainWindow() {
+		return mainFrame;
 	}
 
 	public JPanel getGradePanel() {
 		return gradePanel;
 	}
 
+	public List<LessonButton> getLessonButtons() {
+		return lessonButtons;
+	}
 }
