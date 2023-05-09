@@ -71,7 +71,7 @@ public class JDialogStudentCard extends JDialog {
 		txtPhone.setMaximumSize(txtFieldDimension);
 		txtPhone.setEditable(false);
 		txtPhone.setBorder(null);
-		gpaLabel = new JLabel(mainFrame.getRadioBtnLab().isSelected()?"Средний балл:":" ");
+		gpaLabel = new JLabel(mainFrame.getRadioBtnLab().isSelected() ? "Средний балл:" : " ");
 		txtAverageGrade = new JLabel();
 		deleteButton = new JButton("Удалить студента");
 		editButton = new JButton("Редактировать");
@@ -138,7 +138,7 @@ public class JDialogStudentCard extends JDialog {
 		infoPanel.setPreferredSize(new Dimension(1000, 300));
 		infoPanel.setMinimumSize(infoPanel.getPreferredSize());
 		infoPanel.setMaximumSize(infoPanel.getPreferredSize());
-		gradePanel = new JPanel(new GridLayout(1,11));
+		gradePanel = new JPanel(new GridLayout(1, 11));
 		gradePanel.setMinimumSize(new Dimension(100, 100));
 		createGradeButtons(gradePanel);
 		// Добавление панели календаря
@@ -176,7 +176,7 @@ public class JDialogStudentCard extends JDialog {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowActivated(WindowEvent e) {
-				if(currLessonButton != null) {
+				if (currLessonButton != null) {
 					currLessonButton.requestFocus();
 				}
 			}
@@ -189,7 +189,7 @@ public class JDialogStudentCard extends JDialog {
 				" " + student.getMiddleName());
 		txtEmail.setText(student.getEmail());
 		txtPhone.setText(student.getTelephone());
-		if(!mainFrame.getRadioBtnLecture().isSelected()) {
+		if (!mainFrame.getRadioBtnLecture().isSelected()) {
 			txtAverageGrade.setText(String.valueOf(student.getAverageGrade()));
 		}
 		Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
@@ -202,9 +202,9 @@ public class JDialogStudentCard extends JDialog {
 			photoLabel.setSize(new Dimension(0, 0));
 		}
 		List<Lesson> lessons;
-		if(mainFrame.getRadioBtnLecture().isSelected()){
+		if (mainFrame.getRadioBtnLecture().isSelected()) {
 			lessons = mainFrame.getCurrGroup().getLectures();
-		}else {
+		} else {
 			lessons = mainFrame.getCurrentGroup().getLabs();
 		}
 		if (lessonButtons.size() == 0) {
@@ -249,10 +249,10 @@ public class JDialogStudentCard extends JDialog {
 	private void setInitialSelection(LessonButton lessonButton) {
 		if (lessonButton.lesson.equals(mainFrame.getCurrDate())) {
 			lessonButton.isSelected = true;
-			if(currLessonButton!=null){
+			if (currLessonButton != null) {
 				currLessonButton.setBorder(null);
 				lessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
-			}else {
+			} else {
 				lessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
 			}
 			currLessonButton = lessonButton;
@@ -282,7 +282,10 @@ public class JDialogStudentCard extends JDialog {
 			public void keyPressed(KeyEvent e) {
 				LessonButton button = (LessonButton) e.getSource();
 				int keyCode = e.getKeyCode();
-				if (keyCode == KeyEvent.VK_SPACE) {
+				if (keyCode == KeyEvent.VK_ESCAPE) {
+					// Закрыть диалоговое окно
+					mainFrame.getJDialogStudentCard().dispose();
+				} else if (keyCode == KeyEvent.VK_SPACE) {
 					handleSpaceKeyPressed(button, button.getBackground());
 					button.requestFocus();
 					button.repaint();
@@ -331,9 +334,9 @@ public class JDialogStudentCard extends JDialog {
 		long id = AttendanceDaoImpl.getInstance().save(attendance);
 		if (id > 0) {
 			attendance.setId(id);
-			if(button.lesson.isLecture()){
+			if (button.lesson.isLecture()) {
 				mainFrame.getCurrStudent().getLectureAttendanceList().add(attendance);
-			}else {
+			} else {
 				mainFrame.getCurrStudent().getLabAttendanceList().add(attendance);
 			}
 
@@ -349,9 +352,9 @@ public class JDialogStudentCard extends JDialog {
 		if (attendance != null) {
 			if (AttendanceDaoImpl.getInstance().delete(attendance)) {
 				System.out.println("Запись о посещении удалена");
-				if(button.lesson.isLecture()){
+				if (button.lesson.isLecture()) {
 					mainFrame.getCurrStudent().getLectureAttendanceList().remove(attendance);
-				}else {
+				} else {
 					mainFrame.getCurrStudent().getLabAttendanceList().remove(attendance);
 				}
 
@@ -454,7 +457,7 @@ public class JDialogStudentCard extends JDialog {
 					System.out.println("Оценка изменена");
 				}
 			}
-			if(mainFrame.getRadioBtnLab().isSelected()) {
+			if (mainFrame.getRadioBtnLab().isSelected()) {
 				txtAverageGrade.setText(String.valueOf(mainFrame.getCurrStudent().getAverageGrade()));
 			}
 		} else {

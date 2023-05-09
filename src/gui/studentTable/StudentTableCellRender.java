@@ -10,42 +10,46 @@ import java.awt.*;
  * проверен
  */
 public class StudentTableCellRender extends DefaultTableCellRenderer {
+	public StudentTableCellRender(int column){
+		columnToHighlight = column;
+	}
+	private int columnToHighlight ; // номер колонки для подсветки
+
+
+	private boolean isColumnHighlighted(int column) {
+		return column == columnToHighlight;
+	}
 
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		// Определяем, нужно ли подсветить колонку
+		boolean isColumnHighlighted = isColumnHighlighted(column);
 		if (column == 0) {
-			setFont(getFont().deriveFont(Font.ITALIC,14)); // Меняем шрифт на курсив
+			setFont(getFont().deriveFont(Font.ITALIC, 14)); // Меняем шрифт на курсив
 		} else {
 			setFont(table.getFont()); // Используем шрифт по умолчанию для остальных колонок
 		}
-
 		if (value instanceof JPanel panel) {
-			if (isSelected) {
-				if(panel.getBackground().equals(Constants.ATTENDANCE_COLOR)){
-					panel.setBackground(new Color(200,247,147));
-					table.getTableHeader().getColumnModel().getColumn(column).setCellRenderer(this);
-				}else {
+			if (isSelected || isColumnHighlighted) {
+				if (panel.getBackground().equals(Constants.ATTENDANCE_COLOR)){
+					panel.setBackground(new Color(200, 247, 147));
+				}else{
 					panel.setBackground(Constants.SELECTED_COLOR);
 				}
-
-			} else if (panel.getBackground().equals(Constants.ATTENDANCE_COLOR)) {
+			} else if(panel.getBackground().equals(Constants.ATTENDANCE_COLOR)) {
 				panel.setBackground(Constants.ATTENDANCE_COLOR);
-			} else {
+			}else {
 				panel.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
 			}
 			return panel;
 		}
 
-		if (isSelected) {
+		if (isSelected || isColumnHighlighted) {
 			cellComponent.setBackground(Constants.SELECTED_COLOR);
 		} else {
-			if (table.isColumnSelected(column)) {
-				cellComponent.setBackground(Constants.SELECTED_COLOR);
-			}
 			cellComponent.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
 		}
-
 		return cellComponent;
 	}
 }

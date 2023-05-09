@@ -4,10 +4,14 @@ import gui.studentTable.StudentLabTableModel;
 import gui.studentTable.StudentTable;
 import database.dao.GroupDao;
 import database.dao.impl.GroupDaoImpl;
+import gui.studentTable.StudentTableCellRender;
 import gui.studentTable.studentCard.JDialogStudentCard;
 import entity.Group;
 import entity.Lesson;
 import entity.Student;
+import gui.studentTable.studentTableListener.StudentTableKeyListener;
+import gui.studentTable.studentTableListener.StudentTableListSelectionListener;
+import gui.studentTable.studentTableListener.StudentTableMouseListener;
 import listeners.MainFrameListener;
 import utils.Constants;
 
@@ -148,6 +152,9 @@ public class MainFrame extends JFrame {
 			}
 		});
 		MainFrameListener mainFrameListener = new MainFrameListener(this);
+		StudentTableListSelectionListener studentTableListSelectionListener = new StudentTableListSelectionListener(this);
+		StudentTableMouseListener studentTableMouseListener  = new StudentTableMouseListener(this);
+		StudentTableKeyListener studentTableKeyListener = new StudentTableKeyListener(this);
 		btnAddStudent.addActionListener(mainFrameListener);
 		btnAddGroup.addActionListener(mainFrameListener);
 		btnDeleteGroup.addActionListener(mainFrameListener);
@@ -159,22 +166,12 @@ public class MainFrame extends JFrame {
 		radioBtnLab.addActionListener(mainFrameListener);
 		radioBtnInc.addActionListener(mainFrameListener);
 		cmbSort.addActionListener(mainFrameListener);
-		studentTable.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				int row = studentTable.rowAtPoint(e.getPoint());
-				if (row >= 0) {
-					Object value = studentTable.getValueAt(row, 0);
-					// обработка щелчка на ячейке
-					if (value instanceof Student student) {
-						if (student == currStudent) {
-							jDialogStudentCard.updateStudentCard(student);
-							jDialogStudentCard.setVisible(true);
+		currDateCmb.addActionListener(mainFrameListener);
+		studentTable.getSelectionModel().addListSelectionListener(studentTableListSelectionListener);
+		studentTable.addMouseListener(studentTableMouseListener);
+		studentTable.addKeyListener(studentTableKeyListener);
 
-						}
-					}
-				}
-			}
-		});
+
 		setTitle("Student journal");
 		setSize(new Dimension(1920, 1080));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -250,7 +247,7 @@ public class MainFrame extends JFrame {
 				studentTable.setRowSelectionInterval(index, index);
 				studentTable.revalidate();
 				studentTable.repaint();
-			}else {
+			} else {
 				Student student = studentTable.getStudentAt(0);
 				if (student != null) {
 					studentTable.setRowSelectionInterval(0, 0);
@@ -258,7 +255,7 @@ public class MainFrame extends JFrame {
 					jDialogStudentCard.setVisible(false);
 				}
 			}
-		}else {
+		} else {
 			Student student = studentTable.getStudentAt(0);
 			if (student != null) {
 				studentTable.setRowSelectionInterval(0, 0);
@@ -275,7 +272,8 @@ public class MainFrame extends JFrame {
 		switch (Objects.requireNonNull(option)) {
 			case Constants.SORT_BY_ALPHABET -> studentTable.getStudentTableModel().sortByAlphabet(isInc);
 			case Constants.SORT_BY_GRADE -> studentTable.getStudentTableModel().sortByGrade(isInc);
-			case Constants.SORT_BY_ATTENDANCE -> studentTable.getStudentTableModel().sortByAttendance(radioBtnLecture.isSelected(),isInc);
+			case Constants.SORT_BY_ATTENDANCE ->
+					studentTable.getStudentTableModel().sortByAttendance(radioBtnLecture.isSelected(), isInc);
 		}
 	}
 
