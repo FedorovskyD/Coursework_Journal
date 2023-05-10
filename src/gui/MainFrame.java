@@ -16,6 +16,7 @@ import listeners.MainFrameListener;
 import utils.Constants;
 
 import javax.swing.*;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class MainFrame extends JFrame {
 	private final JComboBox<String> cmbSort;
 	private final List<Group> groups;
 	private Student currStudent;
+	private JCheckBox checkBox;
 
 	public MainFrame() {
 		//Получаем данные о группах из базы данных
@@ -51,6 +53,7 @@ public class MainFrame extends JFrame {
 		radioBtnDec = new JRadioButton("в поряке убывания", false);
 		buttonGroupSortType.add(radioBtnInc);
 		buttonGroupSortType.add(radioBtnDec);
+		checkBox = new JCheckBox("отмечать подряд");
 		JLabel lblSort = new JLabel("Сортировать по: ");
 		cmbSort = new JComboBox<>();
 		refreshSortCmb();
@@ -111,7 +114,8 @@ public class MainFrame extends JFrame {
 						.addComponent(cmbSort)
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(radioBtnInc)
-								.addComponent(radioBtnDec)))
+								.addComponent(radioBtnDec))
+						.addComponent(checkBox))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(scrollPane)
 						.addGroup(groupLayout.createParallelGroup()
@@ -135,7 +139,8 @@ public class MainFrame extends JFrame {
 								.addComponent(cmbSort)
 								.addGroup(groupLayout.createSequentialGroup()
 										.addComponent(radioBtnInc)
-										.addComponent(radioBtnDec)))
+										.addComponent(radioBtnDec))
+								.addComponent(checkBox))
 						.addComponent(scrollPane))
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(btnAddStudent)
@@ -264,6 +269,15 @@ public class MainFrame extends JFrame {
 		}
 
 		studentTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+		if(!radioBtnLecture.isSelected()) {
+			studentTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+		}else {
+			TableColumn column = studentTable.getColumnModel().getColumn(1);
+			column.setPreferredWidth(0);
+			column.setMinWidth(0);
+			column.setWidth(0);
+			column.setMaxWidth(0);
+		}
 	}
 
 	public void sortTable() {
@@ -331,5 +345,9 @@ public class MainFrame extends JFrame {
 
 	public JComboBox<String> getCmbSort() {
 		return cmbSort;
+	}
+
+	public JCheckBox getCheckBox() {
+		return checkBox;
 	}
 }

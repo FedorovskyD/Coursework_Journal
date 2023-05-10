@@ -220,7 +220,13 @@ public class JDialogStudentCard extends JDialog {
 			SwingUtilities.invokeLater(() -> {
 				Grade grade = mainFrame.getCurrStudent().getLabGrade(lessonButton.lesson);
 				String gradeInfo = grade != null ? String.valueOf(grade.getGrade()) : "Нет";
-				lessonButton.setGrade(gradeInfo);
+
+				if (mainFrame.getRadioBtnLecture().isSelected()) {
+					lessonButton.setData();
+				} else {
+					lessonButton.setGrade(gradeInfo);
+				}
+
 				Color color = mainFrame.getCurrStudent().isAttendance(lessonButton.lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
 				lessonButton.setBackground(color);
 				setInitialSelection(lessonButton);
@@ -235,7 +241,11 @@ public class JDialogStudentCard extends JDialog {
 			LessonButton lessonButton = new LessonButton(lesson);
 			Grade grade = mainFrame.getCurrStudent().getLabGrade(lesson);
 			String gradeInfo = grade != null ? String.valueOf(grade.getGrade()) : "Нет";
-			lessonButton.setGrade(gradeInfo);
+			if (mainFrame.getRadioBtnLecture().isSelected()) {
+				lessonButton.setData();
+			} else {
+				lessonButton.setGrade(gradeInfo);
+			}
 			Color color = mainFrame.getCurrStudent().isAttendance(lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
 			lessonButton.setBackground(color);
 			setButtonClickListener(lessonButton);
@@ -282,48 +292,69 @@ public class JDialogStudentCard extends JDialog {
 			public void keyPressed(KeyEvent e) {
 				LessonButton button = (LessonButton) e.getSource();
 				int keyCode = e.getKeyCode();
-				if (keyCode == KeyEvent.VK_ESCAPE) {
-					// Закрыть диалоговое окно
-					mainFrame.getJDialogStudentCard().dispose();
-				} else if (keyCode == KeyEvent.VK_SPACE) {
-					handleSpaceKeyPressed(button, button.getBackground());
-					button.requestFocus();
-					button.repaint();
-				} else if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT) {
-					int index = lessonButtons.indexOf(button);
-					int nextIndex = index + (keyCode == KeyEvent.VK_LEFT ? -1 : 1);
-					if (nextIndex >= 0 && nextIndex < lessonButtons.size()) {
-						LessonButton nextLessonButton = lessonButtons.get(nextIndex);
-						nextLessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
-						button.setBorder(null);
+
+				switch (keyCode) {
+					case KeyEvent.VK_ESCAPE:
+						mainFrame.getJDialogStudentCard().dispose();
+						break;
+					case KeyEvent.VK_SPACE:
+						handleSpaceKeyPressed(button, button.getBackground());
+						button.requestFocus();
 						button.repaint();
-						nextLessonButton.requestFocus();
-						currLessonButton = nextLessonButton;
-						mainFrame.getCurrDateCmb().setSelectedItem(nextLessonButton.lesson);
-					}
-				} else if (keyCode == KeyEvent.VK_UP || keyCode == KeyEvent.VK_DOWN) {
-					int selectedRow = mainFrame.getStudentTable().getSelectedRow();
-					if (selectedRow != -1) {
-						int nextRow = selectedRow + (keyCode == KeyEvent.VK_UP ? -1 : 1);
-						while (nextRow >= 0 && nextRow < mainFrame.getStudentTable().getRowCount() &&
-								mainFrame.getStudentTable().getStudentTableModel().isBlankRow(nextRow)) {
-							nextRow += (keyCode == KeyEvent.VK_UP ? -1 : 1);
-						}
-						if (nextRow >= 0 && nextRow < mainFrame.getStudentTable().getRowCount()) {
-							mainFrame.getStudentTable().setRowSelectionInterval(nextRow, nextRow);
-							mainFrame.getStudentTable().scrollRectToVisible(mainFrame.getStudentTable().getCellRect(nextRow, 0, true));
-							mainFrame.getStudentTable().repaint();
-						}
-					}
+						break;
+					case KeyEvent.VK_LEFT:
+					case KeyEvent.VK_RIGHT:
+						moveLessonButton(keyCode, button);
+						break;
+					case KeyEvent.VK_UP:
+					case KeyEvent.VK_DOWN:
+						moveTableRow(keyCode);
+						break;
+					default:
+						break;
 				}
-				e.consume();
 			}
 		});
 	}
 
+	private void moveLessonButton(int keyCode, LessonButton button) {
+		int index = lessonButtons.indexOf(button);
+		int nextIndex = index + (keyCode == KeyEvent.VK_LEFT ? -1 : 1);
+		if (nextIndex >= 0 && nextIndex < lessonButtons.size()) {
+			LessonButton nextLessonButton = lessonButtons.get(nextIndex);
+			nextLessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
+			button.setBorder(null);
+			button.repaint();
+			nextLessonButton.requestFocus();
+			currLessonButton = nextLessonButton;
+			mainFrame.getCurrDateCmb().setSelectedItem(nextLessonButton.lesson);
+		}
+	}
+
+	private void moveTableRow(int keyCode) {
+		int selectedRow = mainFrame.getStudentTable().getSelectedRow();
+		if (selectedRow != -1) {
+			int nextRow = selectedRow + (keyCode == KeyEvent.VK_UP ? -1 : 1);
+			while (nextRow >= 0 && nextRow < mainFrame.getStudentTable().getRowCount() &&
+					mainFrame.getStudentTable().getStudentTableModel().isBlankRow(nextRow)) {
+				nextRow += (keyCode == KeyEvent.VK_UP ? -1 : 1);
+			}
+			if (nextRow >= 0 && nextRow < mainFrame.getStudentTable().getRowCount()) {
+				mainFrame.getStudentTable().setRowSelectionInterval(nextRow, nextRow);
+				mainFrame.getStudentTable().scrollRectToVisible(mainFrame.getStudentTable().getCellRect(nextRow, 0, true));
+				mainFrame.getStudentTable().repaint();
+			}
+		}
+	}
+
+
 	private void handleSpaceKeyPressed(LessonButton button, Color color) {
 		if (color.equals(Constants.NO_ATTENDANCE_COLOR)) {
-			addAttendance(button);
+
+				addAttendance(button);
+			if(mainFrame.getCheckBox().isSelected()){
+				moveTableRow(KeyEvent.VK_DOWN);
+			}
 		} else if (color.equals(Constants.ATTENDANCE_COLOR)) {
 			removeAttendance(button);
 		}

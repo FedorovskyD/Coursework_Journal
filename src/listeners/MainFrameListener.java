@@ -11,6 +11,7 @@ import gui.studentTable.StudentTableCellRender;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableColumn;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -36,8 +37,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 			onCmbGroupNumberActionPerformed();
 		} else if (e.getSource() == mainFrame.getCurrDateCmb()) {
 			mainFrame.getStudentTable().setDefaultRenderer(Object.class,
-					new StudentTableCellRender(mainFrame.getCurrDateCmb().getSelectedIndex() + 2));
-			mainFrame.getStudentTable().setCurrColumn(mainFrame.getCurrDateCmb().getSelectedIndex() + 2);
+					new StudentTableCellRender(mainFrame.getCurrDateCmb().getSelectedIndex() +2));
 			mainFrame.getStudentTable().repaint();
 		} else if (e.getSource() == mainFrame.getRadioBtnDec() ||
 				e.getSource() == mainFrame.getRadioBtnInc() ||
@@ -93,7 +93,6 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 	}
 
 	private void onCmbGroupNumberActionPerformed() {
-		mainFrame.getStudentTable().setCurrColumn(2);
 		mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(2));
 		mainFrame.refreshDateCmb();
 		mainFrame.refreshStudentTable();
@@ -121,7 +120,6 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 			mainFrame.getJDialogStudentCard().getGradePanel().setVisible(true);
 		}
 
-		mainFrame.getStudentTable().setCurrColumn(2);
 		mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(2));
 		mainFrame.getStudentTable().repaint();
 		mainFrame.getJDialogStudentCard().getLabButtons().clear();

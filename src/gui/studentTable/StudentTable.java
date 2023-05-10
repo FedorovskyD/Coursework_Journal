@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
  * проверен
  */
 public class StudentTable extends JTable {
-	int currColumn = 2;
 
 	public StudentTable(Group group, boolean isLecture) {
 		super(new StudentLabTableModel(group, isLecture));
@@ -21,13 +20,6 @@ public class StudentTable extends JTable {
 		setRowHeight(35);
 	}
 
-	public int getCurrColumn() {
-		return currColumn;
-	}
-
-	public void setCurrColumn(int currColumn) {
-		this.currColumn = currColumn;
-	}
 
 	public Student getStudentAt(int selectedRow) {
 		return getStudentTableModel().getStudentAt(selectedRow);

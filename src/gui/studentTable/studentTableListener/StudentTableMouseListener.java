@@ -23,8 +23,9 @@ public class StudentTableMouseListener extends MouseAdapter {
 			if (value instanceof Student student) {
 				if (student == mainFrame.getCurrentStudent()) {
 					mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(column));
-					mainFrame.getStudentTable().setCurrColumn(column);
-					mainFrame.getCurrDateCmb().setSelectedIndex(mainFrame.getStudentTable().getCurrColumn() - 2);
+					mainFrame.getCurrDateCmb().setSelectedIndex(column-2);
+					mainFrame.getStudentTable().repaint();
+
 				}
 			}
 			// перемещаем получение номера столбца внутрь условия
