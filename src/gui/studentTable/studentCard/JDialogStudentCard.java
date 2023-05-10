@@ -272,7 +272,7 @@ public class JDialogStudentCard extends JDialog {
 	private void setButtonClickListener(LessonButton lessonButton) {
 		lessonButton.addActionListener(e -> {
 			LessonButton button = (LessonButton) e.getSource();
-			if (!button.isSelected) {
+			if (!button.isSelected && button!=currLessonButton) {
 				button.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
 				if (currLessonButton != null) {
 					currLessonButton.setBorder(null);
@@ -396,7 +396,11 @@ public class JDialogStudentCard extends JDialog {
 				}
 				updateGpa(mainFrame.getCurrStudent());
 				button.setBackground(Constants.NO_ATTENDANCE_COLOR);
-				button.setGrade("Нет");
+				if(mainFrame.getRadioBtnLecture().isSelected()){
+					button.setData();
+				}else {
+					button.setGrade("Нет");
+				}
 				mainFrame.refreshStudentTable();
 			}
 		}

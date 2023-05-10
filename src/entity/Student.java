@@ -132,10 +132,18 @@ public class Student {
 		if (lesson == null) {
 			return null;
 		}
-		return labAttendanceList.stream()
-				.filter(a -> a.getLessonId() == lesson.getId())
-				.findFirst()
-				.orElse(null);
+		if (lesson.isLecture()) {
+			return lectureAttendanceList.stream()
+					.filter(a -> a.getLessonId() == lesson.getId())
+					.findFirst()
+					.orElse(null);
+		}
+		else {
+			return labAttendanceList.stream()
+					.filter(a -> a.getLessonId() == lesson.getId())
+					.findFirst()
+					.orElse(null);
+		}
 	}
 
 	public boolean isAttendance(Lesson lesson) {
