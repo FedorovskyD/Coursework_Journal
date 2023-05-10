@@ -274,9 +274,7 @@ public class JDialogStudentCard extends JDialog {
 			LessonButton button = (LessonButton) e.getSource();
 			if (!button.isSelected) {
 				button.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
-				button.isSelected = true;
 				if (currLessonButton != null) {
-					currLessonButton.isSelected = false;
 					currLessonButton.setBorder(null);
 					currLessonButton.repaint();
 				}
@@ -309,6 +307,7 @@ public class JDialogStudentCard extends JDialog {
 					case KeyEvent.VK_UP:
 					case KeyEvent.VK_DOWN:
 						moveTableRow(keyCode);
+						e.consume();
 						break;
 					default:
 						break;
@@ -325,9 +324,11 @@ public class JDialogStudentCard extends JDialog {
 			nextLessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
 			button.setBorder(null);
 			button.repaint();
-			nextLessonButton.requestFocus();
+			nextLessonButton.repaint();
 			currLessonButton = nextLessonButton;
+			nextLessonButton.isSelected = true;
 			mainFrame.getCurrDateCmb().setSelectedItem(nextLessonButton.lesson);
+			nextLessonButton.requestFocus();
 		}
 	}
 
@@ -350,7 +351,6 @@ public class JDialogStudentCard extends JDialog {
 
 	private void handleSpaceKeyPressed(LessonButton button, Color color) {
 		if (color.equals(Constants.NO_ATTENDANCE_COLOR)) {
-
 				addAttendance(button);
 			if(mainFrame.getCheckBox().isSelected()){
 				moveTableRow(KeyEvent.VK_DOWN);

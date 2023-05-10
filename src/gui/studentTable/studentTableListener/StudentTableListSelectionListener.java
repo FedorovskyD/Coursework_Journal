@@ -28,7 +28,6 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 					if (column > 1) {
 						mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(column));
 						mainFrame.getStudentTable().repaint();
-						mainFrame.getCurrDateCmb().setSelectedIndex(column-2);
 					}
 					int index = mainFrame.getStudentTable().getStudentTableModel().getRowIndex(mainFrame.getCurrStudent());
 					if (index != -1) {
@@ -44,9 +43,6 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 						mainFrame.setCurrStudent(selectedStudent);
 						mainFrame.getJDialogStudentCard().updateStudentCard(selectedStudent);
 						mainFrame.getStudentTable().repaint();
-						if(column>1) {
-							mainFrame.getCurrDateCmb().setSelectedIndex(column - 2);
-						}
 						mainFrame.getJDialogStudentCard().setVisible(true);
 					}
 				}

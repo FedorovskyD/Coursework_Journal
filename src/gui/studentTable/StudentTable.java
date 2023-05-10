@@ -4,10 +4,6 @@ import entity.Group;
 import entity.Student;
 
 import javax.swing.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 /**
  * проверен
@@ -18,6 +14,7 @@ public class StudentTable extends JTable {
 		super(new StudentLabTableModel(group, isLecture));
 		setDefaultRenderer(Object.class, new StudentTableCellRender(2));
 		setRowHeight(35);
+		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 
 
