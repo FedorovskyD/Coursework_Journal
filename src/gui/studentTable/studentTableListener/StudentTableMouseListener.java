@@ -22,10 +22,8 @@ public class StudentTableMouseListener extends MouseAdapter {
 			// обработка щелчка на ячейке
 			if (value instanceof Student student) {
 				if (student == mainFrame.getCurrentStudent()) {
-					mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(column));
-					mainFrame.getCurrDateCmb().setSelectedIndex(column-2);
 					mainFrame.getStudentTable().repaint();
-
+					mainFrame.getCurrDateCmb().setSelectedIndex(column - 2);
 				}
 			}
 			// перемещаем получение номера столбца внутрь условия

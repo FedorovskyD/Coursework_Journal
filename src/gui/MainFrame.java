@@ -35,7 +35,7 @@ public class MainFrame extends JFrame {
 	private final JComboBox<String> cmbSort;
 	private final List<Group> groups;
 	private Student currStudent;
-	private JCheckBox checkBox;
+	private final JCheckBox checkBox;
 
 	public MainFrame() {
 		//Получаем данные о группах из базы данных

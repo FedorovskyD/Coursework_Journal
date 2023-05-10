@@ -328,6 +328,7 @@ public class JDialogStudentCard extends JDialog {
 			currLessonButton = nextLessonButton;
 			nextLessonButton.isSelected = true;
 			mainFrame.getCurrDateCmb().setSelectedItem(nextLessonButton.lesson);
+			mainFrame.getStudentTable().setColumnSelectionInterval(mainFrame.getCurrDateCmb().getSelectedIndex()+2,mainFrame.getCurrDateCmb().getSelectedIndex()+2);
 			nextLessonButton.requestFocus();
 		}
 	}
