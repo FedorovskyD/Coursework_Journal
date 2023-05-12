@@ -33,7 +33,7 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 		if (value instanceof JPanel panel) {
 			if (isSelected || isColumnHighlighted) {
 				if (panel.getBackground().equals(Constants.ABSENCE_COLOR)){
-					panel.setBackground(new Color(200, 247, 147));
+					panel.setBackground(new Color(250, 192, 140));
 				}else{
 					panel.setBackground(Constants.SELECTED_COLOR);
 				}

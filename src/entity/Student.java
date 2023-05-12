@@ -87,7 +87,7 @@ public class Student {
 		this.photoPath = photoPath;
 	}
 
-	public List<Absence> getLectureAttendanceList() {
+	public List<Absence> getLectureAbsenceList() {
 		return lectureAbsenceList;
 	}
 
@@ -95,7 +95,7 @@ public class Student {
 		this.lectureAbsenceList = lectureAbsenceList;
 	}
 
-	public List<Absence> getLabAttendanceList() {
+	public List<Absence> getLabAbsenceList() {
 		return labAbsenceList;
 	}
 

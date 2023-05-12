@@ -14,6 +14,8 @@ public class LessonButton extends JButton {
 	public LessonButton(Lesson lesson) {
 		this.lesson = lesson;
 		isCurrent = false;
+		isChecked = false;
+		setBorder(null);
 	}
 	public void setGrade(String grade) {
 		setText("<html>" + getStringLabDate() + "<br> Оценка: " + grade + "</html>");

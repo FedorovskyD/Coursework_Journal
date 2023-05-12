@@ -227,8 +227,13 @@ public class JDialogStudentCard extends JDialog {
 				}else {
 					lessonButton.setData();
 				}
-				Color color = mainFrame.getCurrStudent().isAbsence(lessonButton.getLesson()) ? Constants.ABSENCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
+				Color color = mainFrame.getCurrStudent().isAbsence(lessonButton.getLesson()) ? Constants.ABSENCE_COLOR : Color.WHITE;
 				lessonButton.setBackground(color);
+				if (mainFrame.getCurrStudent().isAbsence(lessonButton.getLesson())) {
+					lessonButton.setChecked(true);
+				}else {
+					lessonButton.setChecked(false);
+				}
 				setInitialSelection(lessonButton);
 				lessonButton.repaint();
 			});
@@ -247,7 +252,7 @@ public class JDialogStudentCard extends JDialog {
 			}else {
 				lessonButton.setData();
 			}
-			Color color = mainFrame.getCurrStudent().isAbsence(lesson) ? Constants.ABSENCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
+			Color color = mainFrame.getCurrStudent().isAbsence(lesson) ? Constants.ABSENCE_COLOR : Color.WHITE;
 			lessonButton.setBackground(color);
 			setButtonClickListener(lessonButton);
 			setButtonKeyListener(lessonButton);

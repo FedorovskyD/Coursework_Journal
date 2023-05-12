@@ -33,12 +33,17 @@ public class StudentTableKeyListener extends KeyAdapter {
 			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
 				if (selectedIndex > 0) {
 					mainFrame.getCurrDateCmb().setSelectedIndex(selectedIndex-1);
+					mainFrame.getStudentTable().scrollRectToVisible(((StudentTable) e.getSource())
+							.getCellRect(mainFrame.getStudentTable().getSelectedRow(), selectedIndex-4, true));
 				}
 			} else {
 				if (selectedIndex < itemCount - 1) {
 					mainFrame.getCurrDateCmb().setSelectedIndex(selectedIndex+1);
+					mainFrame.getStudentTable().scrollRectToVisible(((StudentTable) e.getSource())
+							.getCellRect(mainFrame.getStudentTable().getSelectedRow(), selectedIndex+8, true));
 				}
 			}
+			mainFrame.repaint();
 		}
 		e.consume();
 	}

@@ -170,13 +170,13 @@ public class StudentLabTableModel extends AbstractTableModel {
 	public void sortByAttendance(boolean isLecture,boolean isInc) {
 		if(isLecture){
 			students.sort((o1, o2) -> {
-				int result = Integer.compare(o1.getLectureAttendanceList().size(), o2.getLectureAttendanceList().size());
-				return isInc ? result : result * (-1);
+				int result = Integer.compare(o1.getLectureAbsenceList().size(), o2.getLectureAbsenceList().size());
+				return isInc ? result*(-1) : result;
 			});
 		}else {
 			students.sort((o1, o2) -> {
-				int result = Integer.compare(o1.getLabAttendanceList().size(), o2.getLabAttendanceList().size());
-				return isInc ? result : result * (-1);
+				int result = Integer.compare(o1.getLabAbsenceList().size(), o2.getLabAbsenceList().size());
+				return isInc ? result*(-1) : result;
 			});
 		}
 

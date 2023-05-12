@@ -57,7 +57,9 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			nextLessonButton.repaint();
 			studentCard.setCurrLessonButton(nextLessonButton);
 			studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(nextLessonButton.getLesson());
-			studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+2,studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+2);
+			studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(
+					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+2,studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+2);
+			studentCard.getMainWindow().repaint();
 			nextLessonButton.requestFocus();
 		}
 	}
@@ -81,7 +83,8 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			}
 			if (nextRow >= 0 && nextRow < studentCard.getMainWindow().getStudentTable().getRowCount()) {
 				studentCard.getMainWindow().getStudentTable().setRowSelectionInterval(nextRow, nextRow);
-				studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow().getStudentTable().getCellRect(nextRow, 0, true));
+				studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow()
+						.getStudentTable().getCellRect(nextRow, 0, true));
 				studentCard.getMainWindow().getStudentTable().repaint();
 			}
 		}
@@ -93,9 +96,9 @@ public class LessonButtonKeyListener extends KeyAdapter {
 		if (id > 0) {
 			absence.setId(id);
 			if (button.getLesson().isLecture()) {
-				studentCard.getMainWindow().getCurrStudent().getLectureAttendanceList().add(absence);
+				studentCard.getMainWindow().getCurrStudent().getLectureAbsenceList().add(absence);
 			} else {
-				studentCard.getMainWindow().getCurrStudent().getLabAttendanceList().add(absence);
+				studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().add(absence);
 			}
 			button.setBackground(Constants.ABSENCE_COLOR);
 			if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
@@ -116,11 +119,11 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			if (AbsenceDaoImpl.getInstance().delete(absence)) {
 				System.out.println("Запись об отсутствии удалена");
 				if (button.getLesson().isLecture()) {
-					studentCard.getMainWindow().getCurrStudent().getLectureAttendanceList().remove(absence);
+					studentCard.getMainWindow().getCurrStudent().getLectureAbsenceList().remove(absence);
 				} else {
-					studentCard.getMainWindow().getCurrStudent().getLabAttendanceList().remove(absence);
+					studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().remove(absence);
 				}
-				button.setBackground(Constants.NO_ATTENDANCE_COLOR);
+				button.setBackground(Color.WHITE);
 				button.setData();
 				button.setChecked(false);
 				studentCard.getMainWindow().refreshStudentTable();

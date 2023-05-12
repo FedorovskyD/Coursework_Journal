@@ -2,7 +2,6 @@ package listeners;
 
 import database.dao.impl.GroupDaoImpl;
 import entity.Group;
-import entity.Student;
 import gui.MainFrame;
 import gui.dialogs.AddLessonDialog;
 import gui.dialogs.AddStudentDialog;
@@ -11,7 +10,6 @@ import gui.studentTable.StudentTableCellRender;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableColumn;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -31,7 +29,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 			addNewGroup();
 		} else if (e.getSource() == mainFrame.getBtnDeleteGroup()) {
 			deleteGroup();
-		} else if (e.getSource() == mainFrame.getBtnAddLab()) {
+		} else if (e.getSource() == mainFrame.getBtnAddLesson()) {
 			new AddLessonDialog(mainFrame).setVisible(true);
 		} else if (e.getSource() == mainFrame.getCmbGroupNumber()) {
 			onCmbGroupNumberActionPerformed();
@@ -39,6 +37,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 			mainFrame.getStudentTable().setDefaultRenderer(Object.class,
 					new StudentTableCellRender(mainFrame.getCurrDateCmb().getSelectedIndex() +2));
 			mainFrame.getStudentTable().repaint();
+			mainFrame.repaint();
 		} else if (e.getSource() == mainFrame.getRadioBtnDec() ||
 				e.getSource() == mainFrame.getRadioBtnInc() ||
 				e.getSource() == mainFrame.getCmbSort()) {

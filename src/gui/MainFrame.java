@@ -4,7 +4,6 @@ import gui.studentTable.StudentLabTableModel;
 import gui.studentTable.StudentTable;
 import database.dao.GroupDao;
 import database.dao.impl.GroupDaoImpl;
-import gui.studentTable.StudentTableCellRender;
 import gui.studentTable.studentCard.JDialogStudentCard;
 import entity.Group;
 import entity.Lesson;
@@ -218,7 +217,7 @@ public class MainFrame extends JFrame {
 	}
 
 
-	public JButton getBtnAddLab() {
+	public JButton getBtnAddLesson() {
 		return btnAddLab;
 	}
 
