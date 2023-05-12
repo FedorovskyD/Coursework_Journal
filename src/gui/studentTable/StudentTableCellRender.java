@@ -32,13 +32,13 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 		}
 		if (value instanceof JPanel panel) {
 			if (isSelected || isColumnHighlighted) {
-				if (panel.getBackground().equals(Constants.ATTENDANCE_COLOR)){
+				if (panel.getBackground().equals(Constants.ABSENCE_COLOR)){
 					panel.setBackground(new Color(200, 247, 147));
 				}else{
 					panel.setBackground(Constants.SELECTED_COLOR);
 				}
-			} else if(panel.getBackground().equals(Constants.ATTENDANCE_COLOR)) {
-				panel.setBackground(Constants.ATTENDANCE_COLOR);
+			} else if(panel.getBackground().equals(Constants.ABSENCE_COLOR)) {
+				panel.setBackground(Constants.ABSENCE_COLOR);
 			}else {
 				panel.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
 			}

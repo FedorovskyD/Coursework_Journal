@@ -161,8 +161,8 @@ public class StudentDaoImpl implements StudentDao {
 			student.setTelephone(rs.getString("Telephone"));
 			student.setGroupId(rs.getInt("GroupID"));
 			student.setGradeList(GradeDaoImpl.getInstance().getGradesByStudent(student));
-			student.setLabAttendanceList(AttendanceDaoImpl.getInstance().getLessonAttendancesByStudent(student,false));
-			student.setLectureAttendanceList(AttendanceDaoImpl.getInstance().getLessonAttendancesByStudent(student,true));
+			student.setLabAttendanceList(AbsenceDaoImpl.getInstance().getLessonAttendancesByStudent(student,false));
+			student.setLectureAttendanceList(AbsenceDaoImpl.getInstance().getLessonAttendancesByStudent(student,true));
 			students.add(student);
 		}
 	}

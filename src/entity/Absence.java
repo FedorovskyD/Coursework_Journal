@@ -1,15 +1,15 @@
 package entity;
 
-public class Attendance {
+public class Absence {
 	private long id;
 	private long lessonId;
 	private long studentId;
 
-	public Attendance(long lessonId, long studentId) {
+	public Absence(long lessonId, long studentId) {
 		this.lessonId = lessonId;
 		this.studentId = studentId;
 	}
-public Attendance(){}
+public Absence(){}
 	public long getId() {
 		return id;
 	}

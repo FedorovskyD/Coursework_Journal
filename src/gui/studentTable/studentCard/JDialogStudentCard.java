@@ -1,12 +1,13 @@
 package gui.studentTable.studentCard;
 
 import gui.MainFrame;
-import database.dao.impl.AttendanceDaoImpl;
 import database.dao.impl.GradeDaoImpl;
-import entity.Attendance;
 import entity.Grade;
 import entity.Lesson;
 import entity.Student;
+import gui.studentTable.studentCard.lessonButton.LessonButton;
+import gui.studentTable.studentCard.lessonButton.LessonButtonKeyListener;
+import gui.studentTable.studentCard.lessonButton.LessonButtonMouseListener;
 import listeners.JDialogStudentCardListener;
 import utils.Constants;
 import utils.PhotoUtils;
@@ -218,16 +219,15 @@ public class JDialogStudentCard extends JDialog {
 	private void updateLessonButtons(List<LessonButton> lessonButtons) {
 		for (LessonButton lessonButton : lessonButtons) {
 			SwingUtilities.invokeLater(() -> {
-				Grade grade = mainFrame.getCurrStudent().getLabGrade(lessonButton.lesson);
-				String gradeInfo = grade != null ? String.valueOf(grade.getGrade()) : "Нет";
-
+				Grade grade = mainFrame.getCurrStudent().getLessonGrade(lessonButton.getLesson());
 				if (mainFrame.getRadioBtnLecture().isSelected()) {
 					lessonButton.setData();
-				} else {
-					lessonButton.setGrade(gradeInfo);
+				} else if(grade!=null){
+					lessonButton.setGrade(String.valueOf(grade.getGrade()));
+				}else {
+					lessonButton.setData();
 				}
-
-				Color color = mainFrame.getCurrStudent().isAttendance(lessonButton.lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
+				Color color = mainFrame.getCurrStudent().isAbsence(lessonButton.getLesson()) ? Constants.ABSENCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
 				lessonButton.setBackground(color);
 				setInitialSelection(lessonButton);
 				lessonButton.repaint();
@@ -239,14 +239,15 @@ public class JDialogStudentCard extends JDialog {
 		calendarPanel.removeAll();
 		for (Lesson lesson : lessons) {
 			LessonButton lessonButton = new LessonButton(lesson);
-			Grade grade = mainFrame.getCurrStudent().getLabGrade(lesson);
-			String gradeInfo = grade != null ? String.valueOf(grade.getGrade()) : "Нет";
-			if (mainFrame.getRadioBtnLecture().isSelected()) {
+			Grade grade = mainFrame.getCurrStudent().getLessonGrade(lesson);
+			if (mainFrame.getRadioBtnLecture().isSelected() || lesson.isLecture()) {
 				lessonButton.setData();
-			} else {
-				lessonButton.setGrade(gradeInfo);
+			} else if(grade!=null){
+				lessonButton.setGrade(String.valueOf(grade.getGrade()));
+			}else {
+				lessonButton.setData();
 			}
-			Color color = mainFrame.getCurrStudent().isAttendance(lesson) ? Constants.ATTENDANCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
+			Color color = mainFrame.getCurrStudent().isAbsence(lesson) ? Constants.ABSENCE_COLOR : Constants.NO_ATTENDANCE_COLOR;
 			lessonButton.setBackground(color);
 			setButtonClickListener(lessonButton);
 			setButtonKeyListener(lessonButton);
@@ -257,154 +258,23 @@ public class JDialogStudentCard extends JDialog {
 	}
 
 	private void setInitialSelection(LessonButton lessonButton) {
-		if (lessonButton.lesson.equals(mainFrame.getCurrDate())) {
-			lessonButton.isSelected = true;
+		if (lessonButton.getLesson().equals(mainFrame.getCurrDate())) {
 			if (currLessonButton != null) {
-				currLessonButton.setBorder(null);
-				lessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
-			} else {
-				lessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
+				currLessonButton.setCurrent(false);
 			}
+			lessonButton.setCurrent(true);
 			currLessonButton = lessonButton;
 		}
 	}
 
 	private void setButtonClickListener(LessonButton lessonButton) {
-		lessonButton.addActionListener(e -> {
-			LessonButton button = (LessonButton) e.getSource();
-			if (!button.isSelected && button!=currLessonButton) {
-				button.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
-				if (currLessonButton != null) {
-					currLessonButton.setBorder(null);
-					currLessonButton.repaint();
-				}
-				currLessonButton = button;
-				mainFrame.getCurrDateCmb().setSelectedItem(lessonButton.lesson);
-			}
-		});
+		lessonButton.addMouseListener(new LessonButtonMouseListener(mainFrame.getJDialogStudentCard()));
 	}
 
 	private void setButtonKeyListener(LessonButton lessonButton) {
-		lessonButton.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				LessonButton button = (LessonButton) e.getSource();
-				int keyCode = e.getKeyCode();
-
-				switch (keyCode) {
-					case KeyEvent.VK_ESCAPE:
-						mainFrame.getJDialogStudentCard().dispose();
-						break;
-					case KeyEvent.VK_SPACE:
-						handleSpaceKeyPressed(button, button.getBackground());
-						button.requestFocus();
-						button.repaint();
-						break;
-					case KeyEvent.VK_LEFT:
-					case KeyEvent.VK_RIGHT:
-						moveLessonButton(keyCode, button);
-						break;
-					case KeyEvent.VK_UP:
-					case KeyEvent.VK_DOWN:
-						moveTableRow(keyCode);
-						e.consume();
-						break;
-					default:
-						break;
-				}
-			}
-		});
+		lessonButton.addKeyListener(new LessonButtonKeyListener(mainFrame.getJDialogStudentCard()));
 	}
 
-	private void moveLessonButton(int keyCode, LessonButton button) {
-		int index = lessonButtons.indexOf(button);
-		int nextIndex = index + (keyCode == KeyEvent.VK_LEFT ? -1 : 1);
-		if (nextIndex >= 0 && nextIndex < lessonButtons.size()) {
-			LessonButton nextLessonButton = lessonButtons.get(nextIndex);
-			nextLessonButton.setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
-			button.setBorder(null);
-			button.repaint();
-			nextLessonButton.repaint();
-			currLessonButton = nextLessonButton;
-			nextLessonButton.isSelected = true;
-			mainFrame.getCurrDateCmb().setSelectedItem(nextLessonButton.lesson);
-			mainFrame.getStudentTable().setColumnSelectionInterval(mainFrame.getCurrDateCmb().getSelectedIndex()+2,mainFrame.getCurrDateCmb().getSelectedIndex()+2);
-			nextLessonButton.requestFocus();
-		}
-	}
-
-	private void moveTableRow(int keyCode) {
-		int selectedRow = mainFrame.getStudentTable().getSelectedRow();
-		if (selectedRow != -1) {
-			int nextRow = selectedRow + (keyCode == KeyEvent.VK_UP ? -1 : 1);
-			while (nextRow >= 0 && nextRow < mainFrame.getStudentTable().getRowCount() &&
-					mainFrame.getStudentTable().getStudentTableModel().isBlankRow(nextRow)) {
-				nextRow += (keyCode == KeyEvent.VK_UP ? -1 : 1);
-			}
-			if (nextRow >= 0 && nextRow < mainFrame.getStudentTable().getRowCount()) {
-				mainFrame.getStudentTable().setRowSelectionInterval(nextRow, nextRow);
-				mainFrame.getStudentTable().scrollRectToVisible(mainFrame.getStudentTable().getCellRect(nextRow, 0, true));
-				mainFrame.getStudentTable().repaint();
-			}
-		}
-	}
-
-
-	private void handleSpaceKeyPressed(LessonButton button, Color color) {
-		if (color.equals(Constants.NO_ATTENDANCE_COLOR)) {
-				addAttendance(button);
-			if(mainFrame.getCheckBox().isSelected()){
-				moveTableRow(KeyEvent.VK_DOWN);
-			}
-		} else if (color.equals(Constants.ATTENDANCE_COLOR)) {
-			removeAttendance(button);
-		}
-	}
-
-	private void addAttendance(LessonButton button) {
-		Attendance attendance = new Attendance(button.lesson.getId(), mainFrame.getCurrStudent().getId());
-		long id = AttendanceDaoImpl.getInstance().save(attendance);
-		if (id > 0) {
-			attendance.setId(id);
-			if (button.lesson.isLecture()) {
-				mainFrame.getCurrStudent().getLectureAttendanceList().add(attendance);
-			} else {
-				mainFrame.getCurrStudent().getLabAttendanceList().add(attendance);
-			}
-
-			button.setBackground(Constants.ATTENDANCE_COLOR);
-			System.out.println("Запись о посещении добавлена");
-			mainFrame.refreshStudentTable();
-		}
-	}
-
-	private void removeAttendance(LessonButton button) {
-		Attendance attendance = mainFrame.getCurrStudent().getLabAttendance(button.lesson);
-		Grade studentGrade = mainFrame.getCurrStudent().getLabGrade(button.lesson);
-		if (attendance != null) {
-			if (AttendanceDaoImpl.getInstance().delete(attendance)) {
-				System.out.println("Запись о посещении удалена");
-				if (button.lesson.isLecture()) {
-					mainFrame.getCurrStudent().getLectureAttendanceList().remove(attendance);
-				} else {
-					mainFrame.getCurrStudent().getLabAttendanceList().remove(attendance);
-				}
-
-				if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
-					mainFrame.getCurrStudent().getGradeList().remove(studentGrade);
-					System.out.println("Оценка за лабораторную удалена");
-				}
-				updateGpa(mainFrame.getCurrStudent());
-				button.setBackground(Constants.NO_ATTENDANCE_COLOR);
-				if(mainFrame.getRadioBtnLecture().isSelected()){
-					button.setData();
-				}else {
-					button.setGrade("Нет");
-				}
-				mainFrame.refreshStudentTable();
-			}
-		}
-	}
 
 	public JButton getDeleteButton() {
 		return deleteButton;
@@ -424,10 +294,6 @@ public class JDialogStudentCard extends JDialog {
 
 	public LessonButton getCurrLessonButton() {
 		return currLessonButton;
-	}
-
-	public void updateGpa(Student student) {
-		txtAverageGrade.setText(String.valueOf(student.getAverageGrade()));
 	}
 
 	public JScrollPane getScrollPane() {
@@ -473,9 +339,9 @@ public class JDialogStudentCard extends JDialog {
 	}
 
 	private void setGrade(JButton gradeButton) {
-		if (currLessonButton.getBackground().equals(Constants.ATTENDANCE_COLOR)) {
+		if (!currLessonButton.isChecked()) {
 			currLessonButton.setGrade(gradeButton.getText());
-			Grade grade = mainFrame.getCurrStudent().getLabGrade(currLessonButton.getLab());
+			Grade grade = mainFrame.getCurrStudent().getLessonGrade(currLessonButton.getLab());
 			if (grade == null) {
 				long id;
 				Grade grade1 = new Grade(currLessonButton.getLab().getId(),
@@ -497,7 +363,7 @@ public class JDialogStudentCard extends JDialog {
 				txtAverageGrade.setText(String.valueOf(mainFrame.getCurrStudent().getAverageGrade()));
 			}
 		} else {
-			JOptionPane.showMessageDialog(mainFrame, "Перед выставлением оценки нужно отметить студента");
+			JOptionPane.showMessageDialog(mainFrame, "Нельзя выставить оценку если студент не присутствовал");
 		}
 		currLessonButton.requestFocus();
 	}
@@ -540,5 +406,9 @@ public class JDialogStudentCard extends JDialog {
 
 	public List<LessonButton> getLessonButtons() {
 		return lessonButtons;
+	}
+
+	public void setCurrLessonButton(LessonButton currLessonButton) {
+		this.currLessonButton = currLessonButton;
 	}
 }

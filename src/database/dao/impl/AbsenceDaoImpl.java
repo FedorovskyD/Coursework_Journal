@@ -5,113 +5,113 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.ConnectionFactory;
-import database.dao.AttendanceDao;
-import entity.Attendance;
+import database.dao.AbsenceDao;
+import entity.Absence;
 import entity.Student;
 
-public class AttendanceDaoImpl implements AttendanceDao {
+public class AbsenceDaoImpl implements AbsenceDao {
 
-	private static AttendanceDaoImpl instance;
+	private static AbsenceDaoImpl instance;
 
-	private AttendanceDaoImpl() {
+	private AbsenceDaoImpl() {
 
 	}
 
-	public static AttendanceDaoImpl getInstance() {
+	public static AbsenceDaoImpl getInstance() {
 		if (instance == null) {
-			instance = new AttendanceDaoImpl();
+			instance = new AbsenceDaoImpl();
 		}
 		return instance;
 	}
 
-	private static final String GET_ATTENDANCES_BY_STUDENT_SQL = "SELECT * FROM attendance WHERE student_id = ?";
-	private static final String GET_ATTENDANCES_BY_STUDENT_AND_LESSON_SQL = "SELECT *  FROM attendance a JOIN lesson l ON a.lesson_ID = l.ID WHERE a.student_ID = ? AND l.isLecture=?";
-	private static final String FIND_BY_ID_SQL = "SELECT * FROM attendance WHERE id = ?";
-	private static final String FIND_ALL_SQL = "SELECT * FROM attendance";
-	private static final String SAVE_SQL = "INSERT INTO attendance(student_id,lesson_ID) VALUES (?, ?)";
-	private static final String UPDATE_SQL = "UPDATE attendance SET lesson_ID = ?, student_id = ? WHERE id = ?";
-	private static final String DELETE_SQL = "DELETE FROM attendance WHERE ID = ?";
+	private static final String GET_ATTENDANCES_BY_STUDENT_SQL = "SELECT * FROM absence_log WHERE student_id = ?";
+	private static final String GET_ATTENDANCES_BY_STUDENT_AND_LESSON_SQL = "SELECT *  FROM absence_log a JOIN lesson l ON a.lesson_ID = l.ID WHERE a.student_ID = ? AND l.isLecture=?";
+	private static final String FIND_BY_ID_SQL = "SELECT * FROM absence_log WHERE id = ?";
+	private static final String FIND_ALL_SQL = "SELECT * FROM absence_log";
+	private static final String SAVE_SQL = "INSERT INTO absence_log(student_id,lesson_ID) VALUES (?, ?)";
+	private static final String UPDATE_SQL = "UPDATE absence_log SET lesson_ID = ?, student_id = ? WHERE id = ?";
+	private static final String DELETE_SQL = "DELETE FROM absence_log WHERE ID = ?";
 
-	private static Attendance createAttendanceFromResultSet(ResultSet rs) throws SQLException {
-		Attendance attendance = new Attendance();
-		attendance.setId(rs.getInt("id"));
+	private static Absence createAttendanceFromResultSet(ResultSet rs) throws SQLException {
+		Absence absence = new Absence();
+		absence.setId(rs.getInt("id"));
 
-		attendance.setLessonId(rs.getLong("lesson_ID"));
+		absence.setLessonId(rs.getLong("lesson_ID"));
 
-		attendance.setStudentId(rs.getLong("student_ID"));
-		return attendance;
+		absence.setStudentId(rs.getLong("student_ID"));
+		return absence;
 	}
 
 	@Override
-	public List<Attendance> getAttendancesByStudent(Student student) {
-		List<Attendance> attendances = new ArrayList<>();
+	public List<Absence> getAttendancesByStudent(Student student) {
+		List<Absence> absences = new ArrayList<>();
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(GET_ATTENDANCES_BY_STUDENT_SQL)) {
 			ps.setLong(1, student.getId());
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
-					attendances.add(createAttendanceFromResultSet(rs));
+					absences.add(createAttendanceFromResultSet(rs));
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return attendances;
+		return absences;
 	}
 
 	@Override
-	public List<Attendance> getLessonAttendancesByStudent(Student student, boolean isLecture) {
-		List<Attendance> attendances = new ArrayList<>();
+	public List<Absence> getLessonAttendancesByStudent(Student student, boolean isLecture) {
+		List<Absence> absences = new ArrayList<>();
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(GET_ATTENDANCES_BY_STUDENT_AND_LESSON_SQL)) {
 			ps.setLong(1, student.getId());
 			ps.setBoolean(2,isLecture);
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
-					attendances.add(createAttendanceFromResultSet(rs));
+					absences.add(createAttendanceFromResultSet(rs));
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return attendances;
+		return absences;
 	}
 
 
 	@Override
-	public Attendance findById(long id) {
-		Attendance attendance = null;
+	public Absence findById(long id) {
+		Absence absence = null;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(FIND_BY_ID_SQL)) {
 			ps.setLong(1, id);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					attendance = createAttendanceFromResultSet(rs);
+					absence = createAttendanceFromResultSet(rs);
 				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return attendance;
+		return absence;
 	}
 
 	@Override
-	public List<Attendance> findAll() {
-		List<Attendance> attendances = new ArrayList<>();
+	public List<Absence> findAll() {
+		List<Absence> absences = new ArrayList<>();
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(FIND_ALL_SQL)) {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				attendances.add(createAttendanceFromResultSet(rs));
+				absences.add(createAttendanceFromResultSet(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return attendances;
+		return absences;
 	}
 
 	@Override
-	public long save(Attendance entity) {
+	public long save(Absence entity) {
 		long generatedId = -1;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
@@ -129,7 +129,7 @@ public class AttendanceDaoImpl implements AttendanceDao {
 	}
 
 	@Override
-	public boolean update(Attendance entity) {
+	public boolean update(Absence entity) {
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(UPDATE_SQL)) {
 			ps.setLong(1, entity.getLessonId());
@@ -143,7 +143,7 @@ public class AttendanceDaoImpl implements AttendanceDao {
 	}
 
 	@Override
-	public boolean delete(Attendance entity) {
+	public boolean delete(Absence entity) {
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(DELETE_SQL)) {
 			ps.setLong(1, entity.getId());

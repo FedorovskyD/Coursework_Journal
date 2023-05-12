@@ -4,6 +4,7 @@ import entity.Grade;
 import entity.Group;
 import entity.Lesson;
 import entity.Student;
+import utils.Constants;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -65,7 +66,7 @@ public class StudentLabTableModel extends AbstractTableModel {
 			return String.format("%.2f", students.get(getStudentIndex(rowIndex)).getAverageGrade());
 		}
 
-		return getLabPanel(getStudentIndex(rowIndex), columnIndex);
+		return getLessonPanel(getStudentIndex(rowIndex), columnIndex);
 	}
 
 	public boolean isBlankRow(int rowIndex) {
@@ -85,28 +86,25 @@ public class StudentLabTableModel extends AbstractTableModel {
 	}
 
 
-	private JPanel getLabPanel(int rowIndex, int columnIndex) {
+	private JPanel getLessonPanel(int rowIndex, int columnIndex) {
 		Student student = students.get(rowIndex);
 		Lesson lesson = lessons.get(columnIndex - FIRST_LAB_COLUMN_INDEX);
 
-		boolean isAttendance = student.isAttendance(lesson);
+		boolean isAbsence = student.isAbsence(lesson);
 
 		JPanel panelTableCell = new JPanel();
-		panelTableCell.setBackground(isAttendance ? ATTENDANCE_COLOR : Color.WHITE);
-
-		if (isAttendance) {
-			Grade grade = student.getLabGrade(lesson);
-			String text = "";
-			if(!isLecture) {
-				text = (grade != null) ? String.valueOf(grade.getGrade()) : "Нет оценки";
+		panelTableCell.setBackground(isAbsence ? Constants.ABSENCE_COLOR : Color.WHITE);
+			Grade grade = student.getLessonGrade(lesson);
+			String text;
+			if(isAbsence) {
+				text = "н";
+			}else if (grade!=null) {
+				text = String.valueOf(grade.getGrade());
 			}else {
-				text = "+";
+				text ="";
 			}
-
-
 			JLabel label = new JLabel(text);
 			panelTableCell.add(label);
-		}
 
 		return panelTableCell;
 	}

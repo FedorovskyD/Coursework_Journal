@@ -91,7 +91,7 @@ public class MainFrame extends JFrame {
 		currDateCmb.setPreferredSize(new Dimension(100, 30));
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
 		//Создаем таблицу для отображения списка студентов
-		studentTable = new StudentTable(getCurrGroup(), radioBtnLecture.isSelected());
+		studentTable = new StudentTable(getCurrGroup(), radioBtnLecture.isSelected(),getCurrDateCmb());
 		studentTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		refreshStudentTable();
 		JScrollPane scrollPane = new JScrollPane(studentTable);

@@ -11,15 +11,15 @@ public class Student {
 	private String telephone;
 	private String email;
 	private String photoPath;
-	private List<Attendance> lectureAttendanceList;
-	private List<Attendance> labAttendanceList;
+	private List<Absence> lectureAbsenceList;
+	private List<Absence> labAbsenceList;
 
 	private List<Grade> gradeList;
 	private long groupId;
 
 	public Student() {
-		lectureAttendanceList = new ArrayList<>();
-		labAttendanceList = new ArrayList<>();
+		lectureAbsenceList = new ArrayList<>();
+		labAbsenceList = new ArrayList<>();
 		gradeList = new ArrayList<>();
 	}
 
@@ -87,20 +87,20 @@ public class Student {
 		this.photoPath = photoPath;
 	}
 
-	public List<Attendance> getLectureAttendanceList() {
-		return lectureAttendanceList;
+	public List<Absence> getLectureAttendanceList() {
+		return lectureAbsenceList;
 	}
 
-	public void setLectureAttendanceList(List<Attendance> lectureAttendanceList) {
-		this.lectureAttendanceList = lectureAttendanceList;
+	public void setLectureAttendanceList(List<Absence> lectureAbsenceList) {
+		this.lectureAbsenceList = lectureAbsenceList;
 	}
 
-	public List<Attendance> getLabAttendanceList() {
-		return labAttendanceList;
+	public List<Absence> getLabAttendanceList() {
+		return labAbsenceList;
 	}
 
-	public void setLabAttendanceList(List<Attendance> labAttendanceList) {
-		this.labAttendanceList = labAttendanceList;
+	public void setLabAttendanceList(List<Absence> labAbsenceList) {
+		this.labAbsenceList = labAbsenceList;
 	}
 
 	public List<Grade> getGradeList() {
@@ -118,7 +118,7 @@ public class Student {
 				.orElse(0.0);
 	}
 
-	public Grade getLabGrade(Lesson lesson) {
+	public Grade getLessonGrade(Lesson lesson) {
 		if (lesson == null) {
 			return null;
 		}
@@ -128,33 +128,33 @@ public class Student {
 				.orElse(null);
 	}
 
-	public Attendance getLabAttendance(Lesson lesson) {
+	public Absence getLessonAbsence(Lesson lesson) {
 		if (lesson == null) {
 			return null;
 		}
 		if (lesson.isLecture()) {
-			return lectureAttendanceList.stream()
+			return lectureAbsenceList.stream()
 					.filter(a -> a.getLessonId() == lesson.getId())
 					.findFirst()
 					.orElse(null);
 		}
 		else {
-			return labAttendanceList.stream()
+			return labAbsenceList.stream()
 					.filter(a -> a.getLessonId() == lesson.getId())
 					.findFirst()
 					.orElse(null);
 		}
 	}
 
-	public boolean isAttendance(Lesson lesson) {
-		return isAttendanceOnLab(lesson) || isAttendanceOnLecture(lesson);
+	public boolean isAbsence(Lesson lesson) {
+		return isAbsenceOnLab(lesson) || isAbsenceOnLecture(lesson);
 	}
 
-	public boolean isAttendanceOnLab(Lesson lesson) {
-		return labAttendanceList.stream().anyMatch(attendance -> attendance.getLessonId() == lesson.getId());
+	public boolean isAbsenceOnLab(Lesson lesson) {
+		return labAbsenceList.stream().anyMatch(absence -> absence.getLessonId() == lesson.getId());
 	}
-	public boolean isAttendanceOnLecture(Lesson lesson) {
-		return lectureAttendanceList.stream().anyMatch(attendance -> attendance.getLessonId() == lesson.getId());
+	public boolean isAbsenceOnLecture(Lesson lesson) {
+		return lectureAbsenceList.stream().anyMatch(absence -> absence.getLessonId() == lesson.getId());
 	}
 
 
@@ -165,7 +165,7 @@ public class Student {
 	}
 
 	public int getCountLabAttendance() {
-		return labAttendanceList.size();
+		return labAbsenceList.size();
 	}
 
 	@Override

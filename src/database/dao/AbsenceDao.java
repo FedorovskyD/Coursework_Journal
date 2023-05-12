@@ -1,17 +1,15 @@
 package database.dao;
 
 
-import entity.Attendance;
-import entity.Lesson;
+import entity.Absence;
 import entity.Student;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  * Интерфейс для доступа к данным по посещаемости лабораторных занятий.
  */
-public interface AttendanceDao extends CrudDao<Attendance> {
+public interface AbsenceDao extends CrudDao<Absence> {
 
 	/**
 	 * Возвращает список записей о посещении для определенного студента.
@@ -19,8 +17,8 @@ public interface AttendanceDao extends CrudDao<Attendance> {
 	 * @param student студент
 	 * @return список записей о посещении для данного студента
 	 */
-	List<Attendance> getAttendancesByStudent(Student student);
+	List<Absence> getAttendancesByStudent(Student student);
 
-	List<Attendance> getLessonAttendancesByStudent(Student student, boolean isLecture);
+	List<Absence> getLessonAttendancesByStudent(Student student, boolean isLecture);
 }
 
