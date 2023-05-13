@@ -10,10 +10,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 
-public class JDialogAddStudentListener implements ActionListener {
+public class AddStudentDialogListener implements ActionListener {
 	private AddStudentDialog addStudentDialog;
 
-	public JDialogAddStudentListener(AddStudentDialog addStudentDialog) {
+	public AddStudentDialogListener(AddStudentDialog addStudentDialog) {
 		this.addStudentDialog = addStudentDialog;
 	}
 

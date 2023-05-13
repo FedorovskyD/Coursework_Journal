@@ -15,7 +15,7 @@ import java.awt.*;
 public class StudentTable extends JTable {
 
 	public StudentTable(Group group, boolean isLecture, JComboBox<Lesson> lessonJComboBox) {
-		super(new StudentLabTableModel(group, isLecture));
+		super(new StudentTableModel(group, isLecture));
 		setDefaultRenderer(Object.class, new StudentTableCellRender(2));
 		setRowHeight(35);
 		TableCellRenderer headerRenderer = getColumnModel().getColumn(0).getHeaderRenderer();
@@ -31,7 +31,6 @@ public class StudentTable extends JTable {
 			}
 			return headerComponent;
 		});
-		repaint();
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	}
 
@@ -40,8 +39,8 @@ public class StudentTable extends JTable {
 		return getStudentTableModel().getStudentAt(selectedRow);
 	}
 
-	public StudentLabTableModel getStudentTableModel() {
-		return (StudentLabTableModel) getModel();
+	public StudentTableModel getStudentTableModel() {
+		return (StudentTableModel) getModel();
 	}
 
 }

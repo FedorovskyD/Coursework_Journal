@@ -4,7 +4,7 @@ import database.dao.impl.AbsenceDaoImpl;
 import database.dao.impl.GradeDaoImpl;
 import entity.Absence;
 import entity.Grade;
-import gui.studentTable.studentCard.JDialogStudentCard;
+import gui.studentTable.studentCard.StudentCardDialog;
 import utils.Constants;
 
 import java.awt.*;
@@ -12,9 +12,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class LessonButtonKeyListener extends KeyAdapter {
-	private JDialogStudentCard studentCard;
+	private StudentCardDialog studentCard;
 
-	public LessonButtonKeyListener(JDialogStudentCard studentCard) {
+	public LessonButtonKeyListener(StudentCardDialog studentCard) {
 		this.studentCard = studentCard;
 	}
 
@@ -41,6 +41,16 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				moveTableRow(keyCode);
 				e.consume();
 				break;
+			case KeyEvent.VK_0:
+			case KeyEvent.VK_1:
+			case KeyEvent.VK_2:
+			case KeyEvent.VK_3:
+			case KeyEvent.VK_4:
+			case KeyEvent.VK_5:
+			case KeyEvent.VK_6:
+			case KeyEvent.VK_7:
+			case KeyEvent.VK_8:
+			case KeyEvent.VK_9:
 			default:
 				break;
 		}
@@ -59,6 +69,8 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(nextLessonButton.getLesson());
 			studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(
 					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+2,studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+2);
+			studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow().getStudentTable()
+					.getCellRect(studentCard.getMainWindow().getStudentTable().getSelectedRow(), nextIndex+2, true));
 			studentCard.getMainWindow().repaint();
 			nextLessonButton.requestFocus();
 		}

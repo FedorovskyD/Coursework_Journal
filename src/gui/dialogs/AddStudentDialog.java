@@ -2,7 +2,7 @@ package gui.dialogs;
 
 import gui.MainFrame;
 import entity.Group;
-import listeners.JDialogAddStudentListener;
+import listeners.AddStudentDialogListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -91,8 +91,8 @@ public class AddStudentDialog extends JDialog {
 		cancelButton.addActionListener(e -> dispose());
 		studentDataPanel.add(okButton);
 		studentDataPanel.add(cancelButton);
-		JDialogAddStudentListener JDialogAddStudentListener = new JDialogAddStudentListener(this);
-		okButton.addActionListener(JDialogAddStudentListener);
+		AddStudentDialogListener AddStudentDialogListener = new AddStudentDialogListener(this);
+		okButton.addActionListener(AddStudentDialogListener);
 
 		pack();
 		setLocationRelativeTo(parent);

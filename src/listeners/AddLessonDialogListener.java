@@ -9,9 +9,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Comparator;
 
-public class JDialogAddLessonListener implements ActionListener {
+public class AddLessonDialogListener implements ActionListener {
 	private AddLessonDialog addLessonDialog;
-	public JDialogAddLessonListener(AddLessonDialog addLessonDialog){
+	public AddLessonDialogListener(AddLessonDialog addLessonDialog){
 		this.addLessonDialog = addLessonDialog;
 	}
 	@Override

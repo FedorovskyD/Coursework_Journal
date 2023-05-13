@@ -1,10 +1,10 @@
 package gui;
 
-import gui.studentTable.StudentLabTableModel;
+import gui.studentTable.StudentTableModel;
 import gui.studentTable.StudentTable;
 import database.dao.GroupDao;
 import database.dao.impl.GroupDaoImpl;
-import gui.studentTable.studentCard.JDialogStudentCard;
+import gui.studentTable.studentCard.StudentCardDialog;
 import entity.Group;
 import entity.Lesson;
 import entity.Student;
@@ -27,7 +27,7 @@ public class MainFrame extends JFrame {
 	private final JButton btnAddStudent, btnAddLab,
 			btnAddGroup, btnDeleteGroup;
 	protected StudentTable studentTable;
-	protected JDialogStudentCard jDialogStudentCard;
+	protected StudentCardDialog studentCardDialog;
 	protected final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc, radioBtnDec;
 	private final JComboBox<Group> cmbGroupNumber;
 	private final JComboBox<Lesson> currDateCmb;
@@ -148,7 +148,7 @@ public class MainFrame extends JFrame {
 						.addComponent(btnAddLab))
 		);
 		//Создаем карточку для отображения информации о студенте
-		jDialogStudentCard = new JDialogStudentCard(this, "Карточка студента");
+		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
 		// Добавление слушателей
 		addWindowListener(new WindowAdapter() {
 			public void windowOpened(WindowEvent e) {
@@ -174,8 +174,6 @@ public class MainFrame extends JFrame {
 		studentTable.getSelectionModel().addListSelectionListener(studentTableListSelectionListener);
 		studentTable.addMouseListener(studentTableMouseListener);
 		studentTable.addKeyListener(studentTableKeyListener);
-
-
 		setTitle("Student journal");
 		setSize(new Dimension(1920, 1080));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -243,7 +241,7 @@ public class MainFrame extends JFrame {
 
 	public void refreshStudentTable() {
 		currStudent = getCurrentStudent();
-		studentTable.setModel(new StudentLabTableModel(getCurrGroup(), radioBtnLecture.isSelected()));
+		studentTable.setModel(new StudentTableModel(getCurrGroup(), radioBtnLecture.isSelected()));
 		studentTable.setColumnSelectionInterval(
 				currDateCmb.getSelectedIndex()+2,
 				currDateCmb.getSelectedIndex()+2);
@@ -259,7 +257,7 @@ public class MainFrame extends JFrame {
 				if (student != null) {
 					studentTable.setRowSelectionInterval(0, 0);
 					currStudent = student;
-					jDialogStudentCard.setVisible(false);
+					studentCardDialog.setVisible(false);
 				}
 			}
 		} else {
@@ -329,8 +327,8 @@ public class MainFrame extends JFrame {
 		}
 	}
 
-	public JDialogStudentCard getJDialogStudentCard() {
-		return jDialogStudentCard;
+	public StudentCardDialog getJDialogStudentCard() {
+		return studentCardDialog;
 	}
 
 	public Student getCurrStudent() {

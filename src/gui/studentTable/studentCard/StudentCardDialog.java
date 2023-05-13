@@ -8,7 +8,7 @@ import entity.Student;
 import gui.studentTable.studentCard.lessonButton.LessonButton;
 import gui.studentTable.studentCard.lessonButton.LessonButtonKeyListener;
 import gui.studentTable.studentCard.lessonButton.LessonButtonMouseListener;
-import listeners.JDialogStudentCardListener;
+import listeners.StudentCardDialogListener;
 import utils.Constants;
 import utils.PhotoUtils;
 
@@ -29,7 +29,7 @@ import java.util.List;
  *
  * @author Fedorovsky D. A.
  */
-public class JDialogStudentCard extends JDialog {
+public class StudentCardDialog extends JDialog {
 	protected JLabel photoLabel;
 	protected final JTextField txtFullName, txtEmail, txtPhone;
 	protected final JLabel txtAverageGrade;
@@ -45,7 +45,7 @@ public class JDialogStudentCard extends JDialog {
 	private final JPanel gradePanel;
 
 
-	public JDialogStudentCard(JFrame owner, String title) {
+	public StudentCardDialog(JFrame owner, String title) {
 		super(owner, title, true);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setSize(new Dimension(1000, 800));
@@ -154,12 +154,12 @@ public class JDialogStudentCard extends JDialog {
 		add(infoPanel);
 		add(gradePanel);
 		add(scrollPane);
-		JDialogStudentCardListener JDialogStudentCardListener = new JDialogStudentCardListener(this);
+		StudentCardDialogListener StudentCardDialogListener = new StudentCardDialogListener(this);
 		btnEditPhoto.addActionListener(e -> {
 			editPhoto();
 		});
-		deleteButton.addActionListener(JDialogStudentCardListener);
-		editButton.addActionListener(JDialogStudentCardListener);
+		deleteButton.addActionListener(StudentCardDialogListener);
+		editButton.addActionListener(StudentCardDialogListener);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

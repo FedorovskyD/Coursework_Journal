@@ -34,13 +34,13 @@ public class StudentTableKeyListener extends KeyAdapter {
 				if (selectedIndex > 0) {
 					mainFrame.getCurrDateCmb().setSelectedIndex(selectedIndex-1);
 					mainFrame.getStudentTable().scrollRectToVisible(((StudentTable) e.getSource())
-							.getCellRect(mainFrame.getStudentTable().getSelectedRow(), selectedIndex-4, true));
+							.getCellRect(mainFrame.getStudentTable().getSelectedRow(), selectedIndex-2, true));
 				}
 			} else {
 				if (selectedIndex < itemCount - 1) {
 					mainFrame.getCurrDateCmb().setSelectedIndex(selectedIndex+1);
 					mainFrame.getStudentTable().scrollRectToVisible(((StudentTable) e.getSource())
-							.getCellRect(mainFrame.getStudentTable().getSelectedRow(), selectedIndex+8, true));
+							.getCellRect(mainFrame.getStudentTable().getSelectedRow(), selectedIndex+3, true));
 				}
 			}
 			mainFrame.repaint();
