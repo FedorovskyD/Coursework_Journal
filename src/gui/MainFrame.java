@@ -244,6 +244,9 @@ public class MainFrame extends JFrame {
 	public void refreshStudentTable() {
 		currStudent = getCurrentStudent();
 		studentTable.setModel(new StudentLabTableModel(getCurrGroup(), radioBtnLecture.isSelected()));
+		studentTable.setColumnSelectionInterval(
+				currDateCmb.getSelectedIndex()+2,
+				currDateCmb.getSelectedIndex()+2);
 		sortTable();
 		if (currStudent != null) {
 			int index = studentTable.getStudentTableModel().getRowIndex(currStudent);
@@ -313,6 +316,7 @@ public class MainFrame extends JFrame {
 	}
 
 	public void refreshDateCmb() {
+		Lesson lesson = (Lesson) currDateCmb.getSelectedItem();
 		List<Lesson> currLessons;
 		if (radioBtnLecture.isSelected()) {
 			currLessons = getCurrGroup().getLectures();
@@ -320,6 +324,9 @@ public class MainFrame extends JFrame {
 			currLessons = getCurrGroup().getLabs();
 		}
 		currDateCmb.setModel(new DefaultComboBoxModel<>(currLessons.toArray(new Lesson[0])));
+		if(lesson!=null) {
+			currDateCmb.setSelectedItem(lesson);
+		}
 	}
 
 	public JDialogStudentCard getJDialogStudentCard() {

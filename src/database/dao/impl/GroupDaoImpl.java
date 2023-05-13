@@ -3,10 +3,13 @@ package database.dao.impl;
 import database.ConnectionFactory;
 import database.dao.GroupDao;
 import entity.Group;
+import entity.Lesson;
 import entity.Student;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -118,10 +121,13 @@ public class GroupDaoImpl implements GroupDao {
 	public boolean removeStudent(Group group, Student student) {
 		return false;
 	}
+
 	private Group createGroupFromResultSet(ResultSet rs) throws SQLException {
 		long id = rs.getLong("ID");
 		String groupNumber = rs.getString("GroupNumber");
-		return new Group(id, groupNumber,StudentDaoImpl.getInstance().getStudentsByGroupId(id), LessonDaoImpl.getInstance().getAllLabByGroupId(id));
+		List<Lesson> lessons = LessonDaoImpl.getInstance().getAllLabByGroupId(id);
+		lessons.sort(Comparator.comparing(Lesson::getDate));
+		return new Group(id, groupNumber, StudentDaoImpl.getInstance().getStudentsByGroupId(id), lessons);
 	}
 }
 

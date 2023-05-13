@@ -34,7 +34,7 @@ public class JDialogAddStudentListener implements ActionListener {
 				try {
 					PhotoUtils.getInstance().savePhoto(student, addStudentDialog.getPhotoPath());
 				} catch (IOException ex) {
-					throw new RuntimeException(ex);
+					System.out.println("Фото не найдено");
 				}
 			}
 			addStudentDialog.getMainWindow().getCurrentGroup().getStudents().add(student);
