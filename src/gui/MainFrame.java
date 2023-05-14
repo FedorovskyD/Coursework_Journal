@@ -13,6 +13,7 @@ import gui.studentTable.studentTableListener.StudentTableListSelectionListener;
 import gui.studentTable.studentTableListener.StudentTableMouseListener;
 import listeners.MainFrameListener;
 import utils.Constants;
+import utils.CreateWordTable;
 
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -35,6 +36,7 @@ public class MainFrame extends JFrame {
 	private final List<Group> groups;
 	private Student currStudent;
 	private final JCheckBox checkBox;
+	private final JButton generateTableButton;
 
 	public MainFrame() {
 		//Получаем данные о группах из базы данных
@@ -80,6 +82,7 @@ public class MainFrame extends JFrame {
 		cmbGroupNumber.setPreferredSize(new Dimension(100, 30));
 		cmbGroupNumber.setMaximumSize(cmbGroupNumber.getPreferredSize());
 		// Создаем кнопки
+		generateTableButton = new JButton("Создать файл");
 		btnAddStudent = new JButton("Добавить студента");
 		btnAddGroup = new JButton("Добавить группу");
 		btnDeleteGroup = new JButton("Удалить группу");
@@ -121,7 +124,8 @@ public class MainFrame extends JFrame {
 								.addComponent(btnAddStudent)
 								.addComponent(btnAddGroup)
 								.addComponent(btnDeleteGroup)
-								.addComponent(btnAddLab))
+								.addComponent(btnAddLab)
+								.addComponent(generateTableButton))
 				)
 		);
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
@@ -145,7 +149,7 @@ public class MainFrame extends JFrame {
 						.addComponent(btnAddStudent)
 						.addComponent(btnAddGroup)
 						.addComponent(btnDeleteGroup)
-						.addComponent(btnAddLab))
+						.addComponent(btnAddLab).addComponent(generateTableButton))
 		);
 		//Создаем карточку для отображения информации о студенте
 		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
@@ -174,6 +178,12 @@ public class MainFrame extends JFrame {
 		studentTable.getSelectionModel().addListSelectionListener(studentTableListSelectionListener);
 		studentTable.addMouseListener(studentTableMouseListener);
 		studentTable.addKeyListener(studentTableKeyListener);
+		generateTableButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				CreateWordTable.generateTable(getCurrGroup());
+			}
+		});
 		setTitle("Student journal");
 		setSize(new Dimension(1920, 1080));
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
