@@ -43,15 +43,45 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				e.consume();
 				break;
 			case KeyEvent.VK_0:
+			case KeyEvent.VK_NUMPAD0:
+				studentCard.getGradeButtons().get(0).doClick();
+				break;
 			case KeyEvent.VK_1:
+			case KeyEvent.VK_NUMPAD1:
+				studentCard.getGradeButtons().get(1).doClick();
+				break;
 			case KeyEvent.VK_2:
+				case KeyEvent.VK_NUMPAD2:
+				studentCard.getGradeButtons().get(2).doClick();
+				break;
 			case KeyEvent.VK_3:
+			case KeyEvent.VK_NUMPAD3:
+				studentCard.getGradeButtons().get(3).doClick();
+				break;
 			case KeyEvent.VK_4:
+			case KeyEvent.VK_NUMPAD4:
+				studentCard.getGradeButtons().get(4).doClick();
+				break;
 			case KeyEvent.VK_5:
+			case KeyEvent.VK_NUMPAD5:
+				studentCard.getGradeButtons().get(5).doClick();
+				break;
 			case KeyEvent.VK_6:
+			case KeyEvent.VK_NUMPAD6:
+				studentCard.getGradeButtons().get(6).doClick();
+				break;
 			case KeyEvent.VK_7:
+			case KeyEvent.VK_NUMPAD7:
+				studentCard.getGradeButtons().get(7).doClick();
+				break;
 			case KeyEvent.VK_8:
+			case KeyEvent.VK_NUMPAD8:
+				studentCard.getGradeButtons().get(8).doClick();
+				break;
 			case KeyEvent.VK_9:
+			case KeyEvent.VK_NUMPAD9:
+				studentCard.getGradeButtons().get(9).doClick();
+				break;
 			default:
 				break;
 		}

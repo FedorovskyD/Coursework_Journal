@@ -30,19 +30,20 @@ import java.util.List;
  * @author Fedorovsky D. A.
  */
 public class StudentCardDialog extends JDialog {
-	protected JLabel photoLabel;
-	protected final JTextField txtFullName, txtEmail, txtPhone;
-	protected final JLabel txtAverageGrade;
-	protected JLabel phoneLabel;
-	protected JLabel gpaLabel;
-	protected JLabel emailLabel;
-	protected final JButton deleteButton, editButton, btnEditPhoto;
-	protected final JPanel calendarPanel;
-	protected LessonButton currLessonButton;
+	private final JLabel photoLabel;
+	private final JTextField txtFullName, txtEmail, txtPhone;
+	private final JLabel txtAverageGrade;
+	private final JLabel phoneLabel;
+	private final JLabel gpaLabel;
+	private final JLabel emailLabel;
+	private final JButton deleteButton, editButton, btnEditPhoto;
+	private final JPanel calendarPanel;
+	private LessonButton currLessonButton;
 	private final List<LessonButton> lessonButtons;
-	protected final MainFrame mainFrame;
+	private final MainFrame mainFrame;
 	private final JScrollPane scrollPane;
 	private final JPanel gradePanel;
+	private final List<JButton> gradeButtons;
 
 
 	public StudentCardDialog(JFrame owner, String title) {
@@ -85,6 +86,7 @@ public class StudentCardDialog extends JDialog {
 		photoLabel.setPreferredSize(new Dimension(187, 250));
 		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
 		photoLabel.setMaximumSize(photoLabel.getPreferredSize());
+		gradeButtons = new ArrayList<>();
 		lessonButtons = new ArrayList<>();
 		// Создаем менеджер компоновки
 		GroupLayout groupLayout = new GroupLayout(infoPanel);
@@ -144,8 +146,8 @@ public class StudentCardDialog extends JDialog {
 		createGradeButtons(gradePanel);
 		// Добавление панели календаря
 		calendarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,10));
-		scrollPane = new JScrollPane(calendarPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		calendarPanel.setBorder(BorderFactory.createLineBorder(Color.RED,2));
+		scrollPane = new JScrollPane(calendarPanel);
 		scrollPane.setBorder(BorderFactory.createTitledBorder(
 				mainFrame.getRadioBtnLab().isSelected() ? "Лабораторные работы" : "Лекции"));
 		calendarPanel.setPreferredSize(new Dimension(800, 500));
@@ -192,6 +194,9 @@ public class StudentCardDialog extends JDialog {
 		txtPhone.setText(student.getTelephone());
 		if (!mainFrame.getRadioBtnLecture().isSelected()) {
 			txtAverageGrade.setText(String.valueOf(student.getAverageGrade()));
+			gpaLabel.setText("Cредний балл");
+		}else {
+			gpaLabel.setText("");
 		}
 		Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
 		if (image != null) {
@@ -227,13 +232,7 @@ public class StudentCardDialog extends JDialog {
 				}else {
 					lessonButton.setData();
 				}
-				Color color = mainFrame.getCurrStudent().isAbsence(lessonButton.getLesson()) ? Constants.ABSENCE_COLOR : Color.WHITE;
-				lessonButton.setBackground(color);
-				if (mainFrame.getCurrStudent().isAbsence(lessonButton.getLesson())) {
-					lessonButton.setChecked(true);
-				}else {
-					lessonButton.setChecked(false);
-				}
+				lessonButton.setChecked(mainFrame.getCurrStudent().isAbsence(lessonButton.getLesson()));
 				setInitialSelection(lessonButton);
 				lessonButton.repaint();
 			});
@@ -253,10 +252,22 @@ public class StudentCardDialog extends JDialog {
 			}else {
 				lessonButton.setData();
 			}
-			lessonButton.setPreferredSize(new Dimension(180,120));
+			lessonButton.setPreferredSize(new Dimension(180,80));
 			lessonButton.setChecked(mainFrame.getCurrStudent().isAbsence(lesson));
 			setButtonClickListener(lessonButton);
 			setButtonKeyListener(lessonButton);
+			lessonButton.addFocusListener(new FocusListener() {
+				@Override
+				public void focusGained(FocusEvent e) {
+					if(editButton.getText().equalsIgnoreCase("сохранить")){
+						editButton.requestFocus();
+					}
+				}
+				@Override
+				public void focusLost(FocusEvent e) {
+
+				}
+			});
 			lessonButtons.add(lessonButton);
 			calendarPanel.add(lessonButton);
 			setInitialSelection(lessonButton);
@@ -332,6 +343,7 @@ public class StudentCardDialog extends JDialog {
 				setGrade(gradeButton);
 			});
 			gradeButton.setPreferredSize(new Dimension(80, 30));
+			gradeButtons.add(gradeButton);
 			gradePanel.add(gradeButton);
 		}
 	}
@@ -345,13 +357,21 @@ public class StudentCardDialog extends JDialog {
 	}
 
 	private void setGrade(JButton gradeButton) {
+		String gradeStr = "";
 		if (!currLessonButton.isChecked() && !currLessonButton.getLesson().isHoliday()) {
-			currLessonButton.setGrade(gradeButton.getText());
+			if(currLessonButton.getGrade().equals("1") && gradeButton.getText().equals("0")){
+				currLessonButton.setGrade("10");
+				gradeStr = "10";
+			}else {
+				currLessonButton.setGrade(gradeButton.getText());
+				gradeStr = gradeButton.getText();
+			}
+
 			Grade grade = mainFrame.getCurrStudent().getLessonGrade(currLessonButton.getLab());
 			if (grade == null) {
 				long id;
 				Grade grade1 = new Grade(currLessonButton.getLab().getId(),
-						mainFrame.getCurrStudent().getId(), Integer.parseInt(gradeButton.getText()));
+						mainFrame.getCurrStudent().getId(), Integer.parseInt(gradeStr));
 				if ((id = GradeDaoImpl.getInstance().save(grade1)) != -1) {
 					System.out.println("Оценка добавлена");
 					grade1.setId(id);
@@ -359,7 +379,7 @@ public class StudentCardDialog extends JDialog {
 					mainFrame.refreshStudentTable();
 				}
 			} else {
-				grade.setGrade(Integer.parseInt(gradeButton.getText()));
+				grade.setGrade(Integer.parseInt(gradeStr));
 				mainFrame.refreshStudentTable();
 				if (GradeDaoImpl.getInstance().update(grade)) {
 					System.out.println("Оценка изменена");
@@ -416,5 +436,9 @@ public class StudentCardDialog extends JDialog {
 
 	public void setCurrLessonButton(LessonButton currLessonButton) {
 		this.currLessonButton = currLessonButton;
+	}
+
+	public List<JButton> getGradeButtons() {
+		return gradeButtons;
 	}
 }

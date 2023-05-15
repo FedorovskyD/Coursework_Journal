@@ -11,6 +11,7 @@ public class LessonButton extends JButton {
 	private final Lesson lesson; //Лабораторная работа за которую отвечает данная кнопка
 	private boolean isCurrent; //Показывает активна ли данная кнопка
 	private boolean isChecked;
+	private String grade = "";
 
 	public LessonButton(Lesson lesson) {
 		this.lesson = lesson;
@@ -24,6 +25,7 @@ public class LessonButton extends JButton {
 
 	public void setGrade(String grade) {
 		setText("<html>" + getStringLabDate() + "<br> Оценка: " + grade + "</html>");
+		this.grade = grade;
 	}
 
 	public void setData() {
@@ -68,5 +70,9 @@ public class LessonButton extends JButton {
 
 	public Lesson getLesson() {
 		return lesson;
+	}
+
+	public String getGrade() {
+		return grade;
 	}
 }

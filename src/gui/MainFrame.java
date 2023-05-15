@@ -155,7 +155,7 @@ public class MainFrame extends JFrame {
 		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
 		// Добавление слушателей
 		addWindowListener(new WindowAdapter() {
-			public void windowOpened(WindowEvent e) {
+			public void windowActivated(WindowEvent e) {
 				studentTable.requestFocus();
 			}
 		});

@@ -53,7 +53,7 @@ public class WordConnector {
 		}
 		if (columnCount > lessons.size() + 1) {
 			for (int i = 1; i < rowsCount; i++) {
-				table.getRow(i).getCell(1).setText(String.valueOf(students.get(i - 1).getAverageGrade()));
+				table.getRow(i).getCell(1).setText(String.format("%.2f",students.get(i - 1).getAverageGrade()));
 			}
 		}
 		int columnFirstDate = -1;
