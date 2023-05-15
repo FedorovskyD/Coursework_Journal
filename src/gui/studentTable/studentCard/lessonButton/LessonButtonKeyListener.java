@@ -7,6 +7,7 @@ import entity.Grade;
 import gui.studentTable.studentCard.StudentCardDialog;
 import utils.Constants;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -62,27 +63,32 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			LessonButton nextLessonButton = studentCard.getLessonButtons().get(nextIndex);
 			nextLessonButton.setCurrent(true);
 			button.setCurrent(false);
-			button.setBorder(null);
 			button.repaint();
 			nextLessonButton.repaint();
 			studentCard.setCurrLessonButton(nextLessonButton);
 			studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(nextLessonButton.getLesson());
+			boolean isLecture = studentCard.getMainWindow().getRadioBtnLecture().isSelected();
+			int index1 = isLecture?1:2;
 			studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(
-					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+2,studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+2);
+					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+index1,studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+index1);
 			studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow().getStudentTable()
-					.getCellRect(studentCard.getMainWindow().getStudentTable().getSelectedRow(), nextIndex+2, true));
+					.getCellRect(studentCard.getMainWindow().getStudentTable().getSelectedRow(), nextIndex+index1, true));
 			studentCard.getMainWindow().repaint();
 			nextLessonButton.requestFocus();
 		}
 	}
 	private void handleSpaceKeyPressed(LessonButton button) {
-		if (!button.isChecked()) {
-			addAbsence(button);
-			if(studentCard.getMainWindow().getCheckBox().isSelected()){
-				moveTableRow(KeyEvent.VK_DOWN);
+		if(!button.getLesson().isHoliday()) {
+			if (!button.isChecked()) {
+				addAbsence(button);
+				if (studentCard.getMainWindow().getCheckBox().isSelected()) {
+					moveTableRow(KeyEvent.VK_DOWN);
+				}
+			} else {
+				removeAbsence(button);
 			}
-		} else {
-			removeAbsence(button);
+		}else {
+			JOptionPane.showMessageDialog(studentCard, "Нельзя отметить отсутствие в праздничный день");
 		}
 	}
 	private void moveTableRow(int keyCode) {

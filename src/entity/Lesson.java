@@ -10,14 +10,18 @@ public class Lesson {
 	private long groupId;
 	private String LessonName;
 	private boolean isLecture;
+	private boolean isHoliday;
 
-public Lesson(){}
-	public Lesson(String classroom, Date date, long groupId, String lessonName, boolean isLecture) {
+	public Lesson() {
+	}
+
+	public Lesson(String classroom, Date date, long groupId, String lessonName, boolean isLecture ,boolean isHoliday) {
 		this.classroom = classroom;
 		this.date = date;
 		this.groupId = groupId;
 		this.LessonName = lessonName;
 		this.isLecture = isLecture;
+		this.isHoliday= isHoliday;
 	}
 
 	public long getId() {
@@ -66,6 +70,14 @@ public Lesson(){}
 
 	public void setLecture(boolean lecture) {
 		isLecture = lecture;
+	}
+
+	public boolean isHoliday() {
+		return isHoliday;
+	}
+
+	public void setHoliday(boolean holiday) {
+		isHoliday = holiday;
 	}
 
 	@Override

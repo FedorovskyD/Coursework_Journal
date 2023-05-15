@@ -18,12 +18,15 @@ public class AddLessonDialog extends JDialog {
 	private final JComboBox<Group> groupComboBox;
 	private final JButton addButton;
 
+	private final JCheckBox holidayCheckBox;
+
 	private final MainFrame mainFrame;
 
 	public AddLessonDialog(JFrame parent) {
 		super(parent, "Добавление занятия", true);
 		mainFrame = (MainFrame) parent;
 		JLabel lessonTypeLabel = new JLabel("Тип занятия:");
+		JLabel holidayLabel = new JLabel("Празничный день:");
 		JLabel nameLabel = new JLabel("Название:");
 		JLabel roomLabel = new JLabel("Аудитория:");
 		JLabel dateLabel = new JLabel("Дата:");
@@ -38,6 +41,7 @@ public class AddLessonDialog extends JDialog {
 		panelLessonType.add(radioButtonLecture);
 		nameField = new JTextField(20);
 		roomField = new JTextField(20);
+		holidayCheckBox =new JCheckBox();
 		groupComboBox = new JComboBox<>(new DefaultComboBoxModel<>(mainFrame.getGroups().toArray(new Group[0])));
 		groupComboBox.setSelectedItem(mainFrame.getCurrentGroup());
 		SpinnerDateModel dateModel = new SpinnerDateModel();
@@ -49,9 +53,11 @@ public class AddLessonDialog extends JDialog {
 		addButton = new JButton("Добавить");
 		JButton cancelButton = new JButton("Отмена");
 
-		JPanel panel = new JPanel(new GridLayout(6, 2));
+		JPanel panel = new JPanel(new GridLayout(7, 2));
 		panel.add(lessonTypeLabel);
 		panel.add(panelLessonType);
+		panel.add(holidayLabel);
+		panel.add(holidayCheckBox);
 		panel.add(nameLabel);
 		panel.add(nameField);
 		panel.add(roomLabel);
@@ -65,8 +71,8 @@ public class AddLessonDialog extends JDialog {
 		cancelButton.addActionListener(e -> {
 			dispose();
 		});
-		AddLessonDialogListener AddLessonDialogListener = new AddLessonDialogListener(this);
-		addButton.addActionListener(AddLessonDialogListener);
+		AddLessonDialogListener addLessonDialogListener = new AddLessonDialogListener(this);
+		addButton.addActionListener(addLessonDialogListener);
 		this.setContentPane(panel);
 		this.pack();
 		this.setLocationRelativeTo(null);
@@ -98,5 +104,9 @@ public class AddLessonDialog extends JDialog {
 
 	public MainFrame getMainWindow() {
 		return mainFrame;
+	}
+
+	public JCheckBox getHolidayCheckBox() {
+		return holidayCheckBox;
 	}
 }

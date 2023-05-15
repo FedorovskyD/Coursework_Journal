@@ -11,7 +11,7 @@ import java.util.List;
 public class LessonDaoImpl implements LessonDao {
 	private static final String SQL_SELECT_LAB_BY_ID = "SELECT * FROM lesson WHERE id = ?";
 	private static final String SQL_SELECT_ALL_LAB = "SELECT * FROM lesson";
-	private static final String SQL_INSERT_LAB = "INSERT INTO lesson (date, classroom, groupID, lesson_name,isLecture) VALUES (?, ?, ?, ?,?)";
+	private static final String SQL_INSERT_LAB = "INSERT INTO lesson (date, classroom, groupID, lesson_name,isLecture,isHoliday) VALUES (?, ?, ?, ?,?,?)";
 	private static final String SQL_UPDATE_LAB = "UPDATE lesson SET date = ?, classroom = ?, groupID = ?, lesson_name = ? WHERE id = ?";
 	private static final String SQL_DELETE_LAB = "DELETE FROM lesson WHERE ID = ?";
 	private static final String SQL_SELECT_LAB_BY_GROUP = "SELECT * FROM lesson WHERE groupID = ?";
@@ -99,6 +99,7 @@ public class LessonDaoImpl implements LessonDao {
 			statement.setLong(3, entity.getGroupId());
 			statement.setString(4, entity.getLessonName());
 			statement.setBoolean(5,entity.isLecture());
+			statement.setBoolean(6,entity.isHoliday());
 			int rowsAffected = statement.executeUpdate();
 
 			if (rowsAffected == 0) {
@@ -163,6 +164,7 @@ public class LessonDaoImpl implements LessonDao {
 		int groupId = resultSet.getInt("groupID");
 		String labName = resultSet.getString("lesson_name");
 		boolean isLecture = resultSet.getBoolean("isLecture");
+		boolean isHoliday = resultSet.getBoolean("isHoliday");
 
 		Lesson lesson = new Lesson();
 		lesson.setId(id);
@@ -171,6 +173,7 @@ public class LessonDaoImpl implements LessonDao {
 		lesson.setGroupId(groupId);
 		lesson.setLessonName(labName);
 		lesson.setLecture(isLecture);
+		lesson.setHoliday(isHoliday);
 		return lesson;
 	}
 

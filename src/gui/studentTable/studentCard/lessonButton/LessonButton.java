@@ -4,6 +4,7 @@ import entity.Lesson;
 import utils.Constants;
 
 import javax.swing.*;
+import java.awt.*;
 import java.text.SimpleDateFormat;
 
 public class LessonButton extends JButton {
@@ -15,12 +16,19 @@ public class LessonButton extends JButton {
 		this.lesson = lesson;
 		isCurrent = false;
 		isChecked = false;
-		setBorder(null);
+		if (lesson.isHoliday()) {
+			setBackground(Color.ORANGE);
+		}
+		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 	}
+
 	public void setGrade(String grade) {
 		setText("<html>" + getStringLabDate() + "<br> Оценка: " + grade + "</html>");
 	}
-	public void  setData(){setText(getStringLabDate());}
+
+	public void setData() {
+		setText(getStringLabDate());
+	}
 
 	public Lesson getLab() {
 		return lesson;
@@ -35,10 +43,10 @@ public class LessonButton extends JButton {
 	}
 
 	public void setCurrent(boolean current) {
-		if(current){
-			setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR,5));
-		}else {
-			setBorder(null);
+		if (current) {
+			setBorder(BorderFactory.createLineBorder(Constants.SELECTED_COLOR, 5));
+		} else {
+			setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		}
 		isCurrent = current;
 	}
@@ -48,6 +56,13 @@ public class LessonButton extends JButton {
 	}
 
 	public void setChecked(boolean checked) {
+		if (checked) {
+			setBackground(Constants.ABSENCE_COLOR);
+		} else if (lesson.isHoliday()) {
+			setBackground(Color.ORANGE);
+		} else {
+			setBackground(Color.WHITE);
+		}
 		isChecked = checked;
 	}
 

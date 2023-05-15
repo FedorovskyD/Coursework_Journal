@@ -143,7 +143,7 @@ public class StudentCardDialog extends JDialog {
 		gradePanel.setMinimumSize(new Dimension(100, 100));
 		createGradeButtons(gradePanel);
 		// Добавление панели календаря
-		calendarPanel = new JPanel(new GridLayout(0, 5, 5, 5));
+		calendarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,10));
 		scrollPane = new JScrollPane(calendarPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(BorderFactory.createTitledBorder(
@@ -243,6 +243,7 @@ public class StudentCardDialog extends JDialog {
 	private void createLessonButtons(List<Lesson> lessons) {
 		calendarPanel.removeAll();
 		for (Lesson lesson : lessons) {
+
 			LessonButton lessonButton = new LessonButton(lesson);
 			Grade grade = mainFrame.getCurrStudent().getLessonGrade(lesson);
 			if (mainFrame.getRadioBtnLecture().isSelected() || lesson.isLecture()) {
@@ -252,8 +253,8 @@ public class StudentCardDialog extends JDialog {
 			}else {
 				lessonButton.setData();
 			}
-			Color color = mainFrame.getCurrStudent().isAbsence(lesson) ? Constants.ABSENCE_COLOR : Color.WHITE;
-			lessonButton.setBackground(color);
+			lessonButton.setPreferredSize(new Dimension(180,120));
+			lessonButton.setChecked(mainFrame.getCurrStudent().isAbsence(lesson));
 			setButtonClickListener(lessonButton);
 			setButtonKeyListener(lessonButton);
 			lessonButtons.add(lessonButton);
@@ -344,7 +345,7 @@ public class StudentCardDialog extends JDialog {
 	}
 
 	private void setGrade(JButton gradeButton) {
-		if (!currLessonButton.isChecked()) {
+		if (!currLessonButton.isChecked() && !currLessonButton.getLesson().isHoliday()) {
 			currLessonButton.setGrade(gradeButton.getText());
 			Grade grade = mainFrame.getCurrStudent().getLessonGrade(currLessonButton.getLab());
 			if (grade == null) {
@@ -368,7 +369,7 @@ public class StudentCardDialog extends JDialog {
 				txtAverageGrade.setText(String.valueOf(mainFrame.getCurrStudent().getAverageGrade()));
 			}
 		} else {
-			JOptionPane.showMessageDialog(mainFrame, "Нельзя выставить оценку если студент не присутствовал");
+			JOptionPane.showMessageDialog(mainFrame, "Нельзя выставить оценку в этот день");
 		}
 		currLessonButton.requestFocus();
 	}

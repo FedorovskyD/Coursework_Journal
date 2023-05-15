@@ -19,8 +19,9 @@ public class AddLessonDialogListener implements ActionListener {
 		if (e.getSource() == addLessonDialog.getAddButton()) {
 			Group group = ((Group) addLessonDialog.getGroupComboBox().getSelectedItem());
 			boolean isLecture = addLessonDialog.getRadioButtonLecture().isSelected();
+			boolean isHoliday = addLessonDialog.getHolidayCheckBox().isSelected();
 			Lesson lesson = new Lesson(addLessonDialog.getRoomField().getText(),
-					addLessonDialog.getDate(),group.getId(), addLessonDialog.getNameField().getText(),isLecture);
+					addLessonDialog.getDate(),group.getId(), addLessonDialog.getNameField().getText(),isLecture,isHoliday);
 			long lessonId = LessonDaoImpl.getInstance().save(lesson);
 			if(lessonId!= -1){
 				lesson.setId(lessonId);

@@ -13,12 +13,12 @@ import gui.studentTable.studentTableListener.StudentTableListSelectionListener;
 import gui.studentTable.studentTableListener.StudentTableMouseListener;
 import listeners.MainFrameListener;
 import utils.Constants;
-import utils.CreateWordTable;
+import utils.WordConnector;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +36,7 @@ public class MainFrame extends JFrame {
 	private final List<Group> groups;
 	private Student currStudent;
 	private final JCheckBox checkBox;
-	private final JButton generateTableButton;
+	private final JButton btnSaveTable;
 
 	public MainFrame() {
 		//Получаем данные о группах из базы данных
@@ -82,7 +82,7 @@ public class MainFrame extends JFrame {
 		cmbGroupNumber.setPreferredSize(new Dimension(100, 30));
 		cmbGroupNumber.setMaximumSize(cmbGroupNumber.getPreferredSize());
 		// Создаем кнопки
-		generateTableButton = new JButton("Создать файл");
+		btnSaveTable = new JButton("Сохранить таблицу в файл");
 		btnAddStudent = new JButton("Добавить студента");
 		btnAddGroup = new JButton("Добавить группу");
 		btnDeleteGroup = new JButton("Удалить группу");
@@ -93,7 +93,7 @@ public class MainFrame extends JFrame {
 		currDateCmb.setPreferredSize(new Dimension(100, 30));
 		currDateCmb.setMaximumSize(currDateCmb.getPreferredSize());
 		//Создаем таблицу для отображения списка студентов
-		studentTable = new StudentTable(getCurrGroup(), radioBtnLecture.isSelected(),getCurrDateCmb());
+		studentTable = new StudentTable(getCurrGroup(), radioBtnLecture.isSelected(), getCurrDateCmb());
 		studentTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		refreshStudentTable();
 		JScrollPane scrollPane = new JScrollPane(studentTable);
@@ -125,7 +125,7 @@ public class MainFrame extends JFrame {
 								.addComponent(btnAddGroup)
 								.addComponent(btnDeleteGroup)
 								.addComponent(btnAddLab)
-								.addComponent(generateTableButton))
+								.addComponent(btnSaveTable))
 				)
 		);
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
@@ -149,7 +149,7 @@ public class MainFrame extends JFrame {
 						.addComponent(btnAddStudent)
 						.addComponent(btnAddGroup)
 						.addComponent(btnDeleteGroup)
-						.addComponent(btnAddLab).addComponent(generateTableButton))
+						.addComponent(btnAddLab).addComponent(btnSaveTable))
 		);
 		//Создаем карточку для отображения информации о студенте
 		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
@@ -161,7 +161,7 @@ public class MainFrame extends JFrame {
 		});
 		MainFrameListener mainFrameListener = new MainFrameListener(this);
 		StudentTableListSelectionListener studentTableListSelectionListener = new StudentTableListSelectionListener(this);
-		StudentTableMouseListener studentTableMouseListener  = new StudentTableMouseListener(this);
+		StudentTableMouseListener studentTableMouseListener = new StudentTableMouseListener(this);
 		StudentTableKeyListener studentTableKeyListener = new StudentTableKeyListener(this);
 		btnAddStudent.addActionListener(mainFrameListener);
 		btnAddGroup.addActionListener(mainFrameListener);
@@ -178,18 +178,45 @@ public class MainFrame extends JFrame {
 		studentTable.getSelectionModel().addListSelectionListener(studentTableListSelectionListener);
 		studentTable.addMouseListener(studentTableMouseListener);
 		studentTable.addKeyListener(studentTableKeyListener);
-		generateTableButton.addActionListener(new ActionListener() {
+		btnSaveTable.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				CreateWordTable.generateTable(getCurrGroup());
+				JFileChooser fileChooser = new JFileChooser();
+				// Устанавливаем режим выбора директории
+				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				// Открываем диалог выбора файла
+				int result = fileChooser.showSaveDialog(null);
+				// Если пользователь выбрал директорию и нажал "OK"
+				if (result == JFileChooser.APPROVE_OPTION) {
+					// Получаем выбранную директорию
+					File selectedDir = fileChooser.getSelectedFile();
+					// Открываем диалоговое окно для ввода названия файла
+					String fileName = JOptionPane.showInputDialog(null, "Введите название файла:");
+					if (fileName != null && !fileName.trim().isEmpty()) {
+						// Создаем новый файл в выбранной директории с введенным названием
+						fileName= fileName+".docx";
+					}else {
+						fileName = (radioBtnLab.isSelected() ? "Лабораторные " : "Лекции ") + getCurrentGroup() + ".docx";
+					}
+					File file = new File(selectedDir, fileName);
+					System.out.println(file.getName());
+					WordConnector.generateTable(getStudentTable().getStudentTableModel(), file);
+				}
 			}
 		});
+
 		setTitle("Student journal");
+
 		setSize(new Dimension(1920, 1080));
+
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+
 		setLocationRelativeTo(null);
+
 		setExtendedState(MAXIMIZED_BOTH);
+
 		setVisible(true);
+
 	}
 
 	public JComboBox<Group> getCmbGroupNumber() {
@@ -252,9 +279,12 @@ public class MainFrame extends JFrame {
 	public void refreshStudentTable() {
 		currStudent = getCurrentStudent();
 		studentTable.setModel(new StudentTableModel(getCurrGroup(), radioBtnLecture.isSelected()));
-		studentTable.setColumnSelectionInterval(
-				currDateCmb.getSelectedIndex()+2,
-				currDateCmb.getSelectedIndex()+2);
+		int selectedColumn = currDateCmb.getSelectedIndex() + (radioBtnLecture.isSelected()?1:2);
+		if (selectedColumn < studentTable.getColumnCount()) {
+			studentTable.setColumnSelectionInterval(
+					selectedColumn,
+					selectedColumn);
+		}
 		sortTable();
 		if (currStudent != null) {
 			int index = studentTable.getStudentTableModel().getRowIndex(currStudent);
@@ -279,14 +309,8 @@ public class MainFrame extends JFrame {
 		}
 
 		studentTable.getColumnModel().getColumn(0).setPreferredWidth(300);
-		if(!radioBtnLecture.isSelected()) {
+		if (!radioBtnLecture.isSelected()) {
 			studentTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-		}else {
-			TableColumn column = studentTable.getColumnModel().getColumn(1);
-			column.setPreferredWidth(0);
-			column.setMinWidth(0);
-			column.setWidth(0);
-			column.setMaxWidth(0);
 		}
 	}
 
@@ -332,7 +356,7 @@ public class MainFrame extends JFrame {
 			currLessons = getCurrGroup().getLabs();
 		}
 		currDateCmb.setModel(new DefaultComboBoxModel<>(currLessons.toArray(new Lesson[0])));
-		if(lesson!=null) {
+		if (lesson != null) {
 			currDateCmb.setSelectedItem(lesson);
 		}
 	}

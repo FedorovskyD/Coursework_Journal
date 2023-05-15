@@ -18,11 +18,13 @@ import java.util.List;
  */
 public class StudentTableModel extends AbstractTableModel {
 	private static final int STUDENT_COLUMN_INDEX = 0;//Индекс колонки с информацие о студенете
-	private static final int AVERAGE_GRADE_COLUMN_INDEX = 1;//Индекс колонки с информацией о среднем балле
-	private static final int FIRST_LAB_COLUMN_INDEX = 2;//Индекс с колонки, с которой начинаются даты занятий
+	private int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
+	private final int FIRST_LAB_COLUMN_INDEX ;//Индекс с колонки, с которой начинаются даты занятий
 	public static final int COUNT_SEPARATOR_ROW = 4;//Количество строк после, которых вставляется пустая строка
 	private final List<Student> students;//Список студентов
 	private final List<Lesson> lessons;//Список занятий
+	private final String groupNumber;
+	private final boolean isLecture;
 
 	/**
 	 * Конструктор для создания новой модели таблицы
@@ -38,9 +40,15 @@ public class StudentTableModel extends AbstractTableModel {
 		//Заполняем список lessons, в зависимости от типа занятий, которые отображает таблица
 		if (isLecture) {
 			lessons = group.getLectures();
+			FIRST_LAB_COLUMN_INDEX = 1;
+			AVERAGE_GRADE_COLUMN_INDEX = -1;
 		} else {
 			lessons = group.getLabs();
+			FIRST_LAB_COLUMN_INDEX = 2;
+			AVERAGE_GRADE_COLUMN_INDEX = 1;
 		}
+		this.isLecture = isLecture;
+		groupNumber = group.getName();
 	}
 
 	@Override
@@ -118,22 +126,26 @@ public class StudentTableModel extends AbstractTableModel {
 		boolean isAbsence = student.isAbsence(lesson);
 		JPanel panelTableCell = new JPanel();
 		//В зависимости от посещения занятия устанавливаем цвет панели
-		panelTableCell.setBackground(isAbsence ? Constants.ABSENCE_COLOR : Color.WHITE);
-		//Проверяем, есть ли у студента оценка на текущем занятии
-		Grade grade = null;
-		if (!isAbsence || !lesson.isLecture()) {
-			grade = student.getLessonGrade(lesson);
+		if(!lesson.isHoliday()) {
+			panelTableCell.setBackground(isAbsence ? Constants.ABSENCE_COLOR : Color.WHITE);
+			//Проверяем, есть ли у студента оценка на текущем занятии
+			Grade grade = null;
+			if (!isAbsence || !lesson.isLecture()) {
+				grade = student.getLessonGrade(lesson);
+			}
+			String text = "";
+			//Если студент отсутствовал добавляем "н" на панель
+			if (isAbsence) {
+				text = "н";
+				//Если оценка существует добавляем её на панель
+			} else if (grade != null) {
+				text = String.valueOf(grade.getGrade());
+			}
+			JLabel label = new JLabel(text);
+			panelTableCell.add(label);
+		}else {
+			panelTableCell.setBackground(Color.ORANGE);
 		}
-		String text = "";
-		//Если студент отсутствовал добавляем "н" на панель
-		if (isAbsence) {
-			text = "н";
-			//Если оценка существует добавляем её на панель
-		} else if (grade != null) {
-			text = String.valueOf(grade.getGrade());
-		}
-		JLabel label = new JLabel(text);
-		panelTableCell.add(label);
 
 		return panelTableCell;
 	}
@@ -225,4 +237,23 @@ public class StudentTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 
+	public List<Student> getStudents() {
+		return students;
+	}
+
+	public List<Lesson> getLessons() {
+		return lessons;
+	}
+
+	public String getGroupNumber() {
+		return groupNumber;
+	}
+
+	public boolean isLecture() {
+		return isLecture;
+	}
+
+	public int getFIRST_LAB_COLUMN_INDEX() {
+		return FIRST_LAB_COLUMN_INDEX;
+	}
 }
