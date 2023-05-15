@@ -156,12 +156,12 @@ public class StudentCardDialog extends JDialog {
 		add(infoPanel);
 		add(gradePanel);
 		add(scrollPane);
-		StudentCardDialogListener StudentCardDialogListener = new StudentCardDialogListener(this);
+		StudentCardDialogListener studentCardDialogListener = new StudentCardDialogListener(this);
 		btnEditPhoto.addActionListener(e -> {
 			editPhoto();
 		});
-		deleteButton.addActionListener(StudentCardDialogListener);
-		editButton.addActionListener(StudentCardDialogListener);
+		deleteButton.addActionListener(studentCardDialogListener);
+		editButton.addActionListener(studentCardDialogListener);
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {

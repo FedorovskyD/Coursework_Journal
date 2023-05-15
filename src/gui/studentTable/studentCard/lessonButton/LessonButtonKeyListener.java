@@ -122,6 +122,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 		}
 	}
 	private void moveTableRow(int keyCode) {
+		int firstIndex = studentCard.getMainWindow().getStudentTable().getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
 		int selectedRow = studentCard.getMainWindow().getStudentTable().getSelectedRow();
 		if (selectedRow != -1) {
 			int nextRow = selectedRow + (keyCode == KeyEvent.VK_UP ? -1 : 1);
@@ -132,7 +133,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			if (nextRow >= 0 && nextRow < studentCard.getMainWindow().getStudentTable().getRowCount()) {
 				studentCard.getMainWindow().getStudentTable().setRowSelectionInterval(nextRow, nextRow);
 				studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow()
-						.getStudentTable().getCellRect(nextRow, 0, true));
+						.getStudentTable().getCellRect(nextRow, studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+firstIndex, true));
 				studentCard.getMainWindow().getStudentTable().repaint();
 			}
 		}

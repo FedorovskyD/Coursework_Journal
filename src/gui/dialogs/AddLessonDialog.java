@@ -18,7 +18,7 @@ public class AddLessonDialog extends JDialog {
 	private final JComboBox<Group> groupComboBox;
 	private final JButton addButton;
 
-	private final JCheckBox holidayCheckBox;
+	private final JRadioButton isHolidayRadioButton;
 
 	private final MainFrame mainFrame;
 
@@ -34,14 +34,21 @@ public class AddLessonDialog extends JDialog {
 		JRadioButton radioButtonLab = new JRadioButton("Лабораторная", true);
 		radioButtonLecture = new JRadioButton("Лекция");
 		ButtonGroup buttonGroupLessonType = new ButtonGroup();
+		ButtonGroup buttonGroupHoliday = new ButtonGroup();
 		buttonGroupLessonType.add(radioButtonLab);
 		buttonGroupLessonType.add(radioButtonLecture);
-		JPanel panelLessonType = new JPanel(new GridLayout(1,2));
+		JPanel panelLessonType = new JPanel(new GridLayout(1, 2));
 		panelLessonType.add(radioButtonLab);
 		panelLessonType.add(radioButtonLecture);
 		nameField = new JTextField(20);
 		roomField = new JTextField(20);
-		holidayCheckBox =new JCheckBox();
+		isHolidayRadioButton = new JRadioButton("Да", false);
+		JRadioButton notHoliday = new JRadioButton("Нет", true);
+		buttonGroupHoliday.add(isHolidayRadioButton);
+		buttonGroupHoliday.add(notHoliday);
+		JPanel holidayOptionPanel = new JPanel(new GridLayout(1, 2));
+		holidayOptionPanel.add(isHolidayRadioButton);
+		holidayOptionPanel.add(notHoliday);
 		groupComboBox = new JComboBox<>(new DefaultComboBoxModel<>(mainFrame.getGroups().toArray(new Group[0])));
 		groupComboBox.setSelectedItem(mainFrame.getCurrentGroup());
 		SpinnerDateModel dateModel = new SpinnerDateModel();
@@ -57,7 +64,7 @@ public class AddLessonDialog extends JDialog {
 		panel.add(lessonTypeLabel);
 		panel.add(panelLessonType);
 		panel.add(holidayLabel);
-		panel.add(holidayCheckBox);
+		panel.add(holidayOptionPanel);
 		panel.add(nameLabel);
 		panel.add(nameField);
 		panel.add(roomLabel);
@@ -91,7 +98,7 @@ public class AddLessonDialog extends JDialog {
 	}
 
 	public Date getDate() {
-		return ((SpinnerDateModel)dateSpinner.getModel()).getDate();
+		return ((SpinnerDateModel) dateSpinner.getModel()).getDate();
 	}
 
 	public JRadioButton getRadioButtonLecture() {
@@ -106,7 +113,7 @@ public class AddLessonDialog extends JDialog {
 		return mainFrame;
 	}
 
-	public JCheckBox getHolidayCheckBox() {
-		return holidayCheckBox;
+	public JRadioButton getIsHolidayRadioButton() {
+		return isHolidayRadioButton;
 	}
 }

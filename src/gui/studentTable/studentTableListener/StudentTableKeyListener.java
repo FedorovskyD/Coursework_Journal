@@ -22,8 +22,9 @@ public class StudentTableKeyListener extends KeyAdapter {
 					nextRow += (e.getKeyCode() == KeyEvent.VK_UP ? -1 : 1);
 				}
 				if (nextRow >= 0 && nextRow < ((StudentTable) e.getSource()).getRowCount()) {
+					int firstIndex = mainFrame.getStudentTable().getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
 					mainFrame.getStudentTable().setRowSelectionInterval(nextRow, nextRow);
-					mainFrame.getStudentTable().scrollRectToVisible(((StudentTable) e.getSource()).getCellRect(nextRow, 0, true));
+					mainFrame.getStudentTable().scrollRectToVisible(((StudentTable) e.getSource()).getCellRect(nextRow, mainFrame.getCurrDateCmb().getSelectedIndex()+firstIndex, true));
 					mainFrame.getStudentTable().repaint();
 				}
 			}
