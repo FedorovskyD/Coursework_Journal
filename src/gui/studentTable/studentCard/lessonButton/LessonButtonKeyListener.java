@@ -87,6 +87,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 		}
 	}
 	private void moveLessonButton(int keyCode, LessonButton button) {
+		int firstIndex = studentCard.getMainWindow().getStudentTable().getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
 		int index = studentCard.getLessonButtons().indexOf(button);
 		int nextIndex = index + (keyCode == KeyEvent.VK_LEFT ? -1 : 1);
 		if (nextIndex >= 0 && nextIndex < studentCard.getLessonButtons().size()) {
@@ -101,8 +102,14 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			int index1 = isLecture?1:2;
 			studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(
 					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+index1,studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+index1);
+			int selectedColumn;
+			if(nextIndex+index1 <4){
+				selectedColumn = 0;
+			}else {
+				selectedColumn = nextIndex+index1;
+			}
 			studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow().getStudentTable()
-					.getCellRect(studentCard.getMainWindow().getStudentTable().getSelectedRow(), nextIndex+index1, true));
+					.getCellRect(studentCard.getMainWindow().getStudentTable().getSelectedRow(), selectedColumn, true));
 			studentCard.getMainWindow().repaint();
 			nextLessonButton.requestFocus();
 		}
