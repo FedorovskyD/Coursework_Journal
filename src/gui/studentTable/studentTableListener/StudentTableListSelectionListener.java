@@ -40,9 +40,6 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 							&& mainFrame.getCurrStudent() != null
 							&& mainFrame.getCurrStudent().getGroupId() == selectedStudent.getGroupId();
 					if (isVisible) {
-						if(column>1) {
-							mainFrame.getCurrDateCmb().setSelectedIndex(column - 2);
-						}
 						mainFrame.setCurrStudent(selectedStudent);
 						mainFrame.getJDialogStudentCard().updateStudentCard(selectedStudent);
 						mainFrame.getStudentTable().repaint();

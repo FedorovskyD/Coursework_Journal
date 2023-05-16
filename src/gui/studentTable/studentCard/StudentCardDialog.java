@@ -33,7 +33,7 @@ import java.util.List;
 public class StudentCardDialog extends JDialog {
 	private final JLabel photoLabel;
 	private final JTextField txtFullName, txtEmail, txtPhone;
-	private final JLabel txtAverageGrade;
+	private final JLabel txtAverageGrade, lblLessonCount, lblStudentHours, lblPersantage;
 	private final JLabel phoneLabel;
 	private final JLabel gpaLabel;
 	private final JLabel emailLabel;
@@ -58,6 +58,13 @@ public class StudentCardDialog extends JDialog {
 		JPanel infoPanel = new JPanel();
 		// Создаем компоненты
 		photoLabel = new JLabel();
+		lblLessonCount = new JLabel();
+		lblStudentHours = new JLabel();
+		lblPersantage = new JLabel();
+		JLabel lessonCount = new JLabel("Часов занятий:");
+		JLabel hoursCount = new JLabel("Часов присутствия:");
+		JLabel persantage = new JLabel("Процент посещения:");
+
 		JLabel nameLabel = new JLabel("ФИО:");
 		Dimension txtFieldDimension = new Dimension(300, 20);
 		txtFullName = new JTextField(20);
@@ -103,12 +110,19 @@ public class StudentCardDialog extends JDialog {
 						.addComponent(nameLabel)
 						.addComponent(emailLabel)
 						.addComponent(phoneLabel)
+						.addComponent(lessonCount)
+						.addComponent(hoursCount)
+						.addComponent(persantage)
 						.addComponent(gpaLabel)
 						.addComponent(editButton))
+				.addGap(10)
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(txtFullName)
 						.addComponent(txtEmail)
 						.addComponent(txtPhone)
+						.addComponent(lblLessonCount)
+						.addComponent(lblStudentHours)
+						.addComponent(lblPersantage)
 						.addComponent(txtAverageGrade)
 						.addComponent(deleteButton))
 		);
@@ -132,9 +146,21 @@ public class StudentCardDialog extends JDialog {
 								.addComponent(txtPhone))
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(lessonCount)
+								.addComponent(lblLessonCount))
+						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(hoursCount)
+								.addComponent(lblStudentHours))
+						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(persantage)
+								.addComponent(lblPersantage))
+						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(gpaLabel)
 								.addComponent(txtAverageGrade))
-						.addGap(130) // добавляем 10 пикселей расстояния между строками
+						.addGap(60) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(editButton)
 								.addComponent(deleteButton)))
@@ -146,7 +172,7 @@ public class StudentCardDialog extends JDialog {
 		gradePanel.setMinimumSize(new Dimension(100, 100));
 		createGradeButtons(gradePanel);
 		// Добавление панели календаря
-		calendarPanel = new JPanel(new GridLayout(0,5,5,5));
+		calendarPanel = new JPanel(new GridLayout(0, 5, 5, 5));
 		scrollPane = new JScrollPane(calendarPanel);
 		scrollPane.setBorder(BorderFactory.createTitledBorder(
 				mainFrame.getRadioBtnLab().isSelected() ? "Лабораторные работы" : "Лекции"));
@@ -192,10 +218,20 @@ public class StudentCardDialog extends JDialog {
 		txtEmail.setText(student.getEmail());
 		txtPhone.setText(student.getTelephone());
 		if (!mainFrame.getRadioBtnLecture().isSelected()) {
-			txtAverageGrade.setText(String.format("%.2f",student.getAverageGrade()));
-			gpaLabel.setText("Cредний балл");
-		}else {
+			txtAverageGrade.setText(String.format("%.2f", student.getAverageGrade()));
+			gpaLabel.setText("Cредний балл:");
+			int labHoursCount = mainFrame.getCurrentGroup().getLabHours();
+			lblLessonCount.setText(String.valueOf(labHoursCount));
+			int labHoursAttendance = labHoursCount - student.getLabAbsenceHours();
+			lblStudentHours.setText(String.valueOf(labHoursAttendance));
+			lblPersantage.setText(String.format("%.2f ", ((double) labHoursAttendance / labHoursCount) * 100) + " %");
+		} else {
 			gpaLabel.setText("");
+			int lectureHoursCount = mainFrame.getCurrentGroup().getLectureHours();
+			lblLessonCount.setText(String.valueOf(lectureHoursCount));
+			int lectureHoursAttendance = lectureHoursCount - student.getLectureAbsenceHours();
+			lblStudentHours.setText(String.valueOf(lectureHoursAttendance));
+			lblPersantage.setText(String.format("%.2f", ((double) lectureHoursAttendance / lectureHoursCount) * 100) + " %");
 		}
 		Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
 		if (image != null) {
@@ -226,12 +262,16 @@ public class StudentCardDialog extends JDialog {
 				Grade grade = mainFrame.getCurrStudent().getLessonGrade(lessonButton.getLesson());
 				if (mainFrame.getRadioBtnLecture().isSelected()) {
 					lessonButton.setData();
-				} else if(grade!=null){
+				} else if (grade != null) {
 					lessonButton.setGrade(String.valueOf(grade.getGrade()));
-				}else {
+				} else {
 					lessonButton.setData();
 				}
-				lessonButton.setChecked(mainFrame.getCurrStudent().isAbsence(lessonButton.getLesson()));
+				Absence absence = mainFrame.getCurrStudent().getLessonAbsence(lessonButton.getLesson());
+				if (absence != null) {
+					lessonButton.setHalf(absence.isHalf());
+				}
+				lessonButton.setChecked(absence != null);
 				setInitialSelection(lessonButton);
 				lessonButton.repaint();
 			});
@@ -246,26 +286,27 @@ public class StudentCardDialog extends JDialog {
 			Grade grade = mainFrame.getCurrStudent().getLessonGrade(lesson);
 			if (mainFrame.getRadioBtnLecture().isSelected() || lesson.isLecture()) {
 				lessonButton.setData();
-			} else if(grade!=null){
+			} else if (grade != null) {
 				lessonButton.setGrade(String.valueOf(grade.getGrade()));
-			}else {
+			} else {
 				lessonButton.setData();
 			}
-			lessonButton.setPreferredSize(new Dimension(180,80));
+			lessonButton.setPreferredSize(new Dimension(180, 80));
 			Absence absence = mainFrame.getCurrStudent().getLessonAbsence(lesson);
-			if(absence != null) {
+			if (absence != null) {
 				lessonButton.setHalf(absence.isHalf());
 			}
-			lessonButton.setChecked(absence!=null);
+			lessonButton.setChecked(absence != null);
 			setButtonClickListener(lessonButton);
 			setButtonKeyListener(lessonButton);
 			lessonButton.addFocusListener(new FocusListener() {
 				@Override
 				public void focusGained(FocusEvent e) {
-					if(editButton.getText().equalsIgnoreCase("сохранить")){
+					if (editButton.getText().equalsIgnoreCase("сохранить")) {
 						editButton.requestFocus();
 					}
 				}
+
 				@Override
 				public void focusLost(FocusEvent e) {
 
@@ -362,10 +403,10 @@ public class StudentCardDialog extends JDialog {
 	private void setGrade(JButton gradeButton) {
 		String gradeStr = "";
 		if ((!currLessonButton.isChecked() && !currLessonButton.getLesson().isHoliday()) || (currLessonButton.isChecked() && currLessonButton.isHalf())) {
-			if(currLessonButton.getGrade().equals("1") && gradeButton.getText().equals("0")){
+			if (currLessonButton.getGrade().equals("1") && gradeButton.getText().equals("0")) {
 				currLessonButton.setGrade("10");
 				gradeStr = "10";
-			}else {
+			} else {
 				currLessonButton.setGrade(gradeButton.getText());
 				gradeStr = gradeButton.getText();
 			}
@@ -389,7 +430,7 @@ public class StudentCardDialog extends JDialog {
 				}
 			}
 			if (mainFrame.getRadioBtnLab().isSelected()) {
-				txtAverageGrade.setText(String.valueOf(mainFrame.getCurrStudent().getAverageGrade()));
+				txtAverageGrade.setText(String.format("%.2f", mainFrame.getCurrStudent().getAverageGrade()));
 			}
 		} else {
 			JOptionPane.showMessageDialog(mainFrame, "Нельзя выставить оценку в этот день");
@@ -443,5 +484,9 @@ public class StudentCardDialog extends JDialog {
 
 	public List<JButton> getGradeButtons() {
 		return gradeButtons;
+	}
+
+	public JLabel getLblLessonCount() {
+		return lblLessonCount;
 	}
 }

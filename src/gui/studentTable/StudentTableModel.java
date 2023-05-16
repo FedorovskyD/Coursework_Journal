@@ -79,7 +79,7 @@ public class StudentTableModel extends AbstractTableModel {
 			return String.format("%.2f", students.get(getStudentIndex(rowIndex)).getAverageGrade());
 		}
 		//Иначе возвращаем панель, отвечающую за отображение занятия
-		return getLessonPanel(getStudentIndex(rowIndex), columnIndex);
+		return getLessonLabel(getStudentIndex(rowIndex), columnIndex);
 	}
 
 	/**
@@ -114,14 +114,14 @@ public class StudentTableModel extends AbstractTableModel {
 	}
 
 	//Метод для создания панели с информацией о статусе студента на занятии
-	private JPanel getLessonPanel(int rowIndex, int columnIndex) {
+	private JLabel getLessonLabel(int rowIndex, int columnIndex) {
 		//Получаем студента, по которому нужно отобразить данные
 		Student student = students.get(rowIndex);
 		//Получаем занятие
 		Lesson lesson = lessons.get(columnIndex - FIRST_LAB_COLUMN_INDEX);
 		//Проверяем отсутствие студента на занятии
 		Absence absence = student.getLessonAbsence(lesson);
-		JPanel panelTableCell = new JPanel();
+		JLabel lblTableCell = new JLabel();
 		//В зависимости от посещения занятия устанавливаем цвет панели
 		if(!lesson.isHoliday()) {
 			Color color;
@@ -134,7 +134,7 @@ public class StudentTableModel extends AbstractTableModel {
 			}else {
 				color = Color.WHITE;
 			}
-			panelTableCell.setBackground(color);
+			lblTableCell.setBackground(color);
 			//Проверяем, есть ли у студента оценка на текущем занятии
 			Grade grade = null;
 			if (absence==null || !lesson.isLecture()) {
@@ -142,19 +142,22 @@ public class StudentTableModel extends AbstractTableModel {
 			}
 			String text = "";
 			//Если студент отсутствовал добавляем "н" на панель
-			if (absence!=null) {
-				text = "н";
+			if (absence!=null && !absence.isHalf()) {
+				text = "2";
 				//Если оценка существует добавляем её на панель
-			} else if (grade != null) {
+			} else if (grade != null && absence!=null && absence.isHalf()) {
+				text = grade.getGrade() +"(1)";
+			}else if(grade!=null){
 				text = String.valueOf(grade.getGrade());
+			} else if (absence!=null && absence.isHalf()) {
+				text = "1";
 			}
-			JLabel label = new JLabel(text);
-			panelTableCell.add(label);
+			lblTableCell.setText(text);
 		}else {
-			panelTableCell.setBackground(Color.ORANGE);
+			lblTableCell.setBackground(Color.ORANGE);
 		}
 
-		return panelTableCell;
+		return lblTableCell;
 	}
 
 	@Override
@@ -184,7 +187,7 @@ public class StudentTableModel extends AbstractTableModel {
 			return String.class;
 		}
 
-		return JPanel.class;
+		return JLabel.class;
 	}
 
 	public int getRowIndex(Student student) {

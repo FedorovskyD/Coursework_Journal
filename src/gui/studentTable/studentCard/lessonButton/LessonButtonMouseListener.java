@@ -20,9 +20,9 @@ public class LessonButtonMouseListener extends MouseAdapter {
 				studentCard.getCurrLessonButton().setCurrent(false);
 				studentCard.getCurrLessonButton().repaint();
 			}
-			button.setCurrent(true);
-			studentCard.setCurrLessonButton(button);
-			studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(button.getLesson());
+				button.setCurrent(true);
+				studentCard.setCurrLessonButton(button);
 		}
+		studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(button.getLesson());
 	}
 }

@@ -13,7 +13,6 @@ public class Student {
 	private String photoPath;
 	private List<Absence> lectureAbsenceList;
 	private List<Absence> labAbsenceList;
-
 	private List<Grade> gradeList;
 	private long groupId;
 
@@ -163,7 +162,28 @@ public class Student {
 				firstName + " " +
 				middleName;
 	}
-
+	public int getLectureAbsenceHours(){
+		int hours = 0;
+		for (Absence absence : lectureAbsenceList){
+			if (absence.isHalf()){
+				hours ++;
+			}else {
+				hours+=2;
+			}
+		}
+		return hours;
+	}
+	public int getLabAbsenceHours(){
+		int hours = 0;
+		for (Absence absence : labAbsenceList){
+			if (absence.isHalf()){
+				hours ++;
+			}else {
+				hours+=2;
+			}
+		}
+		return hours;
+	}
 	public int getCountLabAttendance() {
 		return labAbsenceList.size();
 	}

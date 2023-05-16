@@ -10,14 +10,12 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class ExcelTableExample {
 	public static void main(String[] args) {
-		List<Student> students = StudentDaoImpl.getInstance().findAll();
-		List<Lesson> dates = LessonDaoImpl.getInstance().findAll(); // Здесь можно передать реальные даты
-
+		List<Student> students = StudentDaoImpl.getInstance().getStudentsByGroupId(1);
+		List<Lesson> dates = LessonDaoImpl.getInstance().getAllLabByGroupId(1); // Здесь можно передать реальные даты
 		createAttendanceTable(students, dates);
 	}
 
@@ -31,7 +29,13 @@ public class ExcelTableExample {
 		// Создаем заголовок
 		Row headerRow = sheet.createRow(0);
 		Cell headerCell = headerRow.createCell(0);
-		headerCell.setCellValue("Студенты");
+		headerCell.setCellValue("Студенты/Даты");
+		// Создаем стиль для выравнивания по центру
+		CellStyle centerAlignStyle = workbook.createCellStyle();
+		centerAlignStyle.setAlignment(HorizontalAlignment.CENTER);
+		centerAlignStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+
+		headerCell.setCellStyle(centerAlignStyle);
 		for (int i = 0; i < dates.size(); i++) {
 			Cell dateCell = headerRow.createCell(i + 1);
 			dateCell.setCellValue(new SimpleDateFormat("dd.MM.yyyy").format(dates.get(i).getDate()));
@@ -42,6 +46,13 @@ public class ExcelTableExample {
 			Row dataRow = sheet.createRow(i + 1);
 			Cell studentCell = dataRow.createCell(0);
 			studentCell.setCellValue(students.get(i).toString());
+		}
+		// Разворачиваем текст в первой строке, начиная со второго столбца
+		CellStyle verticalTextStyle = workbook.createCellStyle();
+		verticalTextStyle.setRotation((short) 90);
+		for (int i = 1; i <= dates.size(); i++) {
+			Cell dateCell = headerRow.getCell(i);
+			dateCell.setCellStyle(verticalTextStyle);
 		}
 
 		// Автоматически подгоняем ширину столбцов

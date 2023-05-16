@@ -51,7 +51,7 @@ public class MainFrame extends JFrame {
 		buttonGroupLessonType.add(radioBtnLecture);
 		ButtonGroup buttonGroupSortType = new ButtonGroup();
 		radioBtnInc = new JRadioButton("в порядке возрастания", true);
-		radioBtnDec = new JRadioButton("в поряке убывания", false);
+		radioBtnDec = new JRadioButton("в порядке убывания", false);
 		buttonGroupSortType.add(radioBtnInc);
 		buttonGroupSortType.add(radioBtnDec);
 		checkBox = new JCheckBox("отмечать подряд");

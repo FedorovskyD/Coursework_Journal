@@ -6,8 +6,8 @@ import java.util.List;
 public class Group {
 	private long id;
 	private String name;
-	private List<Student> students;
-	private List<Lesson> lessons;
+	private final List<Student> students;
+	private final List<Lesson> lessons;
 
 	public Group(Long id, String name, List<Student> students,List<Lesson> lessons) {
 		this.id = id;
@@ -61,6 +61,24 @@ public class Group {
 			}
 		}
 		return lectures;
+	}
+	public int getLectureHours(){
+		int hours = 0;
+		for (Lesson lesson : getLectures()){
+			if(!lesson.isHoliday()){
+				hours+=2;
+			}
+		}
+		return hours;
+	}
+	public int getLabHours(){
+		int hours = 0;
+		for (Lesson lesson : getLabs()){
+			if(!lesson.isHoliday()){
+				hours+=2;
+			}
+		}
+		return hours;
 	}
 	@Override
 	public String toString() {

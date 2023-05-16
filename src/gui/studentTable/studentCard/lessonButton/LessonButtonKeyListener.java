@@ -29,7 +29,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				studentCard.getMainWindow().getJDialogStudentCard().dispose();
 				break;
 			case KeyEvent.VK_SPACE:
-			handleSpaceKeyPressed(button,e.isShiftDown());
+				handleSpaceKeyPressed(button, e.isShiftDown());
 				button.requestFocus();
 				button.repaint();
 				break;
@@ -51,7 +51,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				studentCard.getGradeButtons().get(1).doClick();
 				break;
 			case KeyEvent.VK_2:
-				case KeyEvent.VK_NUMPAD2:
+			case KeyEvent.VK_NUMPAD2:
 				studentCard.getGradeButtons().get(2).doClick();
 				break;
 			case KeyEvent.VK_3:
@@ -86,6 +86,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				break;
 		}
 	}
+
 	private void moveLessonButton(int keyCode, LessonButton button) {
 		int firstIndex = studentCard.getMainWindow().getStudentTable().getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
 		int index = studentCard.getLessonButtons().indexOf(button);
@@ -99,14 +100,14 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			studentCard.setCurrLessonButton(nextLessonButton);
 			studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(nextLessonButton.getLesson());
 			boolean isLecture = studentCard.getMainWindow().getRadioBtnLecture().isSelected();
-			int index1 = isLecture?1:2;
+			int index1 = isLecture ? 1 : 2;
 			studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(
-					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+index1,studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+index1);
+					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + index1, studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + index1);
 			int selectedColumn;
-			if(nextIndex+index1 <4){
+			if (nextIndex + index1 < 4) {
 				selectedColumn = 0;
-			}else {
-				selectedColumn = nextIndex+index1;
+			} else {
+				selectedColumn = nextIndex + index1;
 			}
 			studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow().getStudentTable()
 					.getCellRect(studentCard.getMainWindow().getStudentTable().getSelectedRow(), selectedColumn, true));
@@ -114,22 +115,25 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			nextLessonButton.requestFocus();
 		}
 	}
-	private void handleSpaceKeyPressed(LessonButton button,boolean isHalf) {
-		if(!button.getLesson().isHoliday()) {
+
+	private void handleSpaceKeyPressed(LessonButton button, boolean isHalf) {
+		if (!button.getLesson().isHoliday()) {
 			if (!button.isChecked()) {
-				addAbsence(button,isHalf);
+				addAbsence(button, isHalf);
 				if (studentCard.getMainWindow().getCheckBox().isSelected()) {
 					moveTableRow(KeyEvent.VK_DOWN);
 				}
-			} else if(isHalf){
+			} else if (isHalf) {
 				updateAbsence(button);
-			}else {
+			} else {
 				removeAbsence(button);
 			}
-		}else {
+		} else {
 			JOptionPane.showMessageDialog(studentCard, "Нельзя отметить отсутствие в праздничный день");
 		}
+		studentCard.updateStudentCard(studentCard.getCurrStudent());
 	}
+
 	private void moveTableRow(int keyCode) {
 		int firstIndex = studentCard.getMainWindow().getStudentTable().getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
 		int selectedRow = studentCard.getMainWindow().getStudentTable().getSelectedRow();
@@ -142,14 +146,15 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			if (nextRow >= 0 && nextRow < studentCard.getMainWindow().getStudentTable().getRowCount()) {
 				studentCard.getMainWindow().getStudentTable().setRowSelectionInterval(nextRow, nextRow);
 				studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow()
-						.getStudentTable().getCellRect(nextRow, studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex()+firstIndex, true));
+						.getStudentTable().getCellRect(nextRow, studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + firstIndex, true));
 				studentCard.getMainWindow().getStudentTable().repaint();
 			}
 		}
 	}
+
 	private void addAbsence(LessonButton button, boolean isHalf) {
-		Absence absence = new Absence(button.getLesson().getId(), studentCard.getMainWindow().getCurrStudent().getId(),isHalf);
-		if(isHalf){
+		Absence absence = new Absence(button.getLesson().getId(), studentCard.getMainWindow().getCurrStudent().getId(), isHalf);
+		if (isHalf) {
 			button.setHalf(true);
 		}
 		Grade studentGrade = studentCard.getMainWindow().getCurrStudent().getLessonGrade(button.getLesson());
@@ -161,11 +166,21 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			} else {
 				studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().add(absence);
 			}
-			if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
-				studentCard.getMainWindow().getCurrStudent().getGradeList().remove(studentGrade);
-				System.out.println("Оценка за лабораторную удалена");
+			if (!isHalf) {
+				if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
+					button.setGrade("");
+					studentCard.getMainWindow().getCurrStudent().getGradeList().remove(studentGrade);
+					studentCard.getTxtAverageGrade().setText(String.format("%.2f",studentCard.getMainWindow().getCurrStudent().getAverageGrade()));
+					System.out.println("Оценка за лабораторную удалена");
+				}
 			}
-			button.setData();
+			if(isHalf){
+				if(studentGrade!=null) {
+					button.setGrade(button.getGrade());
+				}
+			}else {
+				button.setData();
+			}
 			button.setChecked(true);
 			System.out.println("Запись о отсутствии добавлена");
 			studentCard.getMainWindow().refreshStudentTable();
@@ -183,22 +198,27 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				} else {
 					studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().remove(absence);
 				}
-				button.setData();
+				if (!button.getGrade().equals("")) {
+					button.setGrade(button.getGrade());
+				} else {
+					button.setData();
+				}
 				button.setChecked(false);
 				studentCard.getMainWindow().refreshStudentTable();
 				button.setHalf(false);
 			}
 		}
 	}
-	private void updateAbsence(LessonButton button){
+
+	private void updateAbsence(LessonButton button) {
 		Absence absence = studentCard.getMainWindow().getCurrStudent().getLessonAbsence(button.getLesson());
 		if (absence == null) return;
-		if(!absence.isHalf()) {
+		if (!absence.isHalf()) {
 			absence.setHalf(true);
 		}
-			if (AbsenceDaoImpl.getInstance().update(absence)) {
-				System.out.println("Запись об отсутствии обновлена");
-				button.setHalf(true);
-			}
+		if (AbsenceDaoImpl.getInstance().update(absence)) {
+			System.out.println("Запись об отсутствии обновлена");
+			button.setHalf(true);
+		}
 	}
 }

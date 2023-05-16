@@ -37,27 +37,29 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 		if ((column > 0 && indexFirstLessonColumn == 1) || (column > 1 && indexFirstLessonColumn == 2)) {
 			isHolidayColumn = studentTable.getStudentTableModel().getLessons().get(column - indexFirstLessonColumn).isHoliday();
 		}
-		if (value instanceof JPanel panel) {
+		if (value instanceof JLabel label) {
+			JPanel panel1 = new JPanel();
 			if (isSelected || isColumnHighlighted) {
-				if (panel.getBackground().equals(Constants.ABSENCE_COLOR)) {
-					panel.setBackground(new Color(250, 192, 140));
-				} else if (panel.getBackground().equals(Color.ORANGE)) {
-					panel.setBackground(new Color(255, 228, 75));
-				} else if (panel.getBackground().equals(Constants.HALF_ABSENCE_COLOR)) {
-					panel.setBackground(Constants.HALF_ABSENCE_COLOR_SELECTED);
+				if (label.getBackground().equals(Constants.ABSENCE_COLOR)) {
+					panel1.setBackground(new Color(250, 192, 140));
+				} else if (label.getBackground().equals(Color.ORANGE)) {
+					panel1.setBackground(new Color(255, 228, 75));
+				} else if (label.getBackground().equals(Constants.HALF_ABSENCE_COLOR)) {
+					panel1.setBackground(Constants.HALF_ABSENCE_COLOR_SELECTED);
 				} else {
-					panel.setBackground(Constants.SELECTED_COLOR);
+					panel1.setBackground(Constants.SELECTED_COLOR);
 				}
-			} else if (panel.getBackground().equals(Constants.ABSENCE_COLOR)) {
-				panel.setBackground(Constants.ABSENCE_COLOR);
-			} else if (panel.getBackground().equals(Color.ORANGE)) {
-				panel.setBackground(Color.ORANGE);
-			} else if (panel.getBackground().equals(Constants.HALF_ABSENCE_COLOR)) {
-				panel.setBackground(Constants.HALF_ABSENCE_COLOR);
+			} else if (label.getBackground().equals(Constants.ABSENCE_COLOR)) {
+				panel1.setBackground(Constants.ABSENCE_COLOR);
+			} else if (label.getBackground().equals(Color.ORANGE)) {
+				panel1.setBackground(Color.ORANGE);
+			} else if (label.getBackground().equals(Constants.HALF_ABSENCE_COLOR)) {
+				panel1.setBackground(Constants.HALF_ABSENCE_COLOR);
 			} else {
-				panel.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
+				panel1.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
 			}
-			return panel;
+			panel1.add(label);
+			return panel1;
 		}
 
 		if (isHolidayColumn && (isSelected || isColumnHighlighted)) {
