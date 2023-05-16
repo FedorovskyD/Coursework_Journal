@@ -29,7 +29,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				studentCard.getMainWindow().getJDialogStudentCard().dispose();
 				break;
 			case KeyEvent.VK_SPACE:
-				handleSpaceKeyPressed(button);
+			handleSpaceKeyPressed(button,e.isShiftDown());
 				button.requestFocus();
 				button.repaint();
 				break;
@@ -114,14 +114,16 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			nextLessonButton.requestFocus();
 		}
 	}
-	private void handleSpaceKeyPressed(LessonButton button) {
+	private void handleSpaceKeyPressed(LessonButton button,boolean isHalf) {
 		if(!button.getLesson().isHoliday()) {
 			if (!button.isChecked()) {
-				addAbsence(button);
+				addAbsence(button,isHalf);
 				if (studentCard.getMainWindow().getCheckBox().isSelected()) {
 					moveTableRow(KeyEvent.VK_DOWN);
 				}
-			} else {
+			} else if(isHalf){
+				updateAbsence(button);
+			}else {
 				removeAbsence(button);
 			}
 		}else {
@@ -145,8 +147,11 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			}
 		}
 	}
-	private void addAbsence(LessonButton button) {
-		Absence absence = new Absence(button.getLesson().getId(), studentCard.getMainWindow().getCurrStudent().getId());
+	private void addAbsence(LessonButton button, boolean isHalf) {
+		Absence absence = new Absence(button.getLesson().getId(), studentCard.getMainWindow().getCurrStudent().getId(),isHalf);
+		if(isHalf){
+			button.setHalf(true);
+		}
 		Grade studentGrade = studentCard.getMainWindow().getCurrStudent().getLessonGrade(button.getLesson());
 		long id = AbsenceDaoImpl.getInstance().save(absence);
 		if (id > 0) {
@@ -156,7 +161,6 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			} else {
 				studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().add(absence);
 			}
-			button.setBackground(Constants.ABSENCE_COLOR);
 			if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
 				studentCard.getMainWindow().getCurrStudent().getGradeList().remove(studentGrade);
 				System.out.println("Оценка за лабораторную удалена");
@@ -179,11 +183,22 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				} else {
 					studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().remove(absence);
 				}
-				button.setBackground(Color.WHITE);
 				button.setData();
 				button.setChecked(false);
 				studentCard.getMainWindow().refreshStudentTable();
+				button.setHalf(false);
 			}
 		}
+	}
+	private void updateAbsence(LessonButton button){
+		Absence absence = studentCard.getMainWindow().getCurrStudent().getLessonAbsence(button.getLesson());
+		if (absence == null) return;
+		if(!absence.isHalf()) {
+			absence.setHalf(true);
+		}
+			if (AbsenceDaoImpl.getInstance().update(absence)) {
+				System.out.println("Запись об отсутствии обновлена");
+				button.setHalf(true);
+			}
 	}
 }

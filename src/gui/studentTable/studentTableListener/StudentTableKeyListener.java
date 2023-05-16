@@ -7,7 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class StudentTableKeyListener extends KeyAdapter {
-	private MainFrame mainFrame;
+	private final MainFrame mainFrame;
 	public StudentTableKeyListener(MainFrame mainFrame){
 		this.mainFrame = mainFrame;
 	}

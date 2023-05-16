@@ -6,7 +6,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class LessonButtonMouseListener extends MouseAdapter {
-	private StudentCardDialog studentCard;
+	private final StudentCardDialog studentCard;
 
 	public LessonButtonMouseListener(StudentCardDialog studentCard) {
 		this.studentCard = studentCard;

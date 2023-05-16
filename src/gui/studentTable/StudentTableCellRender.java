@@ -14,7 +14,7 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 		columnToHighlight = column;
 	}
 
-	private int columnToHighlight; // номер колонки для подсветки
+	private final int columnToHighlight; // номер колонки для подсветки
 
 
 	private boolean isColumnHighlighted(int column) {
@@ -34,7 +34,7 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 		boolean isHolidayColumn = false;
 		StudentTable studentTable = (StudentTable) table;
 		int indexFirstLessonColumn = studentTable.getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
-		if ((column > 0 && indexFirstLessonColumn==1) || (column > 1 && indexFirstLessonColumn==2)) {
+		if ((column > 0 && indexFirstLessonColumn == 1) || (column > 1 && indexFirstLessonColumn == 2)) {
 			isHolidayColumn = studentTable.getStudentTableModel().getLessons().get(column - indexFirstLessonColumn).isHoliday();
 		}
 		if (value instanceof JPanel panel) {
@@ -43,7 +43,8 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 					panel.setBackground(new Color(250, 192, 140));
 				} else if (panel.getBackground().equals(Color.ORANGE)) {
 					panel.setBackground(new Color(255, 228, 75));
-
+				} else if (panel.getBackground().equals(Constants.HALF_ABSENCE_COLOR)) {
+					panel.setBackground(Constants.HALF_ABSENCE_COLOR_SELECTED);
 				} else {
 					panel.setBackground(Constants.SELECTED_COLOR);
 				}
@@ -51,6 +52,8 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 				panel.setBackground(Constants.ABSENCE_COLOR);
 			} else if (panel.getBackground().equals(Color.ORANGE)) {
 				panel.setBackground(Color.ORANGE);
+			} else if (panel.getBackground().equals(Constants.HALF_ABSENCE_COLOR)) {
+				panel.setBackground(Constants.HALF_ABSENCE_COLOR);
 			} else {
 				panel.setBackground(row % 2 == 0 ? Constants.FIRST_ROW_COLOR : Constants.SECOND_ROW_COLOR);
 			}

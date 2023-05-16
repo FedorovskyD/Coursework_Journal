@@ -4,10 +4,12 @@ public class Absence {
 	private long id;
 	private long lessonId;
 	private long studentId;
+	private boolean isHalf;
 
-	public Absence(long lessonId, long studentId) {
+	public Absence(long lessonId, long studentId, boolean isHalf) {
 		this.lessonId = lessonId;
 		this.studentId = studentId;
+		this.isHalf = isHalf;
 	}
 public Absence(){}
 	public long getId() {
@@ -34,4 +36,11 @@ public Absence(){}
 		this.studentId = studentId;
 	}
 
+	public boolean isHalf() {
+		return isHalf;
+	}
+
+	public void setHalf(boolean half) {
+		isHalf = half;
+	}
 }

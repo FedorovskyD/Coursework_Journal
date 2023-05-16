@@ -11,6 +11,7 @@ public class LessonButton extends JButton {
 	private final Lesson lesson; //Лабораторная работа за которую отвечает данная кнопка
 	private boolean isCurrent; //Показывает активна ли данная кнопка
 	private boolean isChecked;
+	private boolean isHalf;
 	private String grade = "";
 
 	public LessonButton(Lesson lesson) {
@@ -21,6 +22,7 @@ public class LessonButton extends JButton {
 			setBackground(Color.ORANGE);
 		}
 		setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		setMaximumSize(new Dimension(180, 80));
 	}
 
 	public void setGrade(String grade) {
@@ -57,11 +59,28 @@ public class LessonButton extends JButton {
 		return isChecked;
 	}
 
+	public void setHalf(boolean half) {
+		if(half){
+			setBackground(Constants.HALF_ABSENCE_COLOR);
+		}
+		isHalf = half;
+	}
+
+	public boolean isHalf() {
+		return isHalf;
+	}
+
 	public void setChecked(boolean checked) {
-		if (checked) {
-			setBackground(Constants.ABSENCE_COLOR);
-		} else if (lesson.isHoliday()) {
+
+		if (lesson.isHoliday()) {
 			setBackground(Color.ORANGE);
+		}else
+		if (checked) {
+			if(isHalf) {
+				setBackground(Constants.HALF_ABSENCE_COLOR);
+			}else {
+				setBackground(Constants.ABSENCE_COLOR);
+			}
 		} else {
 			setBackground(Color.WHITE);
 		}

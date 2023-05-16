@@ -67,8 +67,8 @@ public class StudentCardDialogListener implements ActionListener {
 					student1.setLastName(fio[0]);
 					student1.setMiddleName(fio[2]);
 					student1.setGroupId(studentCardDialog.getCurrStudent().getGroupId());
-					student1.setTelephone(studentCardDialog.getPhoneLabel().getText());
-					student1.setEmail(studentCardDialog.getEmailLabel().getText());
+					student1.setTelephone(studentCardDialog.getTxtPhone().getText());
+					student1.setEmail(studentCardDialog.getTxtEmail().getText());
 					StudentDaoImpl.getInstance().update(student1);
 					SwingUtilities.invokeLater(studentCardDialog.getMainWindow().getStudentTable()::repaint);
 				}

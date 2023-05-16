@@ -1,9 +1,6 @@
 package gui.studentTable;
 
-import entity.Grade;
-import entity.Group;
-import entity.Lesson;
-import entity.Student;
+import entity.*;
 import utils.Constants;
 
 import javax.swing.*;
@@ -123,19 +120,29 @@ public class StudentTableModel extends AbstractTableModel {
 		//Получаем занятие
 		Lesson lesson = lessons.get(columnIndex - FIRST_LAB_COLUMN_INDEX);
 		//Проверяем отсутствие студента на занятии
-		boolean isAbsence = student.isAbsence(lesson);
+		Absence absence = student.getLessonAbsence(lesson);
 		JPanel panelTableCell = new JPanel();
 		//В зависимости от посещения занятия устанавливаем цвет панели
 		if(!lesson.isHoliday()) {
-			panelTableCell.setBackground(isAbsence ? Constants.ABSENCE_COLOR : Color.WHITE);
+			Color color;
+			if(absence!=null){
+				if(absence.isHalf()){
+					color = Constants.HALF_ABSENCE_COLOR;
+				}else {
+					color = Constants.ABSENCE_COLOR;
+				}
+			}else {
+				color = Color.WHITE;
+			}
+			panelTableCell.setBackground(color);
 			//Проверяем, есть ли у студента оценка на текущем занятии
 			Grade grade = null;
-			if (!isAbsence || !lesson.isLecture()) {
+			if (absence==null || !lesson.isLecture()) {
 				grade = student.getLessonGrade(lesson);
 			}
 			String text = "";
 			//Если студент отсутствовал добавляем "н" на панель
-			if (isAbsence) {
+			if (absence!=null) {
 				text = "н";
 				//Если оценка существует добавляем её на панель
 			} else if (grade != null) {

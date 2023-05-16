@@ -1,5 +1,6 @@
 package gui.studentTable.studentCard;
 
+import entity.Absence;
 import gui.MainFrame;
 import database.dao.impl.GradeDaoImpl;
 import entity.Grade;
@@ -145,8 +146,7 @@ public class StudentCardDialog extends JDialog {
 		gradePanel.setMinimumSize(new Dimension(100, 100));
 		createGradeButtons(gradePanel);
 		// Добавление панели календаря
-		calendarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10,10));
-		calendarPanel.setBorder(BorderFactory.createLineBorder(Color.RED,2));
+		calendarPanel = new JPanel(new GridLayout(0,5,5,5));
 		scrollPane = new JScrollPane(calendarPanel);
 		scrollPane.setBorder(BorderFactory.createTitledBorder(
 				mainFrame.getRadioBtnLab().isSelected() ? "Лабораторные работы" : "Лекции"));
@@ -170,7 +170,6 @@ public class StudentCardDialog extends JDialog {
 					setVisible(false);
 				} else {
 					JOptionPane.showMessageDialog(mainFrame, "Перед закрытием карточки нужно завершить редактирование");
-					setVisible(true);
 				}
 			}
 		});
@@ -193,7 +192,7 @@ public class StudentCardDialog extends JDialog {
 		txtEmail.setText(student.getEmail());
 		txtPhone.setText(student.getTelephone());
 		if (!mainFrame.getRadioBtnLecture().isSelected()) {
-			txtAverageGrade.setText(String.valueOf(student.getAverageGrade()));
+			txtAverageGrade.setText(String.format("%.2f",student.getAverageGrade()));
 			gpaLabel.setText("Cредний балл");
 		}else {
 			gpaLabel.setText("");
@@ -253,7 +252,11 @@ public class StudentCardDialog extends JDialog {
 				lessonButton.setData();
 			}
 			lessonButton.setPreferredSize(new Dimension(180,80));
-			lessonButton.setChecked(mainFrame.getCurrStudent().isAbsence(lesson));
+			Absence absence = mainFrame.getCurrStudent().getLessonAbsence(lesson);
+			if(absence != null) {
+				lessonButton.setHalf(absence.isHalf());
+			}
+			lessonButton.setChecked(absence!=null);
 			setButtonClickListener(lessonButton);
 			setButtonKeyListener(lessonButton);
 			lessonButton.addFocusListener(new FocusListener() {
@@ -358,7 +361,7 @@ public class StudentCardDialog extends JDialog {
 
 	private void setGrade(JButton gradeButton) {
 		String gradeStr = "";
-		if (!currLessonButton.isChecked() && !currLessonButton.getLesson().isHoliday()) {
+		if ((!currLessonButton.isChecked() && !currLessonButton.getLesson().isHoliday()) || (currLessonButton.isChecked() && currLessonButton.isHalf())) {
 			if(currLessonButton.getGrade().equals("1") && gradeButton.getText().equals("0")){
 				currLessonButton.setGrade("10");
 				gradeStr = "10";

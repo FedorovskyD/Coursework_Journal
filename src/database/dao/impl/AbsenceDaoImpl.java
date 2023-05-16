@@ -28,17 +28,16 @@ public class AbsenceDaoImpl implements AbsenceDao {
 	private static final String GET_ATTENDANCES_BY_STUDENT_AND_LESSON_SQL = "SELECT *  FROM absence_log a JOIN lesson l ON a.lesson_ID = l.ID WHERE a.student_ID = ? AND l.isLecture=?";
 	private static final String FIND_BY_ID_SQL = "SELECT * FROM absence_log WHERE id = ?";
 	private static final String FIND_ALL_SQL = "SELECT * FROM absence_log";
-	private static final String SAVE_SQL = "INSERT INTO absence_log(student_id,lesson_ID) VALUES (?, ?)";
-	private static final String UPDATE_SQL = "UPDATE absence_log SET lesson_ID = ?, student_id = ? WHERE id = ?";
+	private static final String SAVE_SQL = "INSERT INTO absence_log(student_id,lesson_ID,isHalf) VALUES (?, ?,?)";
+	private static final String UPDATE_SQL = "UPDATE absence_log SET lesson_ID = ?, student_id = ?,isHalf = ? WHERE id = ?";
 	private static final String DELETE_SQL = "DELETE FROM absence_log WHERE ID = ?";
 
-	private static Absence createAttendanceFromResultSet(ResultSet rs) throws SQLException {
+	private static Absence createAbsenceFromResultSet(ResultSet rs) throws SQLException {
 		Absence absence = new Absence();
 		absence.setId(rs.getInt("id"));
-
 		absence.setLessonId(rs.getLong("lesson_ID"));
-
 		absence.setStudentId(rs.getLong("student_ID"));
+		absence.setHalf(rs.getBoolean("isHalf"));
 		return absence;
 	}
 
@@ -50,7 +49,7 @@ public class AbsenceDaoImpl implements AbsenceDao {
 			ps.setLong(1, student.getId());
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
-					absences.add(createAttendanceFromResultSet(rs));
+					absences.add(createAbsenceFromResultSet(rs));
 				}
 			}
 		} catch (SQLException e) {
@@ -68,7 +67,7 @@ public class AbsenceDaoImpl implements AbsenceDao {
 			ps.setBoolean(2,isLecture);
 			try (ResultSet rs = ps.executeQuery()) {
 				while (rs.next()) {
-					absences.add(createAttendanceFromResultSet(rs));
+					absences.add(createAbsenceFromResultSet(rs));
 				}
 			}
 		} catch (SQLException e) {
@@ -86,7 +85,7 @@ public class AbsenceDaoImpl implements AbsenceDao {
 			ps.setLong(1, id);
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
-					absence = createAttendanceFromResultSet(rs);
+					absence = createAbsenceFromResultSet(rs);
 				}
 			}
 		} catch (SQLException e) {
@@ -102,7 +101,7 @@ public class AbsenceDaoImpl implements AbsenceDao {
 		     PreparedStatement ps = connection.prepareStatement(FIND_ALL_SQL)) {
 			ResultSet rs = ps.executeQuery();
 			while (rs.next()) {
-				absences.add(createAttendanceFromResultSet(rs));
+				absences.add(createAbsenceFromResultSet(rs));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -117,6 +116,7 @@ public class AbsenceDaoImpl implements AbsenceDao {
 		     PreparedStatement ps = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
 			ps.setLong(2, entity.getLessonId());
 			ps.setLong(1, entity.getStudentId());
+			ps.setBoolean(3,entity.isHalf());
 			ps.executeUpdate();
 			ResultSet generatedKeys = ps.getGeneratedKeys();
 			if (generatedKeys.next()) {
@@ -134,6 +134,8 @@ public class AbsenceDaoImpl implements AbsenceDao {
 		     PreparedStatement ps = connection.prepareStatement(UPDATE_SQL)) {
 			ps.setLong(1, entity.getLessonId());
 			ps.setLong(2, entity.getStudentId());
+			ps.setBoolean(3,entity.isHalf());
+			ps.setLong(4,entity.getId());
 			ps.executeUpdate();
 			return true;
 		} catch (SQLException e) {
