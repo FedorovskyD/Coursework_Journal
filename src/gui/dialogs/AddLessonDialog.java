@@ -10,11 +10,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class AddLessonDialog extends JDialog {
-
-	private final JTextField nameField;
 	private final JRadioButton radioButtonLecture;
 	private final JSpinner dateSpinner;
-	private final JTextField roomField;
 	private final JComboBox<Group> groupComboBox;
 	private final JButton addButton;
 
@@ -26,13 +23,11 @@ public class AddLessonDialog extends JDialog {
 		super(parent, "Добавление занятия", true);
 		mainFrame = (MainFrame) parent;
 		JLabel lessonTypeLabel = new JLabel("Тип занятия:");
-		JLabel holidayLabel = new JLabel("Празничный день:");
-		JLabel nameLabel = new JLabel("Название:");
-		JLabel roomLabel = new JLabel("Аудитория:");
+		JLabel holidayLabel = new JLabel("Праздничный день:");
 		JLabel dateLabel = new JLabel("Дата:");
 		JLabel groupLabel = new JLabel("Группа:");
-		JRadioButton radioButtonLab = new JRadioButton("Лабораторная", true);
-		radioButtonLecture = new JRadioButton("Лекция");
+		JRadioButton radioButtonLab = new JRadioButton("Лабораторная", mainFrame.getRadioBtnLab().isSelected());
+		radioButtonLecture = new JRadioButton("Лекция",mainFrame.getRadioBtnLecture().isSelected());
 		ButtonGroup buttonGroupLessonType = new ButtonGroup();
 		ButtonGroup buttonGroupHoliday = new ButtonGroup();
 		buttonGroupLessonType.add(radioButtonLab);
@@ -40,8 +35,6 @@ public class AddLessonDialog extends JDialog {
 		JPanel panelLessonType = new JPanel(new GridLayout(1, 2));
 		panelLessonType.add(radioButtonLab);
 		panelLessonType.add(radioButtonLecture);
-		nameField = new JTextField(20);
-		roomField = new JTextField(20);
 		isHolidayRadioButton = new JRadioButton("Да", false);
 		JRadioButton notHoliday = new JRadioButton("Нет", true);
 		buttonGroupHoliday.add(isHolidayRadioButton);
@@ -60,15 +53,11 @@ public class AddLessonDialog extends JDialog {
 		addButton = new JButton("Добавить");
 		JButton cancelButton = new JButton("Отмена");
 
-		JPanel panel = new JPanel(new GridLayout(7, 2));
+		JPanel panel = new JPanel(new GridLayout(5, 2));
 		panel.add(lessonTypeLabel);
 		panel.add(panelLessonType);
 		panel.add(holidayLabel);
 		panel.add(holidayOptionPanel);
-		panel.add(nameLabel);
-		panel.add(nameField);
-		panel.add(roomLabel);
-		panel.add(roomField);
 		panel.add(dateLabel);
 		panel.add(dateSpinner);
 		panel.add(groupLabel);
@@ -85,13 +74,6 @@ public class AddLessonDialog extends JDialog {
 		this.setLocationRelativeTo(null);
 	}
 
-	public JTextField getNameField() {
-		return nameField;
-	}
-
-	public JTextField getRoomField() {
-		return roomField;
-	}
 
 	public JComboBox<Group> getGroupComboBox() {
 		return groupComboBox;

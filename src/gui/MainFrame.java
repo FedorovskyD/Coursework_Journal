@@ -13,6 +13,7 @@ import gui.studentTable.studentTableListener.StudentTableListSelectionListener;
 import gui.studentTable.studentTableListener.StudentTableMouseListener;
 import listeners.MainFrameListener;
 import utils.Constants;
+import utils.ExcelTableExample;
 import utils.WordConnector;
 
 import javax.swing.*;
@@ -194,13 +195,14 @@ public class MainFrame extends JFrame {
 					String fileName = JOptionPane.showInputDialog(null, "Введите название файла:");
 					if (fileName != null && !fileName.trim().isEmpty()) {
 						// Создаем новый файл в выбранной директории с введенным названием
-						fileName= fileName+".docx";
+						fileName= fileName+".xlsx";
 					}else {
-						fileName = (radioBtnLab.isSelected() ? "Лабораторные " : "Лекции ") + getCurrentGroup() + ".docx";
+						fileName = (radioBtnLab.isSelected() ? "Лабораторные " : "Лекции ") + getCurrentGroup() + ".xlsx";
 					}
 					File file = new File(selectedDir, fileName);
 					System.out.println(file.getName());
-					WordConnector.generateTable(getStudentTable().getStudentTableModel(), file);
+					ExcelTableExample.createAttendanceTable(getStudentTable().getStudentTableModel(),file);
+					//WordConnector.generateTable(getStudentTable().getStudentTableModel(), file);
 				}
 			}
 		});

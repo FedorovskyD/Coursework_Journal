@@ -160,7 +160,7 @@ public class StudentCardDialog extends JDialog {
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(gpaLabel)
 								.addComponent(txtAverageGrade))
-						.addGap(60) // добавляем 10 пикселей расстояния между строками
+						.addGap(50) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(editButton)
 								.addComponent(deleteButton)))

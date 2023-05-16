@@ -6,22 +6,18 @@ import java.util.Date;
 public class Lesson {
 	private long id;
 	private Date date;
-	private String classroom;
 	private long groupId;
-	private String LessonName;
 	private boolean isLecture;
 	private boolean isHoliday;
 
 	public Lesson() {
 	}
 
-	public Lesson(String classroom, Date date, long groupId, String lessonName, boolean isLecture ,boolean isHoliday) {
-		this.classroom = classroom;
+	public Lesson(Date date, long groupId, boolean isLecture, boolean isHoliday) {
 		this.date = date;
 		this.groupId = groupId;
-		this.LessonName = lessonName;
 		this.isLecture = isLecture;
-		this.isHoliday= isHoliday;
+		this.isHoliday = isHoliday;
 	}
 
 	public long getId() {
@@ -32,21 +28,11 @@ public class Lesson {
 		return date;
 	}
 
-	public String getClassroom() {
-		return classroom;
-	}
 
 	public long getGroupId() {
 		return groupId;
 	}
 
-	public String getLessonName() {
-		return LessonName;
-	}
-
-	public void setLessonName(String lessonName) {
-		LessonName = lessonName;
-	}
 
 	public void setId(long id) {
 		this.id = id;
@@ -56,9 +42,6 @@ public class Lesson {
 		this.date = date;
 	}
 
-	public void setClassroom(String classroom) {
-		this.classroom = classroom;
-	}
 
 	public void setGroupId(long groupId) {
 		this.groupId = groupId;

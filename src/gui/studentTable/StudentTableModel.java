@@ -21,6 +21,7 @@ public class StudentTableModel extends AbstractTableModel {
 	private final List<Student> students;//Список студентов
 	private final List<Lesson> lessons;//Список занятий
 	private final String groupNumber;
+	private  final Group group;
 	private final boolean isLecture;
 
 	/**
@@ -44,6 +45,7 @@ public class StudentTableModel extends AbstractTableModel {
 			FIRST_LAB_COLUMN_INDEX = 2;
 			AVERAGE_GRADE_COLUMN_INDEX = 1;
 		}
+		this.group = group;
 		this.isLecture = isLecture;
 		groupNumber = group.getName();
 	}
@@ -265,5 +267,9 @@ public class StudentTableModel extends AbstractTableModel {
 
 	public int getFIRST_LAB_COLUMN_INDEX() {
 		return FIRST_LAB_COLUMN_INDEX;
+	}
+
+	public Group getGroup() {
+		return group;
 	}
 }
