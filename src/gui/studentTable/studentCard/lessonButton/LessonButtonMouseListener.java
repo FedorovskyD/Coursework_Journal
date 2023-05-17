@@ -24,7 +24,7 @@ public class LessonButtonMouseListener extends MouseAdapter {
 				studentCard.setCurrLessonButton(button);
 		}
 		studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(button.getLesson());
-		int index1 = studentCard.getMainWindow().getRadioBtnLecture().isSelected() ? 1 : 2;
+		int index1 = studentCard.getMainWindow().getRadioBtnLecture().isSelected() ? 2 : 3;
 		studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(
 				studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + index1,
 				studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + index1);

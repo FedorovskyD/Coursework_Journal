@@ -1,5 +1,6 @@
 package gui;
 
+import gui.studentTable.StudentTableCellRender;
 import gui.studentTable.StudentTableModel;
 import gui.studentTable.StudentTable;
 import database.dao.GroupDao;
@@ -286,7 +287,7 @@ public class MainFrame extends JFrame {
 	public void refreshStudentTable() {
 		currStudent = getCurrentStudent();
 		studentTable.setModel(new StudentTableModel(getCurrGroup(), radioBtnLecture.isSelected()));
-		int selectedColumn = currDateCmb.getSelectedIndex() + (radioBtnLecture.isSelected()?1:2);
+		int selectedColumn = currDateCmb.getSelectedIndex() + (radioBtnLecture.isSelected()?2:3);
 		if (selectedColumn < studentTable.getColumnCount()) {
 			studentTable.setColumnSelectionInterval(
 					selectedColumn,
@@ -316,9 +317,11 @@ public class MainFrame extends JFrame {
 		}
 
 		studentTable.getColumnModel().getColumn(0).setPreferredWidth(300);
+		studentTable.getColumnModel().getColumn(1).setPreferredWidth(100);
 		if (!radioBtnLecture.isSelected()) {
-			studentTable.getColumnModel().getColumn(1).setPreferredWidth(100);
+			studentTable.getColumnModel().getColumn(2).setPreferredWidth(100);
 		}
+		studentTable.setDefaultRenderer(Object.class,new StudentTableCellRender(selectedColumn));
 	}
 
 	public void sortTable() {

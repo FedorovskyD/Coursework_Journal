@@ -27,14 +27,15 @@ public class AddStudentDialogListener implements ActionListener {
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
 			student.setGroupId(((Group) addStudentDialog.getGroupField().getSelectedItem()).getId());
-			long id = StudentDaoImpl.getInstance().save(student);;
-			System.out.println("Student with id = "+id+" was added");
+			long id = StudentDaoImpl.getInstance().save(student);
+			;
+			System.out.println("Студент с id = " + id + " добавлен");
 			student.setId(id);
-			if(addStudentDialog.getPhotoPath()!=null) {
+			if (addStudentDialog.getPhotoPath() != null) {
 				try {
 					PhotoUtils.getInstance().savePhoto(student, addStudentDialog.getPhotoPath());
 				} catch (IOException ex) {
-					System.out.println("Фото не найдено");
+					System.out.println("Фото студента с id = " + student.getId() + " не найдено");
 				}
 			}
 			addStudentDialog.getMainWindow().getCurrentGroup().getStudents().add(student);

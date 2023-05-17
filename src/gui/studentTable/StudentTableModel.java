@@ -15,7 +15,8 @@ import java.util.List;
  */
 public class StudentTableModel extends AbstractTableModel {
 	private static final int STUDENT_COLUMN_INDEX = 0;//Индекс колонки с информацие о студенете
-	private int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
+	private final int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
+	private final double AttendansePersentColumnIndex = 1;
 	private final int FIRST_LAB_COLUMN_INDEX ;//Индекс с колонки, с которой начинаются даты занятий
 	public static final int COUNT_SEPARATOR_ROW = 4;//Количество строк после, которых вставляется пустая строка
 	private final List<Student> students;//Список студентов
@@ -38,12 +39,12 @@ public class StudentTableModel extends AbstractTableModel {
 		//Заполняем список lessons, в зависимости от типа занятий, которые отображает таблица
 		if (isLecture) {
 			lessons = group.getLectures();
-			FIRST_LAB_COLUMN_INDEX = 1;
+			FIRST_LAB_COLUMN_INDEX = 2;
 			AVERAGE_GRADE_COLUMN_INDEX = -1;
 		} else {
 			lessons = group.getLabs();
-			FIRST_LAB_COLUMN_INDEX = 2;
-			AVERAGE_GRADE_COLUMN_INDEX = 1;
+			FIRST_LAB_COLUMN_INDEX = 3;
+			AVERAGE_GRADE_COLUMN_INDEX = 2;
 		}
 		this.group = group;
 		this.isLecture = isLecture;
@@ -79,6 +80,16 @@ public class StudentTableModel extends AbstractTableModel {
 		//Если столбец отвечает за средний балл получаем его у соответствующего студена
 		if (columnIndex == AVERAGE_GRADE_COLUMN_INDEX) {
 			return String.format("%.2f", students.get(getStudentIndex(rowIndex)).getAverageGrade());
+		}
+		if(columnIndex == AttendansePersentColumnIndex){
+			Student student = students.get(getStudentIndex(rowIndex));
+			double persantage;
+			if(isLecture){
+				persantage = (group.getLectureHours()-student.getLectureAbsenceHours())/(double)group.getLectureHours()*100;
+			}else {
+				persantage = (group.getLabHours()-student.getLabAbsenceHours())/(double)group.getLabHours()*100;
+			}
+			return String.format("%.2f",persantage)+"%";
 		}
 		//Иначе возвращаем панель, отвечающую за отображение занятия
 		return getLessonLabel(getStudentIndex(rowIndex), columnIndex);
@@ -170,7 +181,9 @@ public class StudentTableModel extends AbstractTableModel {
 		if (columnIndex == AVERAGE_GRADE_COLUMN_INDEX) {
 			return "Средний балл";
 		}
-
+		if (columnIndex == AttendansePersentColumnIndex){
+			return "Посещаемость";
+		}
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 		if (columnIndex - FIRST_LAB_COLUMN_INDEX < lessons.size()) {
 			return dateFormat.format(lessons.get(columnIndex - FIRST_LAB_COLUMN_INDEX).getDate());
@@ -188,7 +201,9 @@ public class StudentTableModel extends AbstractTableModel {
 		if (columnIndex == AVERAGE_GRADE_COLUMN_INDEX) {
 			return String.class;
 		}
-
+		if (columnIndex == AttendansePersentColumnIndex) {
+			return String.class;
+		}
 		return JLabel.class;
 	}
 

@@ -88,7 +88,6 @@ public class LessonButtonKeyListener extends KeyAdapter {
 	}
 
 	private void moveLessonButton(int keyCode, LessonButton button) {
-		int firstIndex = studentCard.getMainWindow().getStudentTable().getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
 		int index = studentCard.getLessonButtons().indexOf(button);
 		int nextIndex = index + (keyCode == KeyEvent.VK_LEFT ? -1 : 1);
 		if (nextIndex >= 0 && nextIndex < studentCard.getLessonButtons().size()) {
@@ -100,7 +99,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			studentCard.setCurrLessonButton(nextLessonButton);
 			studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(nextLessonButton.getLesson());
 			boolean isLecture = studentCard.getMainWindow().getRadioBtnLecture().isSelected();
-			int index1 = isLecture ? 1 : 2;
+			int index1 = isLecture ? 2 : 3;
 			studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(
 					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + index1, studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + index1);
 			int selectedColumn;
@@ -170,19 +169,19 @@ public class LessonButtonKeyListener extends KeyAdapter {
 				if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
 					button.setGrade("");
 					studentCard.getMainWindow().getCurrStudent().getGradeList().remove(studentGrade);
-					studentCard.getTxtAverageGrade().setText(String.format("%.2f",studentCard.getMainWindow().getCurrStudent().getAverageGrade()));
-					System.out.println("Оценка за лабораторную удалена");
+					studentCard.getTxtAverageGrade().setText(String.format("%.2f", studentCard.getMainWindow().getCurrStudent().getAverageGrade()));
+					System.out.println("Оценка c id = "+studentGrade.getId()+" за лабораторную c id = "+ button.getLesson().getId()+" удалена");
 				}
 			}
-			if(isHalf){
-				if(studentGrade!=null) {
+			if (isHalf) {
+				if (studentGrade != null) {
 					button.setGrade(button.getGrade());
 				}
-			}else {
+			} else {
 				button.setData();
 			}
 			button.setChecked(true);
-			System.out.println("Запись о отсутствии добавлена");
+			System.out.println("Запись о отсутствии c id = "+id+" добавлена");
 			studentCard.getMainWindow().refreshStudentTable();
 		}
 	}
@@ -192,7 +191,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 
 		if (absence != null) {
 			if (AbsenceDaoImpl.getInstance().delete(absence)) {
-				System.out.println("Запись об отсутствии удалена");
+				System.out.println("Запись об отсутствии c id = " + absence.getId() + " удалена");
 				if (button.getLesson().isLecture()) {
 					studentCard.getMainWindow().getCurrStudent().getLectureAbsenceList().remove(absence);
 				} else {
@@ -217,7 +216,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			absence.setHalf(true);
 		}
 		if (AbsenceDaoImpl.getInstance().update(absence)) {
-			System.out.println("Запись об отсутствии обновлена");
+			System.out.println("Запись об отсутствии c id = "+absence.getId()+" обновлена");
 			button.setHalf(true);
 		}
 	}

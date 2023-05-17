@@ -401,6 +401,7 @@ public class StudentCardDialog extends JDialog {
 	}
 
 	private void setGrade(JButton gradeButton) {
+		if(currLessonButton.getLesson().isLecture())return;
 		String gradeStr = "";
 		if ((!currLessonButton.isChecked() && !currLessonButton.getLesson().isHoliday()) || (currLessonButton.isChecked() && currLessonButton.isHalf())) {
 			if (currLessonButton.getGrade().equals("1") && gradeButton.getText().equals("0")) {
@@ -417,7 +418,7 @@ public class StudentCardDialog extends JDialog {
 				Grade grade1 = new Grade(currLessonButton.getLab().getId(),
 						mainFrame.getCurrStudent().getId(), Integer.parseInt(gradeStr));
 				if ((id = GradeDaoImpl.getInstance().save(grade1)) != -1) {
-					System.out.println("Оценка добавлена");
+					System.out.println("Оценка c id "+id+ " добавлена");
 					grade1.setId(id);
 					mainFrame.getCurrStudent().getGradeList().add(grade1);
 					mainFrame.refreshStudentTable();
@@ -426,7 +427,7 @@ public class StudentCardDialog extends JDialog {
 				grade.setGrade(Integer.parseInt(gradeStr));
 				mainFrame.refreshStudentTable();
 				if (GradeDaoImpl.getInstance().update(grade)) {
-					System.out.println("Оценка изменена");
+					System.out.println("Оценка c id = "+grade.getId()+" изменена");
 				}
 			}
 			if (mainFrame.getRadioBtnLab().isSelected()) {

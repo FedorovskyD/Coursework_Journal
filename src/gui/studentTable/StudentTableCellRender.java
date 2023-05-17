@@ -34,7 +34,7 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 		boolean isHolidayColumn = false;
 		StudentTable studentTable = (StudentTable) table;
 		int indexFirstLessonColumn = studentTable.getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
-		if ((column > 0 && indexFirstLessonColumn == 1) || (column > 1 && indexFirstLessonColumn == 2)) {
+		if ((column > 1 && indexFirstLessonColumn == 2) || (column > 2 && indexFirstLessonColumn == 3)) {
 			isHolidayColumn = studentTable.getStudentTableModel().getLessons().get(column - indexFirstLessonColumn).isHoliday();
 		}
 		if (value instanceof JLabel label) {

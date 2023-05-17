@@ -19,7 +19,7 @@ public class RemoveLessonDialog extends JDialog {
 	private MainFrame mainFrame;
 
 	public RemoveLessonDialog(MainFrame mainFrame) {
-		super(mainFrame);
+		super(mainFrame,"Удаление занятия",true);
 		this.mainFrame = mainFrame;
 		groupJComboBox = new JComboBox<>(new DefaultComboBoxModel<>(mainFrame.getGroups().toArray(new Group[0])));
 		groupJComboBox.setSelectedIndex(mainFrame.getCmbGroupNumber().getSelectedIndex());
@@ -44,16 +44,18 @@ public class RemoveLessonDialog extends JDialog {
 					System.out.println("Занятие удалено");
 					mainFrame.getGroups().get(groupJComboBox.getSelectedIndex()).getLessons().remove(lesson);
 					mainFrame.getJDialogStudentCard().getLessonButtons().clear();
+					mainFrame.refreshDateCmb();
 					mainFrame.refreshStudentTable();
+					refreshLessonCmb(lectureRadioButton.isSelected());
 				}
 			}
 		});
 		addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
-					((JDialog)e.getSource()).dispose();
-				}
+				JDialog source = (JDialog)e.getSource();
+				if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
+				source.dispose();
 			}
 		});
 		lectureRadioButton.addActionListener(e -> {
@@ -73,8 +75,9 @@ public class RemoveLessonDialog extends JDialog {
 		add(new JPanel());
 		add(removeLesson);
 		pack();
+		setLocationRelativeTo(null);
 		setVisible(true);
-		setLocationRelativeTo(mainFrame);
+
 
 	}
 	private void refreshLessonCmb(boolean isLecture){

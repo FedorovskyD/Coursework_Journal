@@ -71,7 +71,6 @@ public class LessonButton extends JButton {
 	}
 
 	public void setChecked(boolean checked) {
-
 		if (lesson.isHoliday()) {
 			setBackground(Color.ORANGE);
 		}else

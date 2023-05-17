@@ -29,7 +29,7 @@ public class StudentTable extends JTable {
 			StudentTable studentTable = (StudentTable) table;
 			boolean isHolidayColumn = false;
 			int indexFirstLessonColumn = studentTable.getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
-			if ((column1 > 0 && indexFirstLessonColumn==1) || (column1 > 1 && indexFirstLessonColumn==2)) {
+			if ((column1 > 1 && indexFirstLessonColumn==2) || (column1 > 2 && indexFirstLessonColumn==3)) {
 				isHolidayColumn = studentTable.getStudentTableModel().getLessons().get(column1- indexFirstLessonColumn).isHoliday();
 			}
 			if (column1 == lessonJComboBox.getSelectedIndex() + indexFirstLessonColumn && isHolidayColumn) {

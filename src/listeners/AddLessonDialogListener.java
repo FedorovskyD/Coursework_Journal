@@ -31,9 +31,9 @@ public class AddLessonDialogListener implements ActionListener {
 				group.getLessons().add(lesson);
 				group.getLessons().sort(Comparator.comparing(Lesson::getDate));
 				if (isLecture) {
-					System.out.println("Лекционное добавлено");
+					System.out.println("Лекционное занятие c id = " + lessonId + " добавлено");
 				} else {
-					System.out.println("Лабораторное занятие добавлено");
+					System.out.println("Лабораторное занятие c id = " + lessonId + " добавлено");
 				}
 				addLessonDialog.getMainWindow().refreshDateCmb();
 				if (addLessonDialog.getMainWindow().getRadioBtnLecture().isSelected() == isLecture) {

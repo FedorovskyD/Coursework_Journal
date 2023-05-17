@@ -36,7 +36,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 			onCmbGroupNumberActionPerformed();
 		} else if (e.getSource() == mainFrame.getCurrDateCmb()) {
 			mainFrame.getStudentTable().setDefaultRenderer(Object.class,
-					new StudentTableCellRender(mainFrame.getCurrDateCmb().getSelectedIndex()+(mainFrame.getRadioBtnLecture().isSelected()?1:2)));
+					new StudentTableCellRender(mainFrame.getCurrDateCmb().getSelectedIndex()+(mainFrame.getRadioBtnLecture().isSelected()?2:3)));
 			mainFrame.getStudentTable().repaint();
 			mainFrame.repaint();
 		} else if (e.getSource() == mainFrame.getRadioBtnDec() ||
@@ -123,7 +123,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 			mainFrame.getJDialogStudentCard().getGradePanel().setVisible(true);
 		}
 
-		mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(mainFrame.getRadioBtnLecture().isSelected()?1:2));
+		mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(mainFrame.getRadioBtnLecture().isSelected()?2:3));
 		mainFrame.getStudentTable().repaint();
 		mainFrame.getJDialogStudentCard().getLabButtons().clear();
 		mainFrame.getJDialogStudentCard().updateStudentCard(mainFrame.getCurrentStudent());

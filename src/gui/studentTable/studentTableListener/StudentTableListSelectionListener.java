@@ -25,9 +25,9 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 				// Получаем значение в ячейке первого столбца строки
 				Object value = mainFrame.getStudentTable().getValueAt(selectedRowIndex, 0); // Получаем значение в ячейке первого столбца строки
 				if (value == null) {
-					if (column > 1) {
+					if (column > (mainFrame.getRadioBtnLecture().isSelected()?1:2)) {
 						mainFrame.getStudentTable().repaint();
-						mainFrame.getCurrDateCmb().setSelectedIndex(column-2);
+						mainFrame.getCurrDateCmb().setSelectedIndex(column-(mainFrame.getRadioBtnLecture().isSelected()?2:3));
 					}
 					int index = mainFrame.getStudentTable().getStudentTableModel().getRowIndex(mainFrame.getCurrStudent());
 					if (index != -1) {
@@ -40,8 +40,8 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 							&& mainFrame.getCurrStudent() != null
 							&& mainFrame.getCurrStudent().getGroupId() == selectedStudent.getGroupId();
 					if (isVisible) {
-						if(column>1) {
-							mainFrame.getCurrDateCmb().setSelectedIndex(column - 2);
+						if(column>(mainFrame.getRadioBtnLecture().isSelected()?1:2)) {
+							mainFrame.getCurrDateCmb().setSelectedIndex(column - (mainFrame.getRadioBtnLecture().isSelected()?2:3));
 						}
 						mainFrame.setCurrStudent(selectedStudent);
 						mainFrame.getJDialogStudentCard().updateStudentCard(selectedStudent);

@@ -24,8 +24,8 @@ public class StudentTableMouseListener extends MouseAdapter {
 			if (student == mainFrame.getCurrentStudent()) {
 				mainFrame.getStudentTable().repaint();
 				mainFrame.getJDialogStudentCard().updateStudentCard(student);
-				if (column > 1) {
-					mainFrame.getCurrDateCmb().setSelectedIndex(column - 2);
+				if (column > (mainFrame.getRadioBtnLecture().isSelected()?1:2)) {
+					mainFrame.getCurrDateCmb().setSelectedIndex(column - (mainFrame.getRadioBtnLecture().isSelected()?2:3));
 				}
 			}
 		}
