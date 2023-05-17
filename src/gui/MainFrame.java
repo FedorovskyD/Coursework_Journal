@@ -1,5 +1,6 @@
 package gui;
 
+import gui.dialogs.EmailConfigDialog;
 import gui.studentTable.StudentTableCellRender;
 import gui.studentTable.StudentTableModel;
 import gui.studentTable.StudentTable;
@@ -14,12 +15,15 @@ import gui.studentTable.studentTableListener.StudentTableListSelectionListener;
 import gui.studentTable.studentTableListener.StudentTableMouseListener;
 import listeners.MainFrameListener;
 import utils.Constants;
-import utils.ExcelTableExample;
+import utils.EmailSender;
+import utils.ExcelTableUtil;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +31,7 @@ import java.util.Objects;
 
 public class MainFrame extends JFrame {
 	private final JButton btnAddStudent, btnAddLab,
-			btnAddGroup, btnDeleteGroup,btnDeleteLesson;
+			btnAddGroup, btnDeleteGroup,btnDeleteLesson,btnSendByEmail;
 	protected StudentTable studentTable;
 	protected StudentCardDialog studentCardDialog;
 	protected final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc, radioBtnDec;
@@ -65,11 +69,13 @@ public class MainFrame extends JFrame {
 		JMenuBar menuBar = new JMenuBar();
 		// Создание пунктов меню
 		JMenuItem menuItemAboutAuthor = new JMenuItem("О авторе");
+		JMenuItem menuItemConfigEmail = new JMenuItem("Настроить почту");
 		JMenuItem menuItemAboutProgram = new JMenuItem("О программе");
 		JMenuItem menuItemExit = new JMenuItem("Выход");
 		// Добавление пунктов в меню
 		menuFile.add(menuItemAboutAuthor);
 		menuFile.add(menuItemAboutProgram);
+		menuFile.add(menuItemConfigEmail);
 		menuFile.addSeparator();
 		menuFile.add(menuItemExit);
 		// Добавление меню на фрейм
@@ -88,6 +94,7 @@ public class MainFrame extends JFrame {
 		btnDeleteGroup = new JButton("Удалить группу");
 		btnAddLab = new JButton("Добавить занятие");
 		btnDeleteLesson = new JButton("Удалить занятие");
+		btnSendByEmail = new JButton("Отправить на почту");
 		//Создаем combobox для выбора даты занятия
 		currDateCmb = new JComboBox<>();
 		refreshDateCmb();
@@ -127,7 +134,8 @@ public class MainFrame extends JFrame {
 								.addComponent(btnDeleteGroup)
 								.addComponent(btnAddLab)
 								.addComponent(btnDeleteLesson)
-								.addComponent(btnSaveTable))
+								.addComponent(btnSaveTable)
+								.addComponent(btnSendByEmail))
 				)
 		);
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
@@ -153,6 +161,7 @@ public class MainFrame extends JFrame {
 						.addComponent(btnDeleteGroup)
 						.addComponent(btnAddLab)
 						.addComponent(btnDeleteLesson)
+						.addComponent(btnSendByEmail)
 						.addComponent(btnSaveTable))
 		);
 		//Создаем карточку для отображения информации о студенте
@@ -183,6 +192,18 @@ public class MainFrame extends JFrame {
 		studentTable.getSelectionModel().addListSelectionListener(studentTableListSelectionListener);
 		studentTable.addMouseListener(studentTableMouseListener);
 		studentTable.addKeyListener(studentTableKeyListener);
+		menuItemConfigEmail.addActionListener(e -> {
+			new EmailConfigDialog().setVisible(true);
+		});
+		btnSendByEmail.addActionListener(e -> {
+			String input = JOptionPane.showInputDialog(null, "Введите получателей через запятую:");
+			String[] recipients = input.split(",");
+			String body = getCurrentGroup().getName()+(radioBtnLecture.isSelected()?" Лекции":" Лабораторные");
+			String filePath = body+".xlsx";
+			EmailSender.sendEmail(recipients,"Отчет посещаемости",
+					body,
+					ExcelTableUtil.createAttendanceTable(studentTable.getStudentTableModel()),filePath);
+		});
 		btnSaveTable.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -205,7 +226,16 @@ public class MainFrame extends JFrame {
 					}
 					File file = new File(selectedDir, fileName);
 					System.out.println(file.getName());
-					ExcelTableExample.createAttendanceTable(getStudentTable().getStudentTableModel(),file);
+					byte[] information = ExcelTableUtil.createAttendanceTable(getStudentTable().getStudentTableModel());
+					try {
+						FileOutputStream fos = new FileOutputStream(file);
+						fos.write(information);
+						fos.close();
+						JOptionPane.showMessageDialog(null,"Файл успешно создан: " + file.getAbsolutePath());
+					} catch (IOException ex) {
+						JOptionPane.showMessageDialog(null,"Файл не создан!");
+						ex.printStackTrace();
+					}
 				}
 			}
 		});

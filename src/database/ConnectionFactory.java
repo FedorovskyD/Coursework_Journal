@@ -1,5 +1,7 @@
 package database;
 
+import utils.PropertyLoader;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -9,7 +11,7 @@ import java.util.Properties;
 
 
 public class ConnectionFactory {
-	private static final String PROPERTIES_FILE = "db.properties";
+	private static final String PROPERTIES_FILE = "resources/database/db.properties";
 	private static final String URL_PROPERTY = "db.url";
 	private static final String USERNAME_PROPERTY = "db.username";
 	private static final String PASSWORD_PROPERTY = "db.password";
@@ -18,15 +20,12 @@ public class ConnectionFactory {
 	private static final String password;
 
 	static {
-		Properties props = new Properties();
-		try (FileInputStream fis = new FileInputStream(PROPERTIES_FILE)) {
-			props.load(fis);
+		Properties props = null;
+		try {
+			props = PropertyLoader.loadProperty(PROPERTIES_FILE);
 		} catch (IOException e) {
-			try {
-				throw new SQLException("Failed to read database configuration file", e);
-			} catch (SQLException ex) {
-				throw new RuntimeException(ex);
-			}
+			System.out.println("Не удалось загрузить файл бд");
+			throw new RuntimeException(e);
 		}
 		url = props.getProperty(URL_PROPERTY);
 		username = props.getProperty(USERNAME_PROPERTY);
