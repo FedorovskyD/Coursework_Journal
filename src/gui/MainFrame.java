@@ -15,7 +15,6 @@ import gui.studentTable.studentTableListener.StudentTableMouseListener;
 import listeners.MainFrameListener;
 import utils.Constants;
 import utils.ExcelTableExample;
-import utils.WordConnector;
 
 import javax.swing.*;
 import java.awt.*;
@@ -38,7 +37,6 @@ public class MainFrame extends JFrame {
 	private final List<Group> groups;
 	private Student currStudent;
 	private final JCheckBox checkBox;
-	private final JButton btnSaveTable;
 
 	public MainFrame() {
 		//Получаем данные о группах из базы данных
@@ -84,7 +82,7 @@ public class MainFrame extends JFrame {
 		cmbGroupNumber.setPreferredSize(new Dimension(100, 30));
 		cmbGroupNumber.setMaximumSize(cmbGroupNumber.getPreferredSize());
 		// Создаем кнопки
-		btnSaveTable = new JButton("Сохранить таблицу в файл");
+		JButton btnSaveTable = new JButton("Сохранить таблицу в файл");
 		btnAddStudent = new JButton("Добавить студента");
 		btnAddGroup = new JButton("Добавить группу");
 		btnDeleteGroup = new JButton("Удалить группу");
@@ -208,7 +206,6 @@ public class MainFrame extends JFrame {
 					File file = new File(selectedDir, fileName);
 					System.out.println(file.getName());
 					ExcelTableExample.createAttendanceTable(getStudentTable().getStudentTableModel(),file);
-					//WordConnector.generateTable(getStudentTable().getStudentTableModel(), file);
 				}
 			}
 		});

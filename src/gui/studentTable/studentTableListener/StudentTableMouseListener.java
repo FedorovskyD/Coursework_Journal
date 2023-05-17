@@ -14,33 +14,20 @@ public class StudentTableMouseListener extends MouseAdapter {
 		this.mainFrame = mainFrame;
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 		int row = mainFrame.getStudentTable().rowAtPoint(e.getPoint());
 		int column = mainFrame.getStudentTable().columnAtPoint(e.getPoint());
 
-		Object value = mainFrame.getStudentTable().getValueAt(row, 0);
-		// обработка щелчка на ячейке
-		if (value instanceof Student student) {
-			if (student == mainFrame.getCurrentStudent()) {
-				mainFrame.getStudentTable().repaint();
-				mainFrame.getJDialogStudentCard().updateStudentCard(student);
-				if (column > (mainFrame.getRadioBtnLecture().isSelected()?1:2)) {
-					mainFrame.getCurrDateCmb().setSelectedIndex(column - (mainFrame.getRadioBtnLecture().isSelected()?2:3));
-				}
-			}
-		}
-		// перемещаем получение номера столбца внутрь условия
 		if (row >= 0) {
-			value = mainFrame.getStudentTable().getValueAt(row, 0);
-			// обработка щелчка на ячейке
-			if (value instanceof Student student) {
-				if (student == mainFrame.getCurrentStudent()) {
-					mainFrame.getJDialogStudentCard().updateStudentCard(student);
-					mainFrame.getJDialogStudentCard().setVisible(true);
+			Object value = mainFrame.getStudentTable().getValueAt(row, 0);
+			if (value instanceof Student student && student == mainFrame.getCurrentStudent()) {
+				mainFrame.getJDialogStudentCard().updateStudentCard(student);
+				if (column > (mainFrame.getRadioBtnLecture().isSelected() ? 1 : 2)) {
+					mainFrame.getCurrDateCmb().setSelectedIndex(column - (mainFrame.getRadioBtnLecture().isSelected() ? 2 : 3));
 				}
+				mainFrame.getJDialogStudentCard().setVisible(true);
 			}
-			// Добавьте здесь свой код, использующий номер столбца
 		}
 	}
 }
-

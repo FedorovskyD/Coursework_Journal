@@ -1,5 +1,7 @@
 package gui.studentTable.studentCard.lessonButton;
 
+import entity.Absence;
+import entity.Grade;
 import entity.Lesson;
 import utils.Constants;
 
@@ -9,6 +11,8 @@ import java.text.SimpleDateFormat;
 
 public class LessonButton extends JButton {
 	private final Lesson lesson; //Лабораторная работа за которую отвечает данная кнопка
+	private Grade lessonGrade;
+	private Absence absence;
 	private boolean isCurrent; //Показывает активна ли данная кнопка
 	private boolean isChecked;
 	private boolean isHalf;

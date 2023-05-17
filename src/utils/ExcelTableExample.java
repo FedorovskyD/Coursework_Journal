@@ -7,6 +7,7 @@ import entity.Grade;
 import entity.Lesson;
 import entity.Student;
 import gui.studentTable.StudentTableModel;
+import org.apache.logging.log4j.simple.SimpleLogger;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
@@ -40,6 +41,10 @@ public class ExcelTableExample {
 		CellStyle centerAlignStyle = workbook.createCellStyle();
 		centerAlignStyle.setAlignment(HorizontalAlignment.CENTER);
 		centerAlignStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		centerAlignStyle.setBorderTop(BorderStyle.THIN);
+		centerAlignStyle.setBorderBottom(BorderStyle.THIN);
+		centerAlignStyle.setBorderLeft(BorderStyle.THIN);
+		centerAlignStyle.setBorderRight(BorderStyle.THIN);
 		headerCell.setCellStyle(centerAlignStyle);
 		Cell cell = headerRow.createCell(currCell);
 		cell.setCellValue("Посещаемость, %");
@@ -72,11 +77,22 @@ public class ExcelTableExample {
 				gradeCell.setCellValue(students.get(i).getAverageGrade());
 			}
 			CellStyle style = workbook.createCellStyle();
-			style.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+			style.setBorderTop(BorderStyle.THIN);
+			style.setBorderBottom(BorderStyle.THIN);
+			style.setBorderLeft(BorderStyle.THIN);
+			style.setBorderRight(BorderStyle.THIN);
+			style.setDataFormat(workbook.createDataFormat().getFormat("#0.0"));
 			attendanceCell.setCellStyle(style);
 			if (gradeCell != null) {
+				style.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
 				gradeCell.setCellStyle(style);
 			}
+			CellStyle studetCellStyle = workbook.createCellStyle();
+			studetCellStyle.setBorderTop(BorderStyle.THIN);
+			studetCellStyle.setBorderBottom(BorderStyle.THIN);
+			studetCellStyle.setBorderLeft(BorderStyle.THIN);
+			studetCellStyle.setBorderRight(BorderStyle.THIN);
+			studentCell.setCellStyle(studetCellStyle);
 			studentCell.setCellValue(students.get(i).toString());
 
 			// Заполняем оставшиеся ячейки значениями
@@ -86,14 +102,16 @@ public class ExcelTableExample {
 				attendanceValueCell.setCellStyle(centerAlignStyle);
 				Absence absence = students.get(i).getLessonAbsence(lesson);
 				Grade grade = students.get(i).getLessonGrade(lesson);
-				if (absence != null) {
-					if (absence.isHalf() && grade != null) {
-						attendanceValueCell.setCellValue(grade.getGrade() + "(1)");
-					}else {
-						attendanceValueCell.setCellValue("н");
+				if (absence != null && grade!=null) {
+					if (absence.isHalf()) {
+						attendanceValueCell.setCellValue(grade.getGrade() + "(1н)");
+					} else {
+						attendanceValueCell.setCellValue(grade.getGrade() + "(н)");
 					}
 				} else if (grade != null) {
 					attendanceValueCell.setCellValue(grade.getGrade());
+				}else if(absence!=null){
+					attendanceValueCell.setCellValue("н");
 				}
 				// Здесь установите нужное значение для ячейки, например, посещаемость или что-то другое
 				// attendanceValueCell.setCellValue(...);
@@ -102,6 +120,10 @@ public class ExcelTableExample {
 		}
 		// Разворачиваем текст в первой строке, начиная со второго столбца
 		CellStyle verticalTextStyle = workbook.createCellStyle();
+		verticalTextStyle.setBorderTop(BorderStyle.THIN);
+		verticalTextStyle.setBorderBottom(BorderStyle.THIN);
+		verticalTextStyle.setBorderLeft(BorderStyle.THIN);
+		verticalTextStyle.setBorderRight(BorderStyle.THIN);
 		verticalTextStyle.setRotation((short) 90);
 		for (int i = 1; i <= lastColumn; i++) {
 			Cell dateCell = headerRow.getCell(i);

@@ -3,7 +3,6 @@ package gui.studentTable.studentTableListener;
 import entity.Student;
 import gui.MainFrame;
 import gui.studentTable.StudentTable;
-import gui.studentTable.StudentTableCellRender;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -22,12 +21,12 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 			int selectedRowIndex = mainFrame.getStudentTable().getSelectedRow();
 
 			if (selectedRowIndex != -1) {
-				// Получаем значение в ячейке первого столбца строки
-				Object value = mainFrame.getStudentTable().getValueAt(selectedRowIndex, 0); // Получаем значение в ячейке первого столбца строки
+				Object value = mainFrame.getStudentTable().getValueAt(selectedRowIndex, 0);
+
 				if (value == null) {
-					if (column > (mainFrame.getRadioBtnLecture().isSelected()?1:2)) {
+					if (column > getColumnOffset()) {
 						mainFrame.getStudentTable().repaint();
-						mainFrame.getCurrDateCmb().setSelectedIndex(column-(mainFrame.getRadioBtnLecture().isSelected()?2:3));
+						mainFrame.getCurrDateCmb().setSelectedIndex(column - getColumnOffset() - 1);
 					}
 					int index = mainFrame.getStudentTable().getStudentTableModel().getRowIndex(mainFrame.getCurrStudent());
 					if (index != -1) {
@@ -40,8 +39,8 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 							&& mainFrame.getCurrStudent() != null
 							&& mainFrame.getCurrStudent().getGroupId() == selectedStudent.getGroupId();
 					if (isVisible) {
-						if(column>(mainFrame.getRadioBtnLecture().isSelected()?1:2)) {
-							mainFrame.getCurrDateCmb().setSelectedIndex(column - (mainFrame.getRadioBtnLecture().isSelected()?2:3));
+						if (column > getColumnOffset()) {
+							mainFrame.getCurrDateCmb().setSelectedIndex(column - getColumnOffset() - 1);
 						}
 						mainFrame.setCurrStudent(selectedStudent);
 						mainFrame.getJDialogStudentCard().updateStudentCard(selectedStudent);
@@ -51,5 +50,8 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 				}
 			}
 		}
+	}
+	private int getColumnOffset() {
+		return mainFrame.getRadioBtnLecture().isSelected() ? 1 : 2;
 	}
 }

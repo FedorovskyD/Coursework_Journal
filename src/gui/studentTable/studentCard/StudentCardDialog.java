@@ -10,7 +10,6 @@ import gui.studentTable.studentCard.lessonButton.LessonButton;
 import gui.studentTable.studentCard.lessonButton.LessonButtonKeyListener;
 import gui.studentTable.studentCard.lessonButton.LessonButtonMouseListener;
 import listeners.StudentCardDialogListener;
-import utils.Constants;
 import utils.PhotoUtils;
 
 import javax.imageio.ImageIO;
@@ -33,7 +32,7 @@ import java.util.List;
 public class StudentCardDialog extends JDialog {
 	private final JLabel photoLabel;
 	private final JTextField txtFullName, txtEmail, txtPhone;
-	private final JLabel txtAverageGrade, lblLessonCount, lblStudentHours, lblPersantage;
+	private final JLabel txtAverageGrade, lblLessonCount, lblStudentHours, lblPercentage;
 	private final JLabel phoneLabel;
 	private final JLabel gpaLabel;
 	private final JLabel emailLabel;
@@ -60,7 +59,7 @@ public class StudentCardDialog extends JDialog {
 		photoLabel = new JLabel();
 		lblLessonCount = new JLabel();
 		lblStudentHours = new JLabel();
-		lblPersantage = new JLabel();
+		lblPercentage = new JLabel();
 		JLabel lessonCount = new JLabel("Часов занятий:");
 		JLabel hoursCount = new JLabel("Часов присутствия:");
 		JLabel persantage = new JLabel("Процент посещения:");
@@ -122,7 +121,7 @@ public class StudentCardDialog extends JDialog {
 						.addComponent(txtPhone)
 						.addComponent(lblLessonCount)
 						.addComponent(lblStudentHours)
-						.addComponent(lblPersantage)
+						.addComponent(lblPercentage)
 						.addComponent(txtAverageGrade)
 						.addComponent(deleteButton))
 		);
@@ -155,7 +154,7 @@ public class StudentCardDialog extends JDialog {
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(persantage)
-								.addComponent(lblPersantage))
+								.addComponent(lblPercentage))
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(gpaLabel)
@@ -224,14 +223,14 @@ public class StudentCardDialog extends JDialog {
 			lblLessonCount.setText(String.valueOf(labHoursCount));
 			int labHoursAttendance = labHoursCount - student.getLabAbsenceHours();
 			lblStudentHours.setText(String.valueOf(labHoursAttendance));
-			lblPersantage.setText(String.format("%.2f ", ((double) labHoursAttendance / labHoursCount) * 100) + " %");
+			lblPercentage.setText(String.format("%.1f ", ((double) labHoursAttendance / labHoursCount) * 100) + " %");
 		} else {
 			gpaLabel.setText("");
 			int lectureHoursCount = mainFrame.getCurrentGroup().getLectureHours();
 			lblLessonCount.setText(String.valueOf(lectureHoursCount));
 			int lectureHoursAttendance = lectureHoursCount - student.getLectureAbsenceHours();
 			lblStudentHours.setText(String.valueOf(lectureHoursAttendance));
-			lblPersantage.setText(String.format("%.2f", ((double) lectureHoursAttendance / lectureHoursCount) * 100) + " %");
+			lblPercentage.setText(String.format("%.1f", ((double) lectureHoursAttendance / lectureHoursCount) * 100) + " %");
 		}
 		Image image = PhotoUtils.getInstance().loadPhoto(student).getImage();
 		if (image != null) {
@@ -319,6 +318,7 @@ public class StudentCardDialog extends JDialog {
 	}
 
 	private void setInitialSelection(LessonButton lessonButton) {
+		lessonButton.setCurrent(false);
 		if (lessonButton.getLesson().equals(mainFrame.getCurrDate())) {
 			if (currLessonButton != null) {
 				currLessonButton.setCurrent(false);
@@ -401,9 +401,9 @@ public class StudentCardDialog extends JDialog {
 	}
 
 	private void setGrade(JButton gradeButton) {
-		if(currLessonButton.getLesson().isLecture())return;
+		if (currLessonButton.getLesson().isLecture()) return;
 		String gradeStr = "";
-		if ((!currLessonButton.isChecked() && !currLessonButton.getLesson().isHoliday()) || (currLessonButton.isChecked() && currLessonButton.isHalf())) {
+		if ((!currLessonButton.getLesson().isHoliday())) {
 			if (currLessonButton.getGrade().equals("1") && gradeButton.getText().equals("0")) {
 				currLessonButton.setGrade("10");
 				gradeStr = "10";
@@ -418,7 +418,7 @@ public class StudentCardDialog extends JDialog {
 				Grade grade1 = new Grade(currLessonButton.getLab().getId(),
 						mainFrame.getCurrStudent().getId(), Integer.parseInt(gradeStr));
 				if ((id = GradeDaoImpl.getInstance().save(grade1)) != -1) {
-					System.out.println("Оценка c id "+id+ " добавлена");
+					System.out.println("Оценка c id " + id + " добавлена");
 					grade1.setId(id);
 					mainFrame.getCurrStudent().getGradeList().add(grade1);
 					mainFrame.refreshStudentTable();
@@ -427,7 +427,7 @@ public class StudentCardDialog extends JDialog {
 				grade.setGrade(Integer.parseInt(gradeStr));
 				mainFrame.refreshStudentTable();
 				if (GradeDaoImpl.getInstance().update(grade)) {
-					System.out.println("Оценка c id = "+grade.getId()+" изменена");
+					System.out.println("Оценка c id = " + grade.getId() + " изменена");
 				}
 			}
 			if (mainFrame.getRadioBtnLab().isSelected()) {

@@ -1,7 +1,9 @@
 package gui.studentTable.studentCard.lessonButton;
 
 import gui.studentTable.studentCard.StudentCardDialog;
+import utils.Constants;
 
+import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -15,14 +17,12 @@ public class LessonButtonMouseListener extends MouseAdapter {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		LessonButton button = (LessonButton) e.getSource();
-		if (!button.isCurrent()) {
-			if (studentCard.getCurrLessonButton()!= null) {
-				studentCard.getCurrLessonButton().setCurrent(false);
-				studentCard.getCurrLessonButton().repaint();
-			}
-				button.setCurrent(true);
-				studentCard.setCurrLessonButton(button);
+		if (studentCard.getCurrLessonButton() != null) {
+			studentCard.getCurrLessonButton().setCurrent(false);
 		}
+		studentCard.setCurrLessonButton(button);
+		button.setCurrent(true);
+		button.repaint();
 		studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(button.getLesson());
 		int index1 = studentCard.getMainWindow().getRadioBtnLecture().isSelected() ? 2 : 3;
 		studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(

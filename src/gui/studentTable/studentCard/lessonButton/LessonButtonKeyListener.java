@@ -165,14 +165,6 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			} else {
 				studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().add(absence);
 			}
-			if (!isHalf) {
-				if (studentGrade != null && GradeDaoImpl.getInstance().delete(studentGrade)) {
-					button.setGrade("");
-					studentCard.getMainWindow().getCurrStudent().getGradeList().remove(studentGrade);
-					studentCard.getTxtAverageGrade().setText(String.format("%.2f", studentCard.getMainWindow().getCurrStudent().getAverageGrade()));
-					System.out.println("Оценка c id = "+studentGrade.getId()+" за лабораторную c id = "+ button.getLesson().getId()+" удалена");
-				}
-			}
 			if (isHalf) {
 				if (studentGrade != null) {
 					button.setGrade(button.getGrade());
