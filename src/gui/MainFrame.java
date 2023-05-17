@@ -27,7 +27,7 @@ import java.util.Objects;
 
 public class MainFrame extends JFrame {
 	private final JButton btnAddStudent, btnAddLab,
-			btnAddGroup, btnDeleteGroup;
+			btnAddGroup, btnDeleteGroup,btnDeleteLesson;
 	protected StudentTable studentTable;
 	protected StudentCardDialog studentCardDialog;
 	protected final JRadioButton radioBtnLecture, radioBtnLab, radioBtnInc, radioBtnDec;
@@ -88,6 +88,7 @@ public class MainFrame extends JFrame {
 		btnAddGroup = new JButton("Добавить группу");
 		btnDeleteGroup = new JButton("Удалить группу");
 		btnAddLab = new JButton("Добавить занятие");
+		btnDeleteLesson = new JButton("Удалить занятие");
 		//Создаем combobox для выбора даты занятия
 		currDateCmb = new JComboBox<>();
 		refreshDateCmb();
@@ -126,6 +127,7 @@ public class MainFrame extends JFrame {
 								.addComponent(btnAddGroup)
 								.addComponent(btnDeleteGroup)
 								.addComponent(btnAddLab)
+								.addComponent(btnDeleteLesson)
 								.addComponent(btnSaveTable))
 				)
 		);
@@ -150,7 +152,9 @@ public class MainFrame extends JFrame {
 						.addComponent(btnAddStudent)
 						.addComponent(btnAddGroup)
 						.addComponent(btnDeleteGroup)
-						.addComponent(btnAddLab).addComponent(btnSaveTable))
+						.addComponent(btnAddLab)
+						.addComponent(btnDeleteLesson)
+						.addComponent(btnSaveTable))
 		);
 		//Создаем карточку для отображения информации о студенте
 		studentCardDialog = new StudentCardDialog(this, "Карточка студента");
@@ -174,6 +178,7 @@ public class MainFrame extends JFrame {
 		radioBtnLecture.addActionListener(mainFrameListener);
 		radioBtnLab.addActionListener(mainFrameListener);
 		radioBtnInc.addActionListener(mainFrameListener);
+		btnDeleteLesson.addActionListener(mainFrameListener);
 		cmbSort.addActionListener(mainFrameListener);
 		currDateCmb.addActionListener(mainFrameListener);
 		studentTable.getSelectionModel().addListSelectionListener(studentTableListSelectionListener);
@@ -389,5 +394,9 @@ public class MainFrame extends JFrame {
 
 	public JCheckBox getCheckBox() {
 		return checkBox;
+	}
+
+	public JButton getBtnDeleteLesson() {
+		return btnDeleteLesson;
 	}
 }

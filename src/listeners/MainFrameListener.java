@@ -5,6 +5,7 @@ import entity.Group;
 import gui.MainFrame;
 import gui.dialogs.AddLessonDialog;
 import gui.dialogs.AddStudentDialog;
+import gui.dialogs.RemoveLessonDialog;
 import gui.studentTable.StudentTableCellRender;
 
 import javax.swing.*;
@@ -45,6 +46,8 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 		} else if (e.getSource() == mainFrame.getRadioBtnLecture() ||
 				e.getSource() == mainFrame.getRadioBtnLab()) {
 			onRadioActionPerformed();
+		} else if (e.getSource()==mainFrame.getBtnDeleteLesson()) {
+			new RemoveLessonDialog(mainFrame);
 		}
 
 	}
