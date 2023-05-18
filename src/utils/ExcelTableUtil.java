@@ -9,20 +9,15 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class ExcelTableUtil {
-	public static void main(String[] args) {
-	}
 
 	public static byte[] createAttendanceTable(StudentTableModel studentTableModel) {
 		List<Student> students = studentTableModel.getStudents();
 		List<Lesson> lessons = studentTableModel.getLessons();
-
 		Workbook workbook = new XSSFWorkbook();
 		String lessonType = studentTableModel.isLecture() ? "Лекции" : "Лабораторные";
 		Sheet sheet = workbook.createSheet(studentTableModel.getGroupNumber() + ". " + lessonType);
@@ -34,12 +29,7 @@ public class ExcelTableUtil {
 		currCell++;
 
 		CellStyle centerAlignStyle = workbook.createCellStyle();
-		centerAlignStyle.setAlignment(HorizontalAlignment.CENTER);
-		centerAlignStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-		centerAlignStyle.setBorderTop(BorderStyle.THIN);
-		centerAlignStyle.setBorderBottom(BorderStyle.THIN);
-		centerAlignStyle.setBorderLeft(BorderStyle.THIN);
-		centerAlignStyle.setBorderRight(BorderStyle.THIN);
+		addBorderToCellStyle(centerAlignStyle);
 		headerCell.setCellStyle(centerAlignStyle);
 
 		Cell cell = headerRow.createCell(currCell);
@@ -76,17 +66,16 @@ public class ExcelTableUtil {
 				gradeCell.setCellValue(students.get(i).getAverageGrade());
 			}
 
-			CellStyle style = workbook.createCellStyle();
-			style.setBorderTop(BorderStyle.THIN);
-			style.setBorderBottom(BorderStyle.THIN);
-			style.setBorderLeft(BorderStyle.THIN);
-			style.setBorderRight(BorderStyle.THIN);
-			style.setDataFormat(workbook.createDataFormat().getFormat("#0.0"));
-			attendanceCell.setCellStyle(style);
+			CellStyle gradeStyle = workbook.createCellStyle();
+			CellStyle attendanceStyle = workbook.createCellStyle();
+			addBorderToCellStyle(attendanceStyle);
+			addBorderToCellStyle(gradeStyle);
+			gradeStyle.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
+			attendanceStyle.setDataFormat(workbook.createDataFormat().getFormat("#0.0"));
 
+			attendanceCell.setCellStyle(attendanceStyle);
 			if (gradeCell != null) {
-				style.setDataFormat(workbook.createDataFormat().getFormat("#0.00"));
-				gradeCell.setCellStyle(style);
+				gradeCell.setCellStyle(gradeStyle);
 			}
 
 			CellStyle studentCellStyle = workbook.createCellStyle();
@@ -103,7 +92,6 @@ public class ExcelTableUtil {
 				attendanceValueCell.setCellStyle(centerAlignStyle);
 				Absence absence = students.get(i).getLessonAbsence(lesson);
 				Grade grade = students.get(i).getLessonGrade(lesson);
-
 				if (absence != null && grade != null) {
 					if (absence.isHalf()) {
 						attendanceValueCell.setCellValue(grade.getGrade() + "(1н)");
@@ -115,16 +103,11 @@ public class ExcelTableUtil {
 				} else if (absence != null) {
 					attendanceValueCell.setCellValue("н");
 				}
-
 				currDateColumn++;
 			}
 		}
-
 		CellStyle verticalTextStyle = workbook.createCellStyle();
-		verticalTextStyle.setBorderTop(BorderStyle.THIN);
-		verticalTextStyle.setBorderBottom(BorderStyle.THIN);
-		verticalTextStyle.setBorderLeft(BorderStyle.THIN);
-		verticalTextStyle.setBorderRight(BorderStyle.THIN);
+		addBorderToCellStyle(verticalTextStyle);
 		verticalTextStyle.setRotation((short) 90);
 
 		for (int i = 1; i <= lastColumn; i++) {
@@ -150,4 +133,14 @@ public class ExcelTableUtil {
 		}
 		return null;
 	}
+
+	private static void addBorderToCellStyle(CellStyle cellStyle) {
+		cellStyle.setBorderTop(BorderStyle.THIN);
+		cellStyle.setBorderBottom(BorderStyle.THIN);
+		cellStyle.setBorderLeft(BorderStyle.THIN);
+		cellStyle.setBorderRight(BorderStyle.THIN);
+		cellStyle.setAlignment(HorizontalAlignment.CENTER);
+		cellStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+	}
+
 }

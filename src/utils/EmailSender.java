@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
@@ -15,7 +14,7 @@ public class EmailSender {
 	private static final String MAIL_USERNAME = "mail.username";
 	private static final String MAIL_PASSWORD = "mail.password";
 
-	public static void sendEmail(String[] recipients,String subject, String body, byte[] fileData, String fileName) {
+	public static void sendEmail(String recipients, String subject, String body, byte[] fileData, String fileName) {
 
 		// Загрузка свойств email
 		Properties emailProps;
@@ -49,7 +48,7 @@ public class EmailSender {
 		try {
 			// Создание объекта MimeMessage
 			Message message = new MimeMessage(session);
-			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(String.join(",", recipients)));
+			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
 
 
 			// Установка темы письма
@@ -76,9 +75,9 @@ public class EmailSender {
 			// Отправка письма
 			Transport.send(message);
 
-			JOptionPane.showMessageDialog(null,"Письмо успешно отправлено!");
+			JOptionPane.showMessageDialog(null, "Письмо успешно отправлено!");
 		} catch (MessagingException e) {
-			JOptionPane.showMessageDialog(null,"Ошибка отправки письма!");
+			JOptionPane.showMessageDialog(null, "Ошибка отправки письма!");
 			e.printStackTrace();
 		}
 	}

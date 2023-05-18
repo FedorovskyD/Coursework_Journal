@@ -1,5 +1,7 @@
 package gui;
 
+import Information.InformationFrame;
+import gui.dialogs.AboutDialog;
 import gui.dialogs.EmailConfigDialog;
 import gui.studentTable.StudentTableCellRender;
 import gui.studentTable.StudentTableModel;
@@ -24,7 +26,9 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -193,54 +197,53 @@ public class MainFrame extends JFrame {
 		studentTable.addMouseListener(studentTableMouseListener);
 		studentTable.addKeyListener(studentTableKeyListener);
 		menuItemConfigEmail.addActionListener(e -> {
-			new EmailConfigDialog().setVisible(true);
+			new EmailConfigDialog(null).setVisible(true);
 		});
 		btnSendByEmail.addActionListener(e -> {
 			String input = JOptionPane.showInputDialog(null, "Введите получателей через запятую:");
-			String[] recipients = input.split(",");
-			String body = getCurrentGroup().getName()+(radioBtnLecture.isSelected()?" Лекции":" Лабораторные");
-			String filePath = body+".xlsx";
-			EmailSender.sendEmail(recipients,"Отчет посещаемости",
-					body,
-					ExcelTableUtil.createAttendanceTable(studentTable.getStudentTableModel()),filePath);
+			if(input!=null) {
+				String body = getCurrentGroup().getName() + (radioBtnLecture.isSelected() ? " Лекции" : " Лабораторные");
+				String filePath = body + ".xlsx";
+				EmailSender.sendEmail(input, "Отчет посещаемости до "+ new SimpleDateFormat("dd.MM.yyyy").format(new Date())+" "+getCurrGroup().getName(),
+						body,
+						ExcelTableUtil.createAttendanceTable(studentTable.getStudentTableModel()), filePath);
+			}
 		});
-		btnSaveTable.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser fileChooser = new JFileChooser();
-				// Устанавливаем режим выбора директории
-				fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				// Открываем диалог выбора файла
-				int result = fileChooser.showSaveDialog(null);
-				// Если пользователь выбрал директорию и нажал "OK"
-				if (result == JFileChooser.APPROVE_OPTION) {
-					// Получаем выбранную директорию
-					File selectedDir = fileChooser.getSelectedFile();
-					// Открываем диалоговое окно для ввода названия файла
-					String fileName = JOptionPane.showInputDialog(null, "Введите название файла:");
-					if (fileName != null && !fileName.trim().isEmpty()) {
-						// Создаем новый файл в выбранной директории с введенным названием
-						fileName= fileName+".xlsx";
-					}else {
-						fileName = (radioBtnLab.isSelected() ? "Лабораторные " : "Лекции ") + getCurrentGroup() + ".xlsx";
-					}
-					File file = new File(selectedDir, fileName);
-					System.out.println(file.getName());
-					byte[] information = ExcelTableUtil.createAttendanceTable(getStudentTable().getStudentTableModel());
-					try {
-						FileOutputStream fos = new FileOutputStream(file);
-						fos.write(information);
-						fos.close();
-						JOptionPane.showMessageDialog(null,"Файл успешно создан: " + file.getAbsolutePath());
-					} catch (IOException ex) {
-						JOptionPane.showMessageDialog(null,"Файл не создан!");
-						ex.printStackTrace();
-					}
+		menuItemAboutAuthor.addActionListener(e -> new AboutDialog(null));
+		btnSaveTable.addActionListener(e -> {
+			JFileChooser fileChooser = new JFileChooser();
+			// Устанавливаем режим выбора директории
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			// Открываем диалог выбора файла
+			int result = fileChooser.showSaveDialog(null);
+			// Если пользователь выбрал директорию и нажал "OK"
+			if (result == JFileChooser.APPROVE_OPTION) {
+				// Получаем выбранную директорию
+				File selectedDir = fileChooser.getSelectedFile();
+				// Открываем диалоговое окно для ввода названия файла
+				String fileName = JOptionPane.showInputDialog(null, "Введите название файла:");
+				if (fileName != null && !fileName.trim().isEmpty()) {
+					// Создаем новый файл в выбранной директории с введенным названием
+					fileName= fileName+".xlsx";
+				}else {
+					fileName = (radioBtnLab.isSelected() ? "Лабораторные " : "Лекции ") + getCurrentGroup() + ".xlsx";
+				}
+				File file = new File(selectedDir, fileName);
+				System.out.println(file.getName());
+				byte[] information = ExcelTableUtil.createAttendanceTable(getStudentTable().getStudentTableModel());
+				try {
+					FileOutputStream fos = new FileOutputStream(file);
+					fos.write(information);
+					fos.close();
+					JOptionPane.showMessageDialog(null,"Файл успешно создан: " + file.getAbsolutePath());
+				} catch (IOException ex) {
+					JOptionPane.showMessageDialog(null,"Файл не создан!");
+					ex.printStackTrace();
 				}
 			}
 		});
 
-		setTitle("Student journal");
+		setTitle("Журнал посещаемости");
 
 		setSize(new Dimension(1920, 1080));
 
