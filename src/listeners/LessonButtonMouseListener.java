@@ -1,9 +1,8 @@
-package gui.studentTable.studentCard.lessonButton;
+package listeners;
 
-import gui.studentTable.studentCard.StudentCardDialog;
-import utils.Constants;
+import dialogs.StudentCardDialog;
+import gui.LessonButton;
 
-import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 

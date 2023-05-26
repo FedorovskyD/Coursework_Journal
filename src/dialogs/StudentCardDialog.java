@@ -1,15 +1,16 @@
-package gui.studentTable.studentCard;
+package dialogs;
 
 import entity.Absence;
+import gui.LessonButton;
 import gui.MainFrame;
 import database.dao.impl.GradeDaoImpl;
 import entity.Grade;
 import entity.Lesson;
 import entity.Student;
-import gui.studentTable.studentCard.lessonButton.LessonButton;
-import gui.studentTable.studentCard.lessonButton.LessonButtonKeyListener;
-import gui.studentTable.studentCard.lessonButton.LessonButtonMouseListener;
+import listeners.LessonButtonKeyListener;
+import listeners.LessonButtonMouseListener;
 import listeners.StudentCardDialogListener;
+import utils.Constants;
 import utils.PhotoUtils;
 
 import javax.imageio.ImageIO;
@@ -19,6 +20,7 @@ import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 

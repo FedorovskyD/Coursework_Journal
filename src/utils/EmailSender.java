@@ -38,18 +38,22 @@ public class EmailSender {
 		props.put("mail.smtp.host", host);
 		props.put("mail.smtp.port", port);
 
-		// Создание объекта Session для аутентификации
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication(username, password);
-			}
-		});
 
 		try {
+			// Создание объекта Session для аутентификации
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(username, password);
+				}
+			});
+			Transport transport = session.getTransport("smtp");
+			transport.connect(host, port, username, password);
+			if (transport.isConnected()) {
+				System.out.println("Авторизация прошла успешно!");
+			}
 			// Создание объекта MimeMessage
 			Message message = new MimeMessage(session);
 			message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
-
 
 			// Установка темы письма
 			message.setSubject(subject);
@@ -76,6 +80,9 @@ public class EmailSender {
 			Transport.send(message);
 
 			JOptionPane.showMessageDialog(null, "Письмо успешно отправлено!");
+		} catch (AuthenticationFailedException e) {
+			JOptionPane.showMessageDialog(null, "Ошибка аутентификации! Проверьте учетные данные.");
+			e.printStackTrace();
 		} catch (MessagingException e) {
 			JOptionPane.showMessageDialog(null, "Ошибка отправки письма!");
 			e.printStackTrace();

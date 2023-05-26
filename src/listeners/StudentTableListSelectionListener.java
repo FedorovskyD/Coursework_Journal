@@ -1,8 +1,7 @@
-package gui.studentTable.studentTableListener;
+package listeners;
 
 import entity.Student;
 import gui.MainFrame;
-import gui.studentTable.StudentTable;
 
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;

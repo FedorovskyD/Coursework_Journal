@@ -1,20 +1,16 @@
 package gui;
 
-import Information.InformationFrame;
-import gui.dialogs.AboutDialog;
-import gui.dialogs.EmailConfigDialog;
-import gui.studentTable.StudentTableCellRender;
-import gui.studentTable.StudentTableModel;
-import gui.studentTable.StudentTable;
+import dialogs.AboutDialog;
+import dialogs.EmailConfigDialog;
 import database.dao.GroupDao;
 import database.dao.impl.GroupDaoImpl;
-import gui.studentTable.studentCard.StudentCardDialog;
+import dialogs.StudentCardDialog;
 import entity.Group;
 import entity.Lesson;
 import entity.Student;
-import gui.studentTable.studentTableListener.StudentTableKeyListener;
-import gui.studentTable.studentTableListener.StudentTableListSelectionListener;
-import gui.studentTable.studentTableListener.StudentTableMouseListener;
+import listeners.StudentTableKeyListener;
+import listeners.StudentTableListSelectionListener;
+import listeners.StudentTableMouseListener;
 import listeners.MainFrameListener;
 import utils.Constants;
 import utils.EmailSender;
@@ -34,7 +30,7 @@ import java.util.Objects;
 
 
 public class MainFrame extends JFrame {
-	private final JButton btnAddStudent, btnAddLab,
+	private final JButton jbtnAddStudent, jbtnAddLab,
 			btnAddGroup, btnDeleteGroup,btnDeleteLesson,btnSendByEmail;
 	protected StudentTable studentTable;
 	protected StudentCardDialog studentCardDialog;
@@ -93,10 +89,10 @@ public class MainFrame extends JFrame {
 		cmbGroupNumber.setMaximumSize(cmbGroupNumber.getPreferredSize());
 		// Создаем кнопки
 		JButton btnSaveTable = new JButton("Сохранить таблицу в файл");
-		btnAddStudent = new JButton("Добавить студента");
+		jbtnAddStudent = new JButton("Добавить студента");
 		btnAddGroup = new JButton("Добавить группу");
 		btnDeleteGroup = new JButton("Удалить группу");
-		btnAddLab = new JButton("Добавить занятие");
+		jbtnAddLab = new JButton("Добавить занятие");
 		btnDeleteLesson = new JButton("Удалить занятие");
 		btnSendByEmail = new JButton("Отправить на почту");
 		//Создаем combobox для выбора даты занятия
@@ -133,10 +129,10 @@ public class MainFrame extends JFrame {
 				.addGroup(groupLayout.createSequentialGroup()
 						.addComponent(scrollPane)
 						.addGroup(groupLayout.createParallelGroup()
-								.addComponent(btnAddStudent)
+								.addComponent(jbtnAddStudent)
 								.addComponent(btnAddGroup)
 								.addComponent(btnDeleteGroup)
-								.addComponent(btnAddLab)
+								.addComponent(jbtnAddLab)
 								.addComponent(btnDeleteLesson)
 								.addComponent(btnSaveTable)
 								.addComponent(btnSendByEmail))
@@ -160,10 +156,10 @@ public class MainFrame extends JFrame {
 								.addComponent(checkBox))
 						.addComponent(scrollPane))
 				.addGroup(groupLayout.createSequentialGroup()
-						.addComponent(btnAddStudent)
+						.addComponent(jbtnAddStudent)
 						.addComponent(btnAddGroup)
 						.addComponent(btnDeleteGroup)
-						.addComponent(btnAddLab)
+						.addComponent(jbtnAddLab)
 						.addComponent(btnDeleteLesson)
 						.addComponent(btnSendByEmail)
 						.addComponent(btnSaveTable))
@@ -180,10 +176,10 @@ public class MainFrame extends JFrame {
 		StudentTableListSelectionListener studentTableListSelectionListener = new StudentTableListSelectionListener(this);
 		StudentTableMouseListener studentTableMouseListener = new StudentTableMouseListener(this);
 		StudentTableKeyListener studentTableKeyListener = new StudentTableKeyListener(this);
-		btnAddStudent.addActionListener(mainFrameListener);
+		jbtnAddStudent.addActionListener(mainFrameListener);
 		btnAddGroup.addActionListener(mainFrameListener);
 		btnDeleteGroup.addActionListener(mainFrameListener);
-		btnAddLab.addActionListener(mainFrameListener);
+		jbtnAddLab.addActionListener(mainFrameListener);
 		studentTable.getSelectionModel().addListSelectionListener(mainFrameListener);
 		cmbGroupNumber.addActionListener(mainFrameListener);
 		radioBtnDec.addActionListener(mainFrameListener);
@@ -265,8 +261,8 @@ public class MainFrame extends JFrame {
 		return studentTable;
 	}
 
-	public JButton getBtnAddStudent() {
-		return btnAddStudent;
+	public JButton getJbtnAddStudent() {
+		return jbtnAddStudent;
 	}
 
 	public Student getCurrentStudent() {
@@ -291,7 +287,7 @@ public class MainFrame extends JFrame {
 
 
 	public JButton getBtnAddLesson() {
-		return btnAddLab;
+		return jbtnAddLab;
 	}
 
 	public JComboBox<Lesson> getCurrDateCmb() {

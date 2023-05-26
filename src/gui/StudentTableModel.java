@@ -1,4 +1,4 @@
-package gui.studentTable;
+package gui;
 
 import entity.*;
 import utils.Constants;

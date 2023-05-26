@@ -1,7 +1,7 @@
 package listeners;
 
 import database.dao.impl.LessonDaoImpl;
-import gui.dialogs.AddLessonDialog;
+import dialogs.AddLessonDialog;
 import entity.Group;
 import entity.Lesson;
 
@@ -18,10 +18,10 @@ public class AddLessonDialogListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == addLessonDialog.getAddButton()) {
-			Group group = ((Group) addLessonDialog.getGroupComboBox().getSelectedItem());
-			boolean isLecture = addLessonDialog.getRadioButtonLecture().isSelected();
-			boolean isHoliday = addLessonDialog.getIsHolidayRadioButton().isSelected();
+		if (e.getSource() == addLessonDialog.getJbtnAddLesson()) {
+			Group group = ((Group) addLessonDialog.getJcmbGroupNumber().getSelectedItem());
+			boolean isLecture = addLessonDialog.getJradiobtnLecture().isSelected();
+			boolean isHoliday = addLessonDialog.getJradionbtnIsHoliday().isSelected();
 
 			Lesson lesson = new Lesson(
 					addLessonDialog.getDate(), group.getId(), isLecture, isHoliday);
@@ -43,6 +43,8 @@ public class AddLessonDialogListener implements ActionListener {
 
 				addLessonDialog.getMainWindow().getStudentTable().requestFocus();
 			}
+		} else if (e.getSource() == addLessonDialog.getJbtnCancel()) {
+			addLessonDialog.dispose();
 		}
 	}
 }

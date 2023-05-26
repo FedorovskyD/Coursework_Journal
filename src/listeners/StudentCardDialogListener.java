@@ -1,6 +1,6 @@
 package listeners;
 
-import gui.studentTable.studentCard.StudentCardDialog;
+import dialogs.StudentCardDialog;
 import database.dao.impl.StudentDaoImpl;
 import entity.Student;
 

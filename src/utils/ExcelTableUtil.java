@@ -4,7 +4,7 @@ import entity.Absence;
 import entity.Grade;
 import entity.Lesson;
 import entity.Student;
-import gui.studentTable.StudentTableModel;
+import gui.StudentTableModel;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 

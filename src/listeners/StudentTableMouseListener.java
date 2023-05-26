@@ -1,8 +1,7 @@
-package gui.studentTable.studentTableListener;
+package listeners;
 
 import entity.Student;
 import gui.MainFrame;
-import gui.studentTable.StudentTableCellRender;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

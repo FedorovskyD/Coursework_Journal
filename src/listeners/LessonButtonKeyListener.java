@@ -1,14 +1,12 @@
-package gui.studentTable.studentCard.lessonButton;
+package listeners;
 
 import database.dao.impl.AbsenceDaoImpl;
-import database.dao.impl.GradeDaoImpl;
 import entity.Absence;
 import entity.Grade;
-import gui.studentTable.studentCard.StudentCardDialog;
-import utils.Constants;
+import dialogs.StudentCardDialog;
+import gui.LessonButton;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -110,6 +108,8 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			}
 			studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow().getStudentTable()
 					.getCellRect(studentCard.getMainWindow().getStudentTable().getSelectedRow(), selectedColumn, true));
+			/*Rectangle buttonRect = button.getBounds();
+			studentCard.getScrollPane().getViewport().scrollRectToVisible(buttonRect);*/
 			studentCard.getMainWindow().repaint();
 			nextLessonButton.requestFocus();
 		}

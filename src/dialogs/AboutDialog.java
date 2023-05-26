@@ -1,11 +1,7 @@
-package gui.dialogs;
-
-import gui.MainFrame;
+package dialogs;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 
 public class AboutDialog extends JDialog {
     public AboutDialog(JFrame parent) {

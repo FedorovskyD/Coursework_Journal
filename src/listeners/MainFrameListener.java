@@ -3,10 +3,10 @@ package listeners;
 import database.dao.impl.GroupDaoImpl;
 import entity.Group;
 import gui.MainFrame;
-import gui.dialogs.AddLessonDialog;
-import gui.dialogs.AddStudentDialog;
-import gui.dialogs.RemoveLessonDialog;
-import gui.studentTable.StudentTableCellRender;
+import dialogs.AddLessonDialog;
+import dialogs.AddStudentDialog;
+import dialogs.DeleteLessonDialog;
+import gui.StudentTableCellRender;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -24,7 +24,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == mainFrame.getBtnAddStudent()) {
+		if (e.getSource() == mainFrame.getJbtnAddStudent()) {
 			new AddStudentDialog(mainFrame).setVisible(true);
 		} else if (e.getSource() == mainFrame.getBtnAddGroup()) {
 			addNewGroup();
@@ -47,7 +47,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 				e.getSource() == mainFrame.getRadioBtnLab()) {
 			onRadioActionPerformed();
 		} else if (e.getSource()==mainFrame.getBtnDeleteLesson()) {
-			new RemoveLessonDialog(mainFrame);
+			new DeleteLessonDialog(mainFrame);
 		}
 
 	}

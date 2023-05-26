@@ -1,7 +1,7 @@
-package gui.studentTable.studentTableListener;
+package listeners;
 
 import gui.MainFrame;
-import gui.studentTable.StudentTable;
+import gui.StudentTable;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

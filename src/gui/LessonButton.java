@@ -1,4 +1,4 @@
-package gui.studentTable.studentCard.lessonButton;
+package gui;
 
 import entity.Absence;
 import entity.Grade;
