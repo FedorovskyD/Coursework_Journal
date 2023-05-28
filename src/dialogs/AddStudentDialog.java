@@ -35,7 +35,7 @@ public class AddStudentDialog extends JDialog {
 			JOptionPane.showMessageDialog(mainFrame,"Добавьте хотя бы одну группу для добавления студента!");
 			return;
 		}
-		photoPath = new File("img/default.jpg");
+		photoPath = null;
 		// Создание компонентов интерфейса
 		JLabel firstNameLabel = new JLabel("Имя:");
 		jTextFieldFirstName = new JTextField(20);
@@ -52,7 +52,10 @@ public class AddStudentDialog extends JDialog {
 		jTextFieldTelephone = new JTextField(20);
 		JLabel photoLabel = new JLabel("Путь к фото:");
 		jbtnChoosePhoto = new JButton("Выбрать файл");
-		jlblPhotoPath = new JLabel(photoPath.toString());
+		jlblPhotoPath = new JLabel();
+		if(photoPath!=null) {
+			jlblPhotoPath.setText(photoPath.toString());
+		}
 		jbtnAddStudent = new JButton("Добавить");
 		jbtnClose = new JButton("Закрыть");
 

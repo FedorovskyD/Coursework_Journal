@@ -89,7 +89,11 @@ public class StudentDaoImpl implements StudentDao {
 			statement.setLong(4, entity.getGroupId());
 			statement.setString(5, entity.getTelephone().trim());
 			statement.setString(6, entity.getEmail().trim());
-			statement.setString(7,entity.getPhotoPath().getPath().trim());
+			if(entity.getPhotoPath() != null) {
+				statement.setString(7, entity.getPhotoPath().getPath().trim());
+			}else {
+				statement.setString(7, null);
+			}
 			int rowsAffected = statement.executeUpdate();
 			ResultSet generatedKeys = statement.getGeneratedKeys();
 			if (generatedKeys.next()) {
@@ -112,7 +116,11 @@ public class StudentDaoImpl implements StudentDao {
 			ps.setLong(4, entity.getGroupId());
 			ps.setString(5, entity.getTelephone().trim());
 			ps.setString(6, entity.getEmail().trim());
-			ps.setString(7, entity.getPhotoPath().getPath().trim());
+			if(entity.getPhotoPath()!=null) {
+				ps.setString(7, entity.getPhotoPath().getPath().trim());
+			}else {
+				ps.setString(7, null);
+			}
 			ps.setLong(8, entity.getId());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
@@ -159,7 +167,11 @@ public class StudentDaoImpl implements StudentDao {
 			student.setLastName(rs.getString("LastName"));
 			student.setMiddleName(rs.getString("MiddleName"));
 			student.setEmail(rs.getString("Email"));
-			student.setPhotoPath(new File(rs.getString("PhotoPath")));
+			if(rs.getString("PhotoPath")!=null) {
+				student.setPhotoPath(new File(rs.getString("PhotoPath")));
+			}else {
+				student.setPhotoPath(null);
+			}
 			student.setTelephone(rs.getString("Telephone"));
 			student.setGroupId(rs.getInt("GroupID"));
 			student.setGradeList(GradeDaoImpl.getInstance().getGradesByStudent(student));

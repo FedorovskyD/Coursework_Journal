@@ -24,7 +24,7 @@ public class StudentCardDialogListener implements ActionListener {
 			int result = (int)optionPane.getValue();
 			if (result == JOptionPane.YES_OPTION) {
 				File photoPath = studentCard.getMainWindow().getCurrentStudentFromTable().getPhotoPath();
-				if (photoPath != null && !photoPath.equals(new File("photos/default.jpg"))) {
+				if (photoPath != null) {
 					if (photoPath.delete()) {
 						System.out.println("File deleted successfully.");
 					} else {

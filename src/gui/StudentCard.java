@@ -10,14 +10,12 @@ import listeners.LessonButtonMouseListener;
 import listeners.StudentCardDialogListener;
 import utils.PhotoUtils;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +46,7 @@ public class StudentCard extends JDialog {
 	private final JScrollPane jScrollPaneCalendar;
 	private final JPanel jpanelGrade;
 	private final List<JButton> gradeButtons;
+	private final ImageIcon defaultImageIcon;
 
 	/**
 	 * Конструктор класса, в котором инициализируются
@@ -118,6 +117,7 @@ public class StudentCard extends JDialog {
 		jlblPhoto.setMaximumSize(jlblPhoto.getPreferredSize());
 		gradeButtons = new ArrayList<>();
 		lessonButtons = new ArrayList<>();
+		defaultImageIcon = loadIcon();
 		// Создаем менеджер компоновки
 		GroupLayout groupLayout = new GroupLayout(infoPanel);
 		infoPanel.setLayout(groupLayout);
@@ -242,7 +242,7 @@ public class StudentCard extends JDialog {
 		setStudentInformation(student);
 		// Обновляем данные о посещаемости
 		boolean isLectureSelected = mainFrame.getJradiobtnLecture().isSelected();
-		if(mainFrame.getCurrGroup()!=null) {
+		if (mainFrame.getCurrGroup() != null) {
 			if (!isLectureSelected) {
 				updateAttendanceAndGrade(student, student.getLabAbsenceHours(), mainFrame.getCurrentGroup().getLabHours());
 			} else {
@@ -250,9 +250,13 @@ public class StudentCard extends JDialog {
 			}
 		}
 		// Загружаем фото
-		Image studentPhoto = PhotoUtils.getInstance().loadPhoto(student).getImage();
-		updateStudentPhoto(studentPhoto);
-
+		ImageIcon icon = PhotoUtils.getInstance().loadPhoto(student);
+		if (icon != null) {
+			Image studentPhoto = icon.getImage();
+			updateStudentPhoto(studentPhoto);
+		}else {
+			updateStudentPhoto(defaultImageIcon.getImage());
+		}
 		List<Lesson> lessons = isLectureSelected ? mainFrame.getCurrGroup().getLectures() : mainFrame.getCurrentGroup().getLabs();
 		updateLessonButtons(lessons);
 
@@ -435,16 +439,23 @@ public class StudentCard extends JDialog {
 			File selectedFile = fileChooser.getSelectedFile();
 			try {
 				PhotoUtils.getInstance().savePhoto(mainFrame.getCurrentStudentFromTable(), selectedFile);
-				BufferedImage image = ImageIO.read(mainFrame.getCurrentStudentFromTable().getPhotoPath());
-				// Масштабируем изображение и создаем иконку
-				ImageIcon icon = new ImageIcon(image.getScaledInstance(jlblPhoto.getWidth(), jlblPhoto.getHeight(), Image.SCALE_SMOOTH));
-				// Устанавливаем иконку изображения в JLabel
-				jlblPhoto.setIcon(icon);
+				ImageIcon icon = PhotoUtils.getInstance().loadPhoto(mainFrame.getCurrentStudentFromTable());
+				if (icon != null) {
+					Image image = icon.getImage();
+					int labelWidth = jlblPhoto.getWidth();
+					int labelHeight = jlblPhoto.getHeight();
+					Image scaledImage = image.getScaledInstance(labelWidth, labelHeight, Image.SCALE_SMOOTH);
+					ImageIcon scaledIcon = new ImageIcon(scaledImage);
+					jlblPhoto.setIcon(scaledIcon);
+				} else {
+					jlblPhoto.setIcon(null);
+				}
 			} catch (IOException ex) {
 				System.out.println("Не удалось сохранить фото");
 			}
 		}
 	}
+
 
 	/*
 	 * Создаем массив кнопок с оценками
@@ -502,6 +513,17 @@ public class StudentCard extends JDialog {
 			JOptionPane.showMessageDialog(mainFrame, "Нельзя выставить оценку в этот день");
 		}
 		currentLessonButton.requestFocus();
+	}
+
+	private ImageIcon loadIcon() {
+		ClassLoader classLoader = StudentCard.class.getClassLoader();
+		java.net.URL iconURL = classLoader.getResource("journal.jpg");
+		if (iconURL != null) {
+			return new ImageIcon(iconURL);
+		} else {
+			System.err.println("Не удалось загрузить иконку: ");
+			return null;
+		}
 	}
 
 	/**

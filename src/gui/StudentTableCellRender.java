@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- * проверен
+ * Класс отвечающий за отображение таблицы
  */
 public class StudentTableCellRender extends DefaultTableCellRenderer {
 	public StudentTableCellRender(int column) {
@@ -25,7 +25,7 @@ public class StudentTableCellRender extends DefaultTableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		// Определяем, нужно ли подсветить колонку
-		boolean isColumnHighlighted = isColumnHighlighted(column);
+		boolean isColumnHighlighted = isColumnHighlighted(column) && ((StudentTable)table).getStudentTableModel().getFIRST_LAB_COLUMN_INDEX()<=column;
 		if (column == 0) {
 			setFont(getFont().deriveFont(Font.ITALIC, 14)); // Меняем шрифт на курсив
 		} else {

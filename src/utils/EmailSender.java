@@ -1,6 +1,9 @@
 package utils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -10,27 +13,31 @@ import javax.mail.util.ByteArrayDataSource;
 import javax.swing.*;
 
 public class EmailSender {
-	private static final String EMAIL_PROPERTY_PATH = "email/email.properties";
+	private static final String CONFIG_FILE_NAME = "config.properties";
 	private static final String MAIL_USERNAME = "mail.username";
 	private static final String MAIL_PASSWORD = "mail.password";
 
 	public static void sendEmail(String recipients, String subject, String body, byte[] fileData, String fileName) {
 
 		// Загрузка свойств email
-		Properties emailProps = null;
+		Properties configProps = new Properties();
 		try {
-			emailProps = PropertyLoader.loadProperty(EMAIL_PROPERTY_PATH);
+			String jarPath = EmailSender.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			String jarDirectory = new File(jarPath).getParent();
+			File configFile = new File(jarDirectory, CONFIG_FILE_NAME);
+			InputStream inputStream = new FileInputStream(configFile);
+			configProps.load(inputStream);
 		} catch (IOException e) {
 			System.out.println("Ошибка при загрузке свойств email");
-			JOptionPane.showMessageDialog(null,"Не удалось загрузить файл: " + EMAIL_PROPERTY_PATH);
+			JOptionPane.showMessageDialog(null,"Не удалось загрузить файл: " + CONFIG_FILE_NAME);
 			return;
 		}
 
 		// Получение параметров подключения к почтовому серверу
-		String host = emailProps.getProperty("mail.smtp.host");
-		int port = Integer.parseInt(emailProps.getProperty("mail.smtp.port"));
-		String username = emailProps.getProperty(MAIL_USERNAME);
-		String password = emailProps.getProperty(MAIL_PASSWORD);
+		String host = configProps.getProperty("mail.smtp.host");
+		int port = Integer.parseInt(configProps.getProperty("mail.smtp.port"));
+		String username = configProps.getProperty(MAIL_USERNAME);
+		String password = configProps.getProperty(MAIL_PASSWORD);
 
 		// Создание свойств для настройки соединения
 		Properties props = new Properties();
@@ -83,7 +90,6 @@ public class EmailSender {
 			JOptionPane.showMessageDialog(null, "Письмо успешно отправлено!");
 		} catch (AuthenticationFailedException e) {
 			JOptionPane.showMessageDialog(null, "Ошибка аутентификации! Проверьте учетные данные.");
-			e.printStackTrace();
 		} catch (MessagingException e) {
 			JOptionPane.showMessageDialog(null, "Ошибка отправки письма!");
 			e.printStackTrace();
