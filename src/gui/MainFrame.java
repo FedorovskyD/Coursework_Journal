@@ -111,6 +111,8 @@ public class MainFrame extends JFrame {
 		//Создаем таблицу для отображения списка студентов
 		studentTable = new StudentTable(getCurrGroup(), jradiobtnLecture.isSelected(), getJcmbCurrentDate());
 		studentTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		//Создаем карточку для отображения информации о студенте
+		studentCard = new StudentCard(this, "Карточка студента");
 		refreshStudentTable();
 		JScrollPane scrollPane = new JScrollPane(studentTable);
 		//Задаем расположение раннее заданным компонентам
@@ -172,8 +174,6 @@ public class MainFrame extends JFrame {
 						.addComponent(btnSendByEmail)
 						.addComponent(btnSaveTable))
 		);
-		//Создаем карточку для отображения информации о студенте
-		studentCard = new StudentCard(this, "Карточка студента");
 		// Добавление слушателей
 		addWindowListener(new WindowAdapter() {
 			public void windowActivated(WindowEvent e) {
@@ -415,6 +415,7 @@ public class MainFrame extends JFrame {
 			if (student != null) {
 				studentTable.setRowSelectionInterval(0, 0);
 				currentStudent = student;
+				studentCard.setVisible(false);
 			}
 		}
 

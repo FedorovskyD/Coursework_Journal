@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class AddStudentDialogListener implements ActionListener {
-	private AddStudentDialog addStudentDialog;
+	private final AddStudentDialog addStudentDialog;
 
 	public AddStudentDialogListener(AddStudentDialog addStudentDialog) {
 		this.addStudentDialog = addStudentDialog;
@@ -47,6 +47,7 @@ public class AddStudentDialogListener implements ActionListener {
 			addStudentDialog.getMainWindow().getCurrentGroup().getStudents().add(student);
 			addStudentDialog.getMainWindow().refreshStudentTable();
 			addStudentDialog.getMainWindow().getStudentTable().requestFocus();
+			addStudentDialog.getMainWindow().getJDialogStudentCard().setVisible(false);
 		} else if (e.getSource() == addStudentDialog.getJbtnChoosePhoto()) {
 			JFileChooser fileChooser = new JFileChooser();
 			int result = fileChooser.showOpenDialog(addStudentDialog);

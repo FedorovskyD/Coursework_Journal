@@ -34,9 +34,10 @@ public class StudentTableListSelectionListener implements ListSelectionListener 
 					}
 				} else {
 					Student selectedStudent = (Student) value;
-					boolean isVisible = mainFrame.getCurrentStudent() != selectedStudent
+					boolean isVisible = mainFrame.getCurrentStudent()!=null
 							&& mainFrame.getCurrentStudentFromTable() != null
-							&& mainFrame.getCurrentStudentFromTable().getGroupId() == selectedStudent.getGroupId();
+							&& mainFrame.getCurrentStudentFromTable().getGroupId() == mainFrame.getCurrentStudent().getGroupId()
+							&& mainFrame.getCurrentStudent() != selectedStudent;
 					if (isVisible) {
 						if (column > getColumnOffset()) {
 							mainFrame.getJcmbCurrentDate().setSelectedIndex(column - getColumnOffset() - 1);

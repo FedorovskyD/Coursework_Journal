@@ -16,9 +16,9 @@ import java.util.List;
  */
 public class StudentTableModel extends AbstractTableModel {
 	private static final int STUDENT_COLUMN_INDEX = 0;//Индекс колонки с информацие о студенете
-	private int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
+	private final int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
 	private final int ATTENDANCE_PERCENTAGE_COLUMN_INDEX = 1;// Индекс колонки с информацией о проценте посещаемости
-	private int FIRST_LAB_COLUMN_INDEX;//Индекс с колонки, с которой начинаются даты занятий
+	private final int FIRST_LAB_COLUMN_INDEX;//Индекс с колонки, с которой начинаются даты занятий
 	public static final int COUNT_SEPARATOR_ROW = 4;//Количество строк после, которых вставляется пустая строка
 	private List<Student> students;//Список студентов
 	private List<Lesson> lessons;//Список занятий
