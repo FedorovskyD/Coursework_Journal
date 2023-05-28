@@ -25,12 +25,12 @@ public class PhotoUtils {
 	public void savePhoto(Student student, File photoFile) throws IOException {
 		String photoPath = PHOTO_DIR + student.getId() + ".jpg";
 		Files.copy(photoFile.toPath(), Paths.get(photoPath), StandardCopyOption.REPLACE_EXISTING);
-		student.setPhotoPath(photoPath);
+		student.setPhotoPath(new File(photoPath));
 	}
 
 	public ImageIcon loadPhoto(Student student) {
-		String photoPath = student.getPhotoPath();
-		return new ImageIcon(photoPath);
+		File photoPath = student.getPhotoPath();
+		return new ImageIcon(photoPath.getPath());
 	}
 }
 

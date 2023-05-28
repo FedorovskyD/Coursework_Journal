@@ -48,15 +48,15 @@ public class DeleteLessonDialog extends JDialog {
 	 */
 	private void initComponents() {
 		jcmbGroupNumber = new JComboBox<>(new DefaultComboBoxModel<>(mainFrame.getGroups().toArray(new Group[0])));
-		jcmbGroupNumber.setSelectedIndex(mainFrame.getCmbGroupNumber().getSelectedIndex());
+		jcmbGroupNumber.setSelectedIndex(mainFrame.getJcmbGroupNumber().getSelectedIndex());
 		jcmbGroupNumber.setMaximumSize(new Dimension(100, 30));
 
 		jcmbLesson = new JComboBox<>();
 		jcmbLesson.setMaximumSize(new Dimension(100, 30));
 
 		ButtonGroup optionGroup = new ButtonGroup();
-		jradiobtnIsLecture = new JRadioButton("Лекции", mainFrame.getRadioBtnLecture().isSelected());
-		jradiobtnIsLab = new JRadioButton("Лабораторные", mainFrame.getRadioBtnLab().isSelected());
+		jradiobtnIsLecture = new JRadioButton("Лекции", mainFrame.getJradiobtnLecture().isSelected());
+		jradiobtnIsLab = new JRadioButton("Лабораторные", mainFrame.getJradiobtnLab().isSelected());
 		refreshLessonCmb(jradiobtnIsLecture.isSelected());
 		optionGroup.add(jradiobtnIsLab);
 		optionGroup.add(jradiobtnIsLecture);
@@ -65,7 +65,7 @@ public class DeleteLessonDialog extends JDialog {
 		panel.add(jradiobtnIsLab);
 		panel.add(jradiobtnIsLecture);
 
-		jcmbLesson.setSelectedIndex(mainFrame.getCurrDateCmb().getSelectedIndex());
+		jcmbLesson.setSelectedIndex(mainFrame.getJcmbCurrentDate().getSelectedIndex());
 
 		jbtDeleteLesson = new JButton("Удалить");
 		jbtnClose = new JButton("Закрыть");
@@ -118,7 +118,7 @@ public class DeleteLessonDialog extends JDialog {
 			refreshLessonCmb(jradiobtnIsLecture.isSelected());
 		});
 		jcmbLesson.addActionListener(e -> {
-			mainFrame.getCurrDateCmb().setSelectedItem(jcmbLesson.getSelectedItem());
+			mainFrame.getJcmbCurrentDate().setSelectedItem(jcmbLesson.getSelectedItem());
 		});
 		jbtnClose.addActionListener(e -> dispose());
 	}

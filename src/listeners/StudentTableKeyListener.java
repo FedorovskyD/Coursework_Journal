@@ -29,18 +29,18 @@ public class StudentTableKeyListener extends KeyAdapter {
 				if (nextRow >= 0 && nextRow < studentTable.getRowCount()) {
 					int firstIndex = mainFrame.getStudentTable().getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
 					studentTable.setRowSelectionInterval(nextRow, nextRow);
-					studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, mainFrame.getCurrDateCmb().getSelectedIndex() + firstIndex, true));
+					studentTable.scrollRectToVisible(studentTable.getCellRect(nextRow, mainFrame.getJcmbCurrentDate().getSelectedIndex() + firstIndex, true));
 					studentTable.repaint();
 				}
 			}
 		} else if (keyCode == KeyEvent.VK_LEFT || keyCode == KeyEvent.VK_RIGHT) {
-			int itemCount = mainFrame.getCurrDateCmb().getItemCount();
-			int selectedIndex = mainFrame.getCurrDateCmb().getSelectedIndex();
+			int itemCount = mainFrame.getJcmbCurrentDate().getItemCount();
+			int selectedIndex = mainFrame.getJcmbCurrentDate().getSelectedIndex();
 			if (keyCode == KeyEvent.VK_LEFT && selectedIndex > 0) {
-				mainFrame.getCurrDateCmb().setSelectedIndex(selectedIndex - 1);
+				mainFrame.getJcmbCurrentDate().setSelectedIndex(selectedIndex - 1);
 				studentTable.scrollRectToVisible(studentTable.getCellRect(studentTable.getSelectedRow(), selectedIndex - 2, true));
 			} else if (keyCode == KeyEvent.VK_RIGHT && selectedIndex < itemCount - 1) {
-				mainFrame.getCurrDateCmb().setSelectedIndex(selectedIndex + 1);
+				mainFrame.getJcmbCurrentDate().setSelectedIndex(selectedIndex + 1);
 				studentTable.scrollRectToVisible(studentTable.getCellRect(studentTable.getSelectedRow(), selectedIndex + 4, true));
 			}
 			mainFrame.repaint();

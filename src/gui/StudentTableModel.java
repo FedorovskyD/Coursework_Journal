@@ -11,29 +11,31 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * проверен
+ * Модель таблицы для отображения
+ * экземпляров класса Student
  */
 public class StudentTableModel extends AbstractTableModel {
 	private static final int STUDENT_COLUMN_INDEX = 0;//Индекс колонки с информацие о студенете
-	private final int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
+	private  int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
 	private final int ATTENDANCE_PERCENTAGE_COLUMN_INDEX = 1;// Индекс колонки с информацией о проценте посещаемости
-	private final int FIRST_LAB_COLUMN_INDEX;//Индекс с колонки, с которой начинаются даты занятий
+	private  int FIRST_LAB_COLUMN_INDEX;//Индекс с колонки, с которой начинаются даты занятий
 	public static final int COUNT_SEPARATOR_ROW = 4;//Количество строк после, которых вставляется пустая строка
-	private final List<Student> students;//Список студентов
-	private final List<Lesson> lessons;//Список занятий
-	private final Group group;// Группа студентов
-	private final boolean isLecture;// Являются ли занятия лекциями
+	private  List<Student> students;//Список студентов
+	private  List<Lesson> lessons;//Список занятий
+	private  Group group;// Группа студентов
+	private  boolean isLecture;// Являются ли занятия лекциями
 
 	/**
 	 * Конструктор для создания новой модели таблицы
 	 *
-	 * @param group     - группа, которую будет отображать таблица
-	 * @param isLecture - устанавливается true, если таблица будет
+	 * @param group     группа, которую будет отображать таблица
+	 * @param isLecture устанавливается true, если таблица будет
 	 *                  отображать статистику лекционных занятий,
 	 *                  если false - лабораторных занятий
 	 */
 	public StudentTableModel(Group group, boolean isLecture) {
 		//Получаем список студентов из группы
+		if(group==null)return;
 		students = group.getStudents();
 		//Заполняем список lessons, в зависимости от типа занятий, которые отображает таблица
 		if (isLecture) {
@@ -49,6 +51,11 @@ public class StudentTableModel extends AbstractTableModel {
 		this.isLecture = isLecture;
 	}
 
+	/**
+	 * Возвращает количество строк в таблице.
+	 *
+	 * @return Количество строк в таблице
+	 */
 	@Override
 	public int getRowCount() {
 		int rowCount = students.size();
@@ -59,12 +66,25 @@ public class StudentTableModel extends AbstractTableModel {
 		return rowCount;
 	}
 
+	/**
+	 * Возвращает количество столбцов в таблице.
+	 *
+	 * @return Количество столбцов в таблице
+	 */
 	@Override
 	public int getColumnCount() {
 		//Вычисляем количество столбцов
+		if(lessons == null)return 0;
 		return lessons.size() + FIRST_LAB_COLUMN_INDEX;
 	}
 
+	/**
+	 * Возращает значение в ячейке таблицыы
+	 *
+	 * @param rowIndex    строка в которой находся возвращаемое значение
+	 * @param columnIndex столбец в которой находся возвращаемое значение
+	 * @return значение в ячейке таблицы
+	 */
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		//Проверяем строку, является ли она разделителем
@@ -159,6 +179,12 @@ public class StudentTableModel extends AbstractTableModel {
 		return lblTableCell;
 	}
 
+	/**
+	 * Возвращает заголовок столбца по индексу
+	 *
+	 * @param columnIndex индекс столбец
+	 * @return заголовок столбца
+	 */
 	@Override
 	public String getColumnName(int columnIndex) {
 		if (columnIndex == STUDENT_COLUMN_INDEX) {
@@ -177,7 +203,12 @@ public class StudentTableModel extends AbstractTableModel {
 		return "";
 	}
 
-
+	/**
+	 * Возвращает тип данных хранимый в столбце
+	 *
+	 * @param columnIndex индекс столбца
+	 * @return тип данных
+	 */
 	@Override
 	public Class<?> getColumnClass(int columnIndex) {
 		if (columnIndex == STUDENT_COLUMN_INDEX) {
@@ -193,6 +224,13 @@ public class StudentTableModel extends AbstractTableModel {
 		return JLabel.class;
 	}
 
+	/**
+	 * Возвращает индекс строки, в которой отображается
+	 * требуемый студент
+	 *
+	 * @param student требуемый студент
+	 * @return индекс строки
+	 */
 	public int getRowIndex(Student student) {
 		int studentIndex = students.indexOf(student);
 		if (studentIndex == -1) {
@@ -253,26 +291,56 @@ public class StudentTableModel extends AbstractTableModel {
 		fireTableDataChanged();
 	}
 
+	/**
+	 * Возвращает список студентов.
+	 *
+	 * @return список студентов
+	 */
 	public List<Student> getStudents() {
 		return students;
 	}
 
+	/**
+	 * Возвращает список занятий.
+	 *
+	 * @return список занятий
+	 */
 	public List<Lesson> getLessons() {
 		return lessons;
 	}
 
+	/**
+	 * Возвращает номер группы.
+	 *
+	 * @return номер группы
+	 */
 	public String getGroupNumber() {
 		return group.getName();
 	}
 
+	/**
+	 * Проверяет, является ли текущее занятие лекцией.
+	 *
+	 * @return true, если текущее занятие - лекция, иначе false
+	 */
 	public boolean isLecture() {
 		return isLecture;
 	}
 
+	/**
+	 * Возвращает индекс первого столбца лабораторных работ.
+	 *
+	 * @return индекс первого столбца лабораторных работ
+	 */
 	public int getFIRST_LAB_COLUMN_INDEX() {
 		return FIRST_LAB_COLUMN_INDEX;
 	}
 
+	/**
+	 * Возвращает объект группы.
+	 *
+	 * @return объект группы
+	 */
 	public Group getGroup() {
 		return group;
 	}

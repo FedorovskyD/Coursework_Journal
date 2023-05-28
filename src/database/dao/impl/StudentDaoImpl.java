@@ -4,6 +4,7 @@ import database.ConnectionFactory;
 import database.dao.StudentDao;
 import entity.Student;
 
+import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
 public class StudentDaoImpl implements StudentDao {
 
 	private static final String SQL_SELECT_ALL_STUDENTS_BY_GROUP = "SELECT * FROM student WHERE GroupID=?";
-	private static final String SQl_INSERT_STUDENT = "INSERT INTO student (LastName,FirstName, MiddleName, GroupID ,Telephone, Email) VALUES ( ?, ?, ?,?, ?, ?)";
+	private static final String SQl_INSERT_STUDENT = "INSERT INTO student (LastName,FirstName, MiddleName, GroupID ,Telephone, Email,PhotoPath) VALUES ( ?, ?, ?,?, ?, ?,?)";
 	private static final String SQL_SELECT_ALL_STUDENTS = "SELECT * FROM student";
 	private static final String SQL_SELECT_STUDENT_BY_ID = "SELECT * FROM student WHERE ID = ?";
 	private static final String SQL_UPDATE_STUDENT = "UPDATE student SET LastName=?, FirstName=?, MiddleName=?,GroupID=?," +
@@ -52,7 +53,7 @@ public class StudentDaoImpl implements StudentDao {
 					student.setMiddleName(middleName);
 					student.setTelephone(telephone);
 					student.setEmail(email);
-					student.setPhotoPath(photoPath);
+					student.setPhotoPath(new File(photoPath));
 				}
 			} catch (SQLException ex) {
 				throw new RuntimeException(ex);
@@ -82,12 +83,13 @@ public class StudentDaoImpl implements StudentDao {
 		long id = Long.MAX_VALUE;
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement statement = connection.prepareStatement(SQl_INSERT_STUDENT, Statement.RETURN_GENERATED_KEYS)) {
-			statement.setString(1, entity.getLastName());
-			statement.setString(2, entity.getFirstName());
-			statement.setString(3, entity.getMiddleName());
+			statement.setString(1, entity.getLastName().trim());
+			statement.setString(2, entity.getFirstName().trim());
+			statement.setString(3, entity.getMiddleName().trim());
 			statement.setLong(4, entity.getGroupId());
-			statement.setString(5, entity.getTelephone());
-			statement.setString(6, entity.getEmail());
+			statement.setString(5, entity.getTelephone().trim());
+			statement.setString(6, entity.getEmail().trim());
+			statement.setString(7,entity.getPhotoPath().getPath().trim());
 			int rowsAffected = statement.executeUpdate();
 			ResultSet generatedKeys = statement.getGeneratedKeys();
 			if (generatedKeys.next()) {
@@ -104,13 +106,13 @@ public class StudentDaoImpl implements StudentDao {
 	public boolean update(Student entity) {
 		try (Connection connection = ConnectionFactory.getConnection();
 		     PreparedStatement ps = connection.prepareStatement(SQL_UPDATE_STUDENT)) {
-			ps.setString(1, entity.getLastName());
-			ps.setString(2, entity.getFirstName());
-			ps.setString(3, entity.getMiddleName());
+			ps.setString(1, entity.getLastName().trim());
+			ps.setString(2, entity.getFirstName().trim());
+			ps.setString(3, entity.getMiddleName().trim());
 			ps.setLong(4, entity.getGroupId());
-			ps.setString(5, entity.getTelephone());
-			ps.setString(6, entity.getEmail());
-			ps.setString(7, entity.getPhotoPath());
+			ps.setString(5, entity.getTelephone().trim());
+			ps.setString(6, entity.getEmail().trim());
+			ps.setString(7, entity.getPhotoPath().getPath().trim());
 			ps.setLong(8, entity.getId());
 			return ps.executeUpdate() > 0;
 		} catch (SQLException e) {
@@ -157,7 +159,7 @@ public class StudentDaoImpl implements StudentDao {
 			student.setLastName(rs.getString("LastName"));
 			student.setMiddleName(rs.getString("MiddleName"));
 			student.setEmail(rs.getString("Email"));
-			student.setPhotoPath(rs.getString("PhotoPath"));
+			student.setPhotoPath(new File(rs.getString("PhotoPath")));
 			student.setTelephone(rs.getString("Telephone"));
 			student.setGroupId(rs.getInt("GroupID"));
 			student.setGradeList(GradeDaoImpl.getInstance().getGradesByStudent(student));

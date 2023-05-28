@@ -32,19 +32,19 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 			deleteGroup();
 		} else if (e.getSource() == mainFrame.getBtnAddLesson()) {
 			new AddLessonDialog(mainFrame).setVisible(true);
-		} else if (e.getSource() == mainFrame.getCmbGroupNumber()) {
+		} else if (e.getSource() == mainFrame.getJcmbGroupNumber()) {
 			onCmbGroupNumberActionPerformed();
-		} else if (e.getSource() == mainFrame.getCurrDateCmb()) {
+		} else if (e.getSource() == mainFrame.getJcmbCurrentDate()) {
 			mainFrame.getStudentTable().setDefaultRenderer(Object.class,
-					new StudentTableCellRender(mainFrame.getCurrDateCmb().getSelectedIndex()+(mainFrame.getRadioBtnLecture().isSelected()?2:3)));
+					new StudentTableCellRender(mainFrame.getJcmbCurrentDate().getSelectedIndex()+(mainFrame.getJradiobtnLecture().isSelected()?2:3)));
 			mainFrame.getStudentTable().repaint();
 			mainFrame.repaint();
-		} else if (e.getSource() == mainFrame.getRadioBtnDec() ||
-				e.getSource() == mainFrame.getRadioBtnInc() ||
-				e.getSource() == mainFrame.getCmbSort()) {
+		} else if (e.getSource() == mainFrame.getJradiobtnDec() ||
+				e.getSource() == mainFrame.getJradiobtnInc() ||
+				e.getSource() == mainFrame.getJcmbSortOption()) {
 			onSortActionPerformed();
-		} else if (e.getSource() == mainFrame.getRadioBtnLecture() ||
-				e.getSource() == mainFrame.getRadioBtnLab()) {
+		} else if (e.getSource() == mainFrame.getJradiobtnLecture() ||
+				e.getSource() == mainFrame.getJradiobtnLab()) {
 			onRadioActionPerformed();
 		} else if (e.getSource()==mainFrame.getBtnDeleteLesson()) {
 			new DeleteLessonDialog(mainFrame);
@@ -67,7 +67,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 
 	private void deleteGroup() {
 		Group[] groups = mainFrame.getGroups().toArray(new Group[0]);
-		int index = mainFrame.getCmbGroupNumber().getSelectedIndex();
+		int index = mainFrame.getJcmbGroupNumber().getSelectedIndex();
 		Group selectedGroup = (Group) JOptionPane.showInputDialog(
 				mainFrame,
 				"Выберите группу для удаления:",
@@ -100,7 +100,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 		int indexOfFirstLesson = mainFrame.getStudentTable().getStudentTableModel().getFIRST_LAB_COLUMN_INDEX();
 		mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(indexOfFirstLesson));
 		mainFrame.getJDialogStudentCard().getLabButtons().clear();
-		mainFrame.getJDialogStudentCard().updateStudentCard(mainFrame.getCurrStudent());
+		mainFrame.getJDialogStudentCard().updateStudentCard(mainFrame.getCurrentStudentFromTable());
 		mainFrame.getJDialogStudentCard().revalidate();
 		mainFrame.getJDialogStudentCard().repaint();
 		mainFrame.getStudentTable().repaint();
@@ -113,29 +113,29 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 	}
 
 	public void onRadioActionPerformed() {
-		if (mainFrame.getRadioBtnLecture().isSelected()) {
-			mainFrame.getJDialogStudentCard().getScrollPane().setBorder(BorderFactory.createTitledBorder("Лекции"));
-			mainFrame.getJDialogStudentCard().getTxtAverageGrade().setText(" ");
-			mainFrame.getJDialogStudentCard().getGradePanel().setVisible(false);
+		if (mainFrame.getJradiobtnLecture().isSelected()) {
+			mainFrame.getJDialogStudentCard().getJScrollPaneCalendar().setBorder(BorderFactory.createTitledBorder("Лекции"));
+			mainFrame.getJDialogStudentCard().getJlblAverageGradeValue().setText(" ");
+			mainFrame.getJDialogStudentCard().getJpanelGrade().setVisible(false);
 		} else {
-			mainFrame.getJDialogStudentCard().getScrollPane().setBorder(BorderFactory.createTitledBorder("Лабораторные"));
-			mainFrame.getJDialogStudentCard().getGpaLabel().setText("Средний балл: ");
-			mainFrame.getJDialogStudentCard().getGradePanel().setVisible(true);
+			mainFrame.getJDialogStudentCard().getJScrollPaneCalendar().setBorder(BorderFactory.createTitledBorder("Лабораторные"));
+			mainFrame.getJDialogStudentCard().getJlblAverageMark().setText("Средний балл: ");
+			mainFrame.getJDialogStudentCard().getJpanelGrade().setVisible(true);
 		}
 
-		mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(mainFrame.getRadioBtnLecture().isSelected()?2:3));
+		mainFrame.getStudentTable().setDefaultRenderer(Object.class, new StudentTableCellRender(mainFrame.getJradiobtnLecture().isSelected()?2:3));
 		mainFrame.getStudentTable().repaint();
 		mainFrame.getJDialogStudentCard().getLabButtons().clear();
-		mainFrame.getJDialogStudentCard().updateStudentCard(mainFrame.getCurrentStudent());
+		mainFrame.getJDialogStudentCard().updateStudentCard(mainFrame.getCurrentStudentFromTable());
 
 		if (mainFrame.getJDialogStudentCard().isVisible()) {
-			mainFrame.getJDialogStudentCard().getCurrLessonButton().requestFocus();
+			mainFrame.getJDialogStudentCard().getCurrentLessonButton().requestFocus();
 		}
 
 		mainFrame.refreshDateCmb();
 		mainFrame.refreshSortCmb();
 		mainFrame.refreshStudentTable();
-		mainFrame.getJDialogStudentCard().getGradePanel().repaint();
+		mainFrame.getJDialogStudentCard().getJpanelGrade().repaint();
 		mainFrame.getStudentTable().requestFocus();
 	}
 

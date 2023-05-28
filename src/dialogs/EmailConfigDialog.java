@@ -4,9 +4,7 @@ import utils.PropertyLoader;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 /**
@@ -17,7 +15,7 @@ public class EmailConfigDialog extends JDialog {
 	private JTextField jTextFieldUsername;
 	private JPasswordField jPasswordFieldPassword;
 	private JButton jbtnSave;
-	private static final String PROPERTY_FILE_PATH = "resources/email/email.properties";
+	private static final String CONFIG_FILE_NAME = "config.properties";
 	private static final String PROPERTY_USERNAME = "mail.username";
 	private static final String PROPERTY_PASSWORD = "mail.password";
 
@@ -29,7 +27,6 @@ public class EmailConfigDialog extends JDialog {
 	public EmailConfigDialog(JFrame parent) {
 		super(parent, "Настройки почты отправителя", true);
 		initComponents();
-		setupListeners();
 	}
 
 	/**
@@ -38,26 +35,29 @@ public class EmailConfigDialog extends JDialog {
 	private void initComponents() {
 		Properties properties = null;
 		try {
-			properties = PropertyLoader.loadProperty(PROPERTY_FILE_PATH);
+			String jarPath = EmailConfigDialog.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			String jarDirectory = new File(jarPath).getParent();
+			File configFile = new File(jarDirectory, CONFIG_FILE_NAME);
+			InputStream inputStream = new FileInputStream(configFile);
+			properties.load(inputStream);
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Не удалось загрузить файл: " + PROPERTY_FILE_PATH);
+			JOptionPane.showMessageDialog(null, "Не удалось загрузить файл: " + CONFIG_FILE_NAME);
+			return;
 		}
 
 		setSize(300, 150);
 		setLayout(new GridLayout(4, 2));
 
-		if (properties != null) {
-			add(new JLabel("Почта:"));
-			jTextFieldUsername = new JTextField(20);
-			jTextFieldUsername.setText(properties.getProperty(PROPERTY_USERNAME));
-			add(jTextFieldUsername);
+		add(new JLabel("Почта:"));
+		jTextFieldUsername = new JTextField(20);
+		jTextFieldUsername.setText(properties.getProperty(PROPERTY_USERNAME));
+		add(jTextFieldUsername);
 
-			add(new JLabel("Пароль:"));
-			jPasswordFieldPassword = new JPasswordField(20);
-			jPasswordFieldPassword.setEchoChar('*');
-			jPasswordFieldPassword.setText(properties.getProperty(PROPERTY_PASSWORD));
-			add(jPasswordFieldPassword);
-		}
+		add(new JLabel("Пароль:"));
+		jPasswordFieldPassword = new JPasswordField(20);
+		jPasswordFieldPassword.setEchoChar('*');
+		jPasswordFieldPassword.setText(properties.getProperty(PROPERTY_PASSWORD));
+		add(jPasswordFieldPassword);
 
 		add(new JPanel());
 		JCheckBox showPasswordCheckBox = new JCheckBox("Показать пароль");
@@ -72,7 +72,7 @@ public class EmailConfigDialog extends JDialog {
 			JCheckBox checkBox = (JCheckBox) e.getSource();
 			jPasswordFieldPassword.setEchoChar(checkBox.isSelected() ? '\0' : '*');
 		});
-
+		setupListeners();
 		pack();
 	}
 
@@ -83,8 +83,8 @@ public class EmailConfigDialog extends JDialog {
 		jbtnSave.addActionListener(e -> {
 			String newUsername = jTextFieldUsername.getText();
 			char[] newCharPassword = jPasswordFieldPassword.getPassword();
-			updateProperty(PROPERTY_USERNAME, newUsername);
-			updateProperty(PROPERTY_PASSWORD, new String(newCharPassword));
+			//updateProperty(PROPERTY_USERNAME, newUsername);
+			//updateProperty(PROPERTY_PASSWORD, new String(newCharPassword));
 			dispose();
 			JOptionPane.showMessageDialog(this, "Данные почты обновлены!");
 		});
@@ -96,20 +96,23 @@ public class EmailConfigDialog extends JDialog {
 	 * @param key      ключ свойства
 	 * @param newValue новое значение свойства
 	 */
-	private void updateProperty(String key, String newValue) {
-		Properties properties = new Properties();
-		try (FileInputStream in = new FileInputStream(PROPERTY_FILE_PATH)) {
-			properties.load(in);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Не удалось загрузить данные из файла: " + PROPERTY_FILE_PATH);
-		}
-
-		properties.setProperty(key, newValue);
-
-		try (FileOutputStream out = new FileOutputStream(PROPERTY_FILE_PATH)) {
-			properties.store(out, null);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "Не удалось сохранить файл: " + PROPERTY_FILE_PATH);
-		}
-	}
+//	private void updateProperty(String key, String newValue) {
+//		Properties properties = null;
+//		try {
+//			//properties = PropertyLoader.loadProperty(PROPERTY_FILE_PATH);
+//		} catch (IOException e) {
+//			JOptionPane.showMessageDialog(null, "Не удалось загрузить данные из файла: " + PROPERTY_FILE_PATH);
+//		}
+//		if (properties != null) {
+//			properties.setProperty(key, newValue);
+//		}
+//
+//		//try (FileOutputStream out = new FileOutputStream(PROPERTY_FILE_PATH)) {
+//		//	if (properties != null) {
+//		//		properties.store(out, null);
+//			}
+//		//} catch (IOException e) {
+//		//	JOptionPane.showMessageDialog(null, "Не удалось сохранить файл: " + PROPERTY_FILE_PATH);
+//		//}
+//	}
 }

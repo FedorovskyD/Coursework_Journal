@@ -34,8 +34,8 @@ public class AddLessonDialog extends JDialog {
 		JLabel jlblHoliday = new JLabel("Праздничный день:");
 		JLabel jlblDate = new JLabel("Дата:");
 		JLabel jlblGroup = new JLabel("Группа:");
-		JRadioButton jradiobtnLab = new JRadioButton("Лабораторная", mainFrame.getRadioBtnLab().isSelected());
-		jradiobtnLecture = new JRadioButton("Лекция", mainFrame.getRadioBtnLecture().isSelected());
+		JRadioButton jradiobtnLab = new JRadioButton("Лабораторная", mainFrame.getJradiobtnLab().isSelected());
+		jradiobtnLecture = new JRadioButton("Лекция", mainFrame.getJradiobtnLecture().isSelected());
 		ButtonGroup buttonGroupLessonType = new ButtonGroup();
 		ButtonGroup buttonGroupHoliday = new ButtonGroup();
 		buttonGroupLessonType.add(jradiobtnLab);

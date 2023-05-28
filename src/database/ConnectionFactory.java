@@ -1,7 +1,6 @@
 package database;
 
-import utils.PropertyLoader;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,29 +10,43 @@ import java.util.Properties;
 
 
 public class ConnectionFactory {
-	private static final String PROPERTIES_FILE = "resources/database/db.properties";
-	private static final String URL_PROPERTY = "db.url";
+	private static final String PROPERTIES_FILE = "config.properties";
+	private static final String DATABASE_NAME_PROPERTY = "db.name";
+	private static final String HOST_PROPERTY = "db.host";
+	private static final String PORT_PROPERTY = "db.port";
 	private static final String USERNAME_PROPERTY = "db.username";
 	private static final String PASSWORD_PROPERTY = "db.password";
-	private static final String url;
-	private static final String username;
-	private static final String password;
-
-	static {
-		Properties props = null;
-		try {
-			props = PropertyLoader.loadProperty(PROPERTIES_FILE);
-		} catch (IOException e) {
-			System.out.println("Не удалось загрузить файл бд");
-			throw new RuntimeException(e);
-		}
-		url = props.getProperty(URL_PROPERTY);
-		username = props.getProperty(USERNAME_PROPERTY);
-		password = props.getProperty(PASSWORD_PROPERTY);
-	}
+	private static Properties props;
 
 	public static Connection getConnection() throws SQLException {
+		if(props == null) {
+			props = new Properties();
+			FileInputStream fileInputStream;
+			try {
+				String jarPath = ConnectionFactory.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				String jarDirectory = new File(jarPath).getParent();
+				String filePath = jarDirectory + File.separator + PROPERTIES_FILE;
+				fileInputStream = new FileInputStream(filePath);
+				props.load(fileInputStream);
+			} catch (IOException e) {
+				System.out.println("Не удалось загрузить файл бд");
+			}
+		}
+		String databaseName = props.getProperty(DATABASE_NAME_PROPERTY);
+		String host = props.getProperty(HOST_PROPERTY);
+		String port = props.getProperty(PORT_PROPERTY);
+		String username = props.getProperty(USERNAME_PROPERTY);
+		String password = props.getProperty(PASSWORD_PROPERTY);
+		String url = "jdbc:mysql://" + host + ":" + port + "/" + databaseName;
 		return DriverManager.getConnection(url, username, password);
+	}
+	public static boolean checkConnectionData (String url, String username, String password){
+		try {
+			DriverManager.getConnection(url, username, password);
+		} catch (SQLException e) {
+			return false;
+		}
+		return true;
 	}
 }
 

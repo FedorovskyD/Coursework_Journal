@@ -3,7 +3,7 @@ package listeners;
 import database.dao.impl.AbsenceDaoImpl;
 import entity.Absence;
 import entity.Grade;
-import dialogs.StudentCardDialog;
+import gui.StudentCard;
 import gui.LessonButton;
 
 import javax.swing.*;
@@ -11,9 +11,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class LessonButtonKeyListener extends KeyAdapter {
-	private StudentCardDialog studentCard;
+	private StudentCard studentCard;
 
-	public LessonButtonKeyListener(StudentCardDialog studentCard) {
+	public LessonButtonKeyListener(StudentCard studentCard) {
 		this.studentCard = studentCard;
 	}
 
@@ -90,16 +90,16 @@ public class LessonButtonKeyListener extends KeyAdapter {
 		int nextIndex = index + (keyCode == KeyEvent.VK_LEFT ? -1 : 1);
 		if (nextIndex >= 0 && nextIndex < studentCard.getLessonButtons().size()) {
 			LessonButton nextLessonButton = studentCard.getLessonButtons().get(nextIndex);
-			nextLessonButton.setCurrent(true);
-			button.setCurrent(false);
+			nextLessonButton.setCurrentColor(true);
+			button.setCurrentColor(false);
 			button.repaint();
 			nextLessonButton.repaint();
-			studentCard.setCurrLessonButton(nextLessonButton);
-			studentCard.getMainWindow().getCurrDateCmb().setSelectedItem(nextLessonButton.getLesson());
-			boolean isLecture = studentCard.getMainWindow().getRadioBtnLecture().isSelected();
+			studentCard.setCurrentLessonButton(nextLessonButton);
+			studentCard.getMainWindow().getJcmbCurrentDate().setSelectedItem(nextLessonButton.getLesson());
+			boolean isLecture = studentCard.getMainWindow().getJradiobtnLecture().isSelected();
 			int index1 = isLecture ? 2 : 3;
 			studentCard.getMainWindow().getStudentTable().setColumnSelectionInterval(
-					studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + index1, studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + index1);
+					studentCard.getMainWindow().getJcmbCurrentDate().getSelectedIndex() + index1, studentCard.getMainWindow().getJcmbCurrentDate().getSelectedIndex() + index1);
 			int selectedColumn;
 			if (nextIndex + index1 < 4) {
 				selectedColumn = 0;
@@ -119,7 +119,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 		if (!button.getLesson().isHoliday()) {
 			if (!button.isChecked()) {
 				addAbsence(button, isHalf);
-				if (studentCard.getMainWindow().getCheckBox().isSelected()) {
+				if (studentCard.getMainWindow().getJCheckBoxMarkUnder().isSelected()) {
 					moveTableRow(KeyEvent.VK_DOWN);
 				}
 			} else if (isHalf) {
@@ -145,56 +145,50 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			if (nextRow >= 0 && nextRow < studentCard.getMainWindow().getStudentTable().getRowCount()) {
 				studentCard.getMainWindow().getStudentTable().setRowSelectionInterval(nextRow, nextRow);
 				studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow()
-						.getStudentTable().getCellRect(nextRow, studentCard.getMainWindow().getCurrDateCmb().getSelectedIndex() + firstIndex, true));
+						.getStudentTable().getCellRect(nextRow, studentCard.getMainWindow().getJcmbCurrentDate().getSelectedIndex() + firstIndex, true));
 				studentCard.getMainWindow().getStudentTable().repaint();
 			}
 		}
 	}
 
 	private void addAbsence(LessonButton button, boolean isHalf) {
-		Absence absence = new Absence(button.getLesson().getId(), studentCard.getMainWindow().getCurrStudent().getId(), isHalf);
+		Absence absence = new Absence(button.getLesson().getId(), studentCard.getMainWindow().getCurrentStudentFromTable().getId(), isHalf);
 		if (isHalf) {
 			button.setHalf(true);
 		}
-		Grade studentGrade = studentCard.getMainWindow().getCurrStudent().getLessonGrade(button.getLesson());
+		Grade studentGrade = studentCard.getCurrStudent().getLessonGrade(button.getLesson());
 		long id = AbsenceDaoImpl.getInstance().save(absence);
 		if (id > 0) {
 			absence.setId(id);
 			if (button.getLesson().isLecture()) {
-				studentCard.getMainWindow().getCurrStudent().getLectureAbsenceList().add(absence);
+				studentCard.getMainWindow().getCurrentStudentFromTable().getLectureAbsenceList().add(absence);
 			} else {
-				studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().add(absence);
+				studentCard.getMainWindow().getCurrentStudentFromTable().getLabAbsenceList().add(absence);
 			}
 			if (isHalf) {
 				if (studentGrade != null) {
-					button.setGrade(button.getGrade());
+					button.setDateWithGrade(String.valueOf(studentGrade.getGrade()));
 				}
 			} else {
-				button.setData();
+				button.setDate();
 			}
-			button.setChecked(true);
+			button.setAbsence(true);
 			System.out.println("Запись о отсутствии c id = "+id+" добавлена");
 			studentCard.getMainWindow().refreshStudentTable();
 		}
 	}
 
 	private void removeAbsence(LessonButton button) {
-		Absence absence = studentCard.getMainWindow().getCurrStudent().getLessonAbsence(button.getLesson());
-
+		Absence absence = studentCard.getMainWindow().getCurrentStudentFromTable().getLessonAbsence(button.getLesson());
 		if (absence != null) {
 			if (AbsenceDaoImpl.getInstance().delete(absence)) {
 				System.out.println("Запись об отсутствии c id = " + absence.getId() + " удалена");
 				if (button.getLesson().isLecture()) {
-					studentCard.getMainWindow().getCurrStudent().getLectureAbsenceList().remove(absence);
+					studentCard.getMainWindow().getCurrentStudentFromTable().getLectureAbsenceList().remove(absence);
 				} else {
-					studentCard.getMainWindow().getCurrStudent().getLabAbsenceList().remove(absence);
+					studentCard.getMainWindow().getCurrentStudentFromTable().getLabAbsenceList().remove(absence);
 				}
-				if (!button.getGrade().equals("")) {
-					button.setGrade(button.getGrade());
-				} else {
-					button.setData();
-				}
-				button.setChecked(false);
+				button.setAbsence(false);
 				studentCard.getMainWindow().refreshStudentTable();
 				button.setHalf(false);
 			}
@@ -202,7 +196,7 @@ public class LessonButtonKeyListener extends KeyAdapter {
 	}
 
 	private void updateAbsence(LessonButton button) {
-		Absence absence = studentCard.getMainWindow().getCurrStudent().getLessonAbsence(button.getLesson());
+		Absence absence = studentCard.getMainWindow().getCurrentStudentFromTable().getLessonAbsence(button.getLesson());
 		if (absence == null) return;
 		if (!absence.isHalf()) {
 			absence.setHalf(true);

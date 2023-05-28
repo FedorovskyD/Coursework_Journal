@@ -9,6 +9,7 @@ import utils.PhotoUtils;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 
 public class AddStudentDialogListener implements ActionListener {
@@ -28,17 +29,20 @@ public class AddStudentDialogListener implements ActionListener {
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
 			student.setGroupId(((Group) addStudentDialog.getJcmbGroupNumber().getSelectedItem()).getId());
+			student.setPhotoPath(addStudentDialog.getPhotoPath());
 			long id = StudentDaoImpl.getInstance().save(student);
-			;
 			System.out.println("Студент с id = " + id + " добавлен");
 			student.setId(id);
 			if (addStudentDialog.getPhotoPath() != null) {
-				try {
-					PhotoUtils.getInstance().savePhoto(student, addStudentDialog.getPhotoPath());
-				} catch (IOException ex) {
-					System.out.println("Фото студента с id = " + student.getId() + " не найдено");
+				if (!addStudentDialog.getPhotoPath().equals(new File("photos/default.jpg"))) {
+					try {
+						PhotoUtils.getInstance().savePhoto(student, addStudentDialog.getPhotoPath());
+					} catch (IOException ex) {
+						System.out.println("Фото студента с id = " + student.getId() + " не найдено");
+					}
 				}
 			}
+			StudentDaoImpl.getInstance().update(student);
 			addStudentDialog.getMainWindow().getCurrentGroup().getStudents().add(student);
 			addStudentDialog.getMainWindow().refreshStudentTable();
 			addStudentDialog.getMainWindow().getStudentTable().requestFocus();

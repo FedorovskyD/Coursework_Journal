@@ -10,19 +10,20 @@ import javax.mail.util.ByteArrayDataSource;
 import javax.swing.*;
 
 public class EmailSender {
-	private static final String EMAIL_PROPERTY_PATH = "resources/email/email.properties";
+	private static final String EMAIL_PROPERTY_PATH = "email/email.properties";
 	private static final String MAIL_USERNAME = "mail.username";
 	private static final String MAIL_PASSWORD = "mail.password";
 
 	public static void sendEmail(String recipients, String subject, String body, byte[] fileData, String fileName) {
 
 		// Загрузка свойств email
-		Properties emailProps;
+		Properties emailProps = null;
 		try {
 			emailProps = PropertyLoader.loadProperty(EMAIL_PROPERTY_PATH);
 		} catch (IOException e) {
 			System.out.println("Ошибка при загрузке свойств email");
-			throw new RuntimeException(e);
+			JOptionPane.showMessageDialog(null,"Не удалось загрузить файл: " + EMAIL_PROPERTY_PATH);
+			return;
 		}
 
 		// Получение параметров подключения к почтовому серверу

@@ -7,7 +7,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class StudentTableMouseListener extends MouseAdapter {
-	private MainFrame mainFrame;
+	private final MainFrame mainFrame;
 
 	public StudentTableMouseListener(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
@@ -20,11 +20,11 @@ public class StudentTableMouseListener extends MouseAdapter {
 
 		if (row >= 0) {
 			Object value = mainFrame.getStudentTable().getValueAt(row, 0);
-			if (value instanceof Student student && student == mainFrame.getCurrentStudent()) {
-				mainFrame.getJDialogStudentCard().updateStudentCard(student);
-				if (column > (mainFrame.getRadioBtnLecture().isSelected() ? 1 : 2)) {
-					mainFrame.getCurrDateCmb().setSelectedIndex(column - (mainFrame.getRadioBtnLecture().isSelected() ? 2 : 3));
+			if (value instanceof Student student && student == mainFrame.getCurrentStudentFromTable()) {
+				if (column > (mainFrame.getJradiobtnLecture().isSelected() ? 1 : 2)) {
+					mainFrame.getJcmbCurrentDate().setSelectedIndex(column - (mainFrame.getJradiobtnLecture().isSelected() ? 2 : 3));
 				}
+				mainFrame.getJDialogStudentCard().updateStudentCard(student);
 				mainFrame.getJDialogStudentCard().setVisible(true);
 			}
 		}

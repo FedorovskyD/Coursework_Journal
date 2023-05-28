@@ -9,7 +9,7 @@ public class Group {
 	private final List<Student> students;
 	private final List<Lesson> lessons;
 
-	public Group(Long id, String name, List<Student> students,List<Lesson> lessons) {
+	public Group(Long id, String name, List<Student> students, List<Lesson> lessons) {
 		this.id = id;
 		this.name = name;
 		this.students = students;
@@ -41,45 +41,38 @@ public class Group {
 		return students;
 	}
 
-	public List<Lesson> getLessons(){
+	public List<Lesson> getLessons() {
 		return lessons;
 	}
+
 	public List<Lesson> getLabs() {
 		List<Lesson> labs = new ArrayList<>();
-		for (Lesson lesson: lessons){
-			if(!lesson.isLecture()){
+		for (Lesson lesson : lessons) {
+			if (!lesson.isLecture()) {
 				labs.add(lesson);
 			}
 		}
 		return labs;
 	}
-	public List<Lesson> getLectures(){
+
+	public List<Lesson> getLectures() {
 		List<Lesson> lectures = new ArrayList<>();
-		for (Lesson lesson: lessons){
-			if(lesson.isLecture()){
+		for (Lesson lesson : lessons) {
+			if (lesson.isLecture()) {
 				lectures.add(lesson);
 			}
 		}
 		return lectures;
 	}
-	public int getLectureHours(){
-		int hours = 0;
-		for (Lesson lesson : getLectures()){
-			if(!lesson.isHoliday()){
-				hours+=2;
-			}
-		}
-		return hours;
+
+	public int getLectureHours() {
+		return getLectures().size() * 2;
 	}
-	public int getLabHours(){
-		int hours = 0;
-		for (Lesson lesson : getLabs()){
-			if(!lesson.isHoliday()){
-				hours+=2;
-			}
-		}
-		return hours;
+
+	public int getLabHours() {
+		return getLabs().size() * 2;
 	}
+
 	@Override
 	public String toString() {
 		return name;

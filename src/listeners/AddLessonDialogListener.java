@@ -36,7 +36,7 @@ public class AddLessonDialogListener implements ActionListener {
 					System.out.println("Лабораторное занятие c id = " + lessonId + " добавлено");
 				}
 				addLessonDialog.getMainWindow().refreshDateCmb();
-				if (addLessonDialog.getMainWindow().getRadioBtnLecture().isSelected() == isLecture) {
+				if (addLessonDialog.getMainWindow().getJradiobtnLecture().isSelected() == isLecture) {
 					addLessonDialog.getMainWindow().refreshStudentTable();
 				}
 				addLessonDialog.getMainWindow().getJDialogStudentCard().getLessonButtons().clear();

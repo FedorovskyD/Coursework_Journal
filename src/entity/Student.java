@@ -1,5 +1,6 @@
 package entity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class Student {
 	private String middleName;
 	private String telephone;
 	private String email;
-	private String photoPath;
+	private File photoPath;
 	private List<Absence> lectureAbsenceList;
 	private List<Absence> labAbsenceList;
 	private List<Grade> gradeList;
@@ -78,11 +79,11 @@ public class Student {
 		this.groupId = groupId;
 	}
 
-	public String getPhotoPath() {
+	public File getPhotoPath() {
 		return photoPath;
 	}
 
-	public void setPhotoPath(String photoPath) {
+	public void setPhotoPath(File photoPath) {
 		this.photoPath = photoPath;
 	}
 
