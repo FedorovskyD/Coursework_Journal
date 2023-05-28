@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Objects;
 
 public class AddStudentDialogListener implements ActionListener {
 	private AddStudentDialog addStudentDialog;
@@ -28,7 +29,7 @@ public class AddStudentDialogListener implements ActionListener {
 			student.setMiddleName(addStudentDialog.getMiddleName());
 			student.setEmail(addStudentDialog.getEmail());
 			student.setTelephone(addStudentDialog.getTelephone());
-			student.setGroupId(((Group) addStudentDialog.getJcmbGroupNumber().getSelectedItem()).getId());
+			student.setGroupId(((Group) Objects.requireNonNull(addStudentDialog.getJcmbGroupNumber().getSelectedItem())).getId());
 			student.setPhotoPath(addStudentDialog.getPhotoPath());
 			long id = StudentDaoImpl.getInstance().save(student);
 			System.out.println("Студент с id = " + id + " добавлен");

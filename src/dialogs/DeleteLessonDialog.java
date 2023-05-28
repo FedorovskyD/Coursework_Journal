@@ -9,6 +9,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.List;
 
 /**
  * Диалоговое окно для удаления занятия.
@@ -29,6 +30,10 @@ public class DeleteLessonDialog extends JDialog {
 	public DeleteLessonDialog(MainFrame mainFrame) {
 		super(mainFrame, "Удаление занятия", true);
 		this.mainFrame = mainFrame;
+		if (mainFrame.getCurrGroup() == null || !hasAnyLesson(mainFrame.getGroups())) {
+			JOptionPane.showMessageDialog(mainFrame, "Нет ни одного занятия!");
+			return;
+		}
 
 		// Инициализация компонентов интерфейса
 		initComponents();
@@ -106,7 +111,10 @@ public class DeleteLessonDialog extends JDialog {
 					mainFrame.refreshDateCmb();
 					mainFrame.refreshStudentTable();
 					refreshLessonCmb(jradiobtnIsLecture.isSelected());
+					JOptionPane.showMessageDialog(mainFrame,"Занятие успешно удалено!");
 				}
+			}else {
+				JOptionPane.showMessageDialog(mainFrame,"Занятие для удаления не выбрано!");
 			}
 		});
 		// Добавление слушателей
@@ -134,12 +142,22 @@ public class DeleteLessonDialog extends JDialog {
 	 * Обновляет список занятий в выпадающем списке в зависимости от выбранного типа занятия (лекции/лабораторные).
 	 */
 	private void refreshLessonCmb(boolean isLecture) {
+		int index = jcmbGroupNumber.getSelectedIndex();
+		if (index < 0) return;
+		Group group = mainFrame.getGroups().get(index);
+		if (group == null) return;
 		if (isLecture) {
-			jcmbLesson.setModel(new DefaultComboBoxModel<>(mainFrame.getGroups()
-					.get(jcmbGroupNumber.getSelectedIndex()).getLectures().toArray(new Lesson[0])));
+			jcmbLesson.setModel(new DefaultComboBoxModel<>(group.getLectures().toArray(new Lesson[0])));
 		} else {
-			jcmbLesson.setModel(new DefaultComboBoxModel<>(mainFrame.getGroups()
-					.get(jcmbGroupNumber.getSelectedIndex()).getLabs().toArray(new Lesson[0])));
+			jcmbLesson.setModel(new DefaultComboBoxModel<>(group.getLabs().toArray(new Lesson[0])));
 		}
+	}
+	private boolean hasAnyLesson(List<Group> groups) {
+		for (Group group : groups) {
+			if (!group.getLabs().isEmpty() || !group.getLectures().isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

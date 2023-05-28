@@ -156,33 +156,33 @@ public class StudentCard extends JDialog {
 								.addComponent(jlblFullName)
 								.addComponent(jpanelFullName))
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(jlblEmail)
-						.addComponent(jTextFieldEmail))
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(jlblEmail)
+								.addComponent(jTextFieldEmail))
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(jlblPhone)
-						.addComponent(jTextFieldPhone))
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(jlblPhone)
+								.addComponent(jTextFieldPhone))
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(jlblLessonHours)
-						.addComponent(jlblLessonCountValue))
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(jlblLessonHours)
+								.addComponent(jlblLessonCountValue))
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(jlblAttendanceHours)
-						.addComponent(jlblStudentHoursValue))
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(jlblAttendanceHours)
+								.addComponent(jlblStudentHoursValue))
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(jlblPercentage)
-						.addComponent(jlblPercentageValue))
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(jlblPercentage)
+								.addComponent(jlblPercentageValue))
 						.addGap(10) // добавляем 10 пикселей расстояния между строками
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(jlblAverageMark)
-						.addComponent(jlblAverageGradeValue))
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(jlblAverageMark)
+								.addComponent(jlblAverageGradeValue))
 						.addGap(50) // добавляем 10 пикселей расстояния между строками
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-						.addComponent(jbtnEditStudent)
-						.addComponent(jbtnDeleteStudent))));
+						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+								.addComponent(jbtnEditStudent)
+								.addComponent(jbtnDeleteStudent))));
 		// Устанавливаем размер панели с информацией о студенте
 		infoPanel.setPreferredSize(new Dimension(1000, 300));
 		infoPanel.setMinimumSize(infoPanel.getPreferredSize());
@@ -242,10 +242,12 @@ public class StudentCard extends JDialog {
 		setStudentInformation(student);
 		// Обновляем данные о посещаемости
 		boolean isLectureSelected = mainFrame.getJradiobtnLecture().isSelected();
-		if (!isLectureSelected) {
-			updateAttendanceAndGrade(student, student.getLabAbsenceHours(), mainFrame.getCurrentGroup().getLabHours());
-		} else {
-			updateAttendanceAndGrade(student, student.getLectureAbsenceHours(), mainFrame.getCurrentGroup().getLectureHours());
+		if(mainFrame.getCurrGroup()!=null) {
+			if (!isLectureSelected) {
+				updateAttendanceAndGrade(student, student.getLabAbsenceHours(), mainFrame.getCurrentGroup().getLabHours());
+			} else {
+				updateAttendanceAndGrade(student, student.getLectureAbsenceHours(), mainFrame.getCurrentGroup().getLectureHours());
+			}
 		}
 		// Загружаем фото
 		Image studentPhoto = PhotoUtils.getInstance().loadPhoto(student).getImage();
@@ -281,7 +283,11 @@ public class StudentCard extends JDialog {
 		jlblLessonCountValue.setText(String.valueOf(totalHours));
 		int hoursAttendance = totalHours - absenceHours;
 		jlblStudentHoursValue.setText(String.valueOf(hoursAttendance));
-		jlblPercentageValue.setText(String.format("%.1f ", ((double) hoursAttendance / totalHours) * 100) + " %");
+		if (totalHours > 0) {
+			jlblPercentageValue.setText(String.format("%.1f ", ((double) hoursAttendance / totalHours) * 100) + " %");
+		} else {
+			jlblPercentageValue.setText(100 + " %");
+		}
 	}
 
 	/*
@@ -296,6 +302,7 @@ public class StudentCard extends JDialog {
 			jlblPhoto.setSize(new Dimension(0, 0));
 		}
 	}
+
 	/*
 	 * Обновляем кнопки отвечающие за отображение
 	 * информации о посещаемости
@@ -307,6 +314,7 @@ public class StudentCard extends JDialog {
 			updateExistingLessonButtons();
 		}
 	}
+
 	/*
 	 * Создаем кнопки для отображения посещаемости
 	 */
@@ -321,6 +329,7 @@ public class StudentCard extends JDialog {
 			setInitialSelection(lessonButton);
 		}
 	}
+
 	/*
 	 * Создаем кнопку для отображения информации
 	 * о посещении занятия и успеваемости
@@ -349,6 +358,7 @@ public class StudentCard extends JDialog {
 		lessonButton.setAbsence(absence != null);
 		return lessonButton;
 	}
+
 	/*
 	 * Обновляем уже существующие кнопки с занятиями
 	 * метод используется если карточка обновляется
@@ -379,6 +389,7 @@ public class StudentCard extends JDialog {
 			});
 		}
 	}
+
 	/*
 	 * Находим кнопку с выбранным занятием и делаем ее текущей
 	 */
@@ -392,6 +403,7 @@ public class StudentCard extends JDialog {
 			currentLessonButton = lessonButton;
 		}
 	}
+
 	/*
 	 * Устанавливаем слушателей для кнопок с занятиями
 	 */
@@ -405,8 +417,10 @@ public class StudentCard extends JDialog {
 					jbtnEditStudent.requestFocus();
 				}
 			}
+
 			@Override
-			public void focusLost(FocusEvent e) {}
+			public void focusLost(FocusEvent e) {
+			}
 		});
 	}
 
@@ -431,6 +445,7 @@ public class StudentCard extends JDialog {
 			}
 		}
 	}
+
 	/*
 	 * Создаем массив кнопок с оценками
 	 */
@@ -444,6 +459,7 @@ public class StudentCard extends JDialog {
 			gradePanel.add(gradeButton);
 		}
 	}
+
 	/*
 	 * Выставляем оценку за занятие
 	 */

@@ -13,11 +13,11 @@ import java.util.Date;
  * Диалоговое окно для добавления занятия.
  */
 public class AddLessonDialog extends JDialog {
-	private final JRadioButton jradiobtnLecture;
-	private final JSpinner dateSpinner;
-	private final JComboBox<Group> jcmbGroupNumber;
-	private final JButton jbtnAddLesson, jbtnCancel;
-	private final JRadioButton jradionbtnIsHoliday;
+	private  JRadioButton jradiobtnLecture;
+	private  JSpinner dateSpinner;
+	private  JComboBox<Group> jcmbGroupNumber;
+	private  JButton jbtnAddLesson, jbtnCancel;
+	private  JRadioButton jradionbtnIsHoliday;
 	private final MainFrame mainFrame;
 
 	/**
@@ -28,7 +28,10 @@ public class AddLessonDialog extends JDialog {
 	public AddLessonDialog(JFrame parent) {
 		super(parent, "Добавление занятия", true);
 		mainFrame = (MainFrame) parent;
-
+		if(mainFrame.getCurrGroup() == null){
+			JOptionPane.showMessageDialog(mainFrame,"Добавьте хотя бы одну группу перед добавлением занятия!");
+			return;
+		}
 		// Создание компонентов интерфейса
 		JLabel jlblLessonType = new JLabel("Тип занятия:");
 		JLabel jlblHoliday = new JLabel("Праздничный день:");
@@ -79,9 +82,10 @@ public class AddLessonDialog extends JDialog {
 		jbtnAddLesson.addActionListener(addLessonDialogListener);
 		jbtnCancel.addActionListener(addLessonDialogListener);
 
-		this.setContentPane(jpanel);
-		this.pack();
-		this.setLocationRelativeTo(null);
+		setContentPane(jpanel);
+		pack();
+		setLocationRelativeTo(null);
+		setVisible(true);
 	}
 
 	/**

@@ -16,14 +16,14 @@ import java.util.List;
  */
 public class StudentTableModel extends AbstractTableModel {
 	private static final int STUDENT_COLUMN_INDEX = 0;//Индекс колонки с информацие о студенете
-	private  int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
+	private int AVERAGE_GRADE_COLUMN_INDEX;//Индекс колонки с информацией о среднем балле
 	private final int ATTENDANCE_PERCENTAGE_COLUMN_INDEX = 1;// Индекс колонки с информацией о проценте посещаемости
-	private  int FIRST_LAB_COLUMN_INDEX;//Индекс с колонки, с которой начинаются даты занятий
+	private int FIRST_LAB_COLUMN_INDEX;//Индекс с колонки, с которой начинаются даты занятий
 	public static final int COUNT_SEPARATOR_ROW = 4;//Количество строк после, которых вставляется пустая строка
-	private  List<Student> students;//Список студентов
-	private  List<Lesson> lessons;//Список занятий
-	private  Group group;// Группа студентов
-	private  boolean isLecture;// Являются ли занятия лекциями
+	private List<Student> students;//Список студентов
+	private List<Lesson> lessons;//Список занятий
+	private Group group;// Группа студентов
+	private boolean isLecture;// Являются ли занятия лекциями
 
 	/**
 	 * Конструктор для создания новой модели таблицы
@@ -34,19 +34,23 @@ public class StudentTableModel extends AbstractTableModel {
 	 *                  если false - лабораторных занятий
 	 */
 	public StudentTableModel(Group group, boolean isLecture) {
+		if (isLecture) {
+			FIRST_LAB_COLUMN_INDEX = 2;
+			AVERAGE_GRADE_COLUMN_INDEX = -1;
+		} else {
+			FIRST_LAB_COLUMN_INDEX = 3;
+			AVERAGE_GRADE_COLUMN_INDEX = 2;
+		}
 		//Получаем список студентов из группы
-		if(group==null)return;
+		if (group == null) return;
 		students = group.getStudents();
 		//Заполняем список lessons, в зависимости от типа занятий, которые отображает таблица
 		if (isLecture) {
 			lessons = group.getLectures();
-			FIRST_LAB_COLUMN_INDEX = 2;
-			AVERAGE_GRADE_COLUMN_INDEX = -1;
 		} else {
 			lessons = group.getLabs();
-			FIRST_LAB_COLUMN_INDEX = 3;
-			AVERAGE_GRADE_COLUMN_INDEX = 2;
 		}
+
 		this.group = group;
 		this.isLecture = isLecture;
 	}
@@ -58,6 +62,7 @@ public class StudentTableModel extends AbstractTableModel {
 	 */
 	@Override
 	public int getRowCount() {
+		if(students == null)return 0;
 		int rowCount = students.size();
 		if (rowCount > 0) {
 			// Добавляем к количеству строк пустые строки
@@ -74,7 +79,9 @@ public class StudentTableModel extends AbstractTableModel {
 	@Override
 	public int getColumnCount() {
 		//Вычисляем количество столбцов
-		if(lessons == null)return 0;
+		if (lessons == null) {
+			return FIRST_LAB_COLUMN_INDEX;
+		}
 		return lessons.size() + FIRST_LAB_COLUMN_INDEX;
 	}
 
@@ -101,13 +108,23 @@ public class StudentTableModel extends AbstractTableModel {
 		}
 		if (columnIndex == ATTENDANCE_PERCENTAGE_COLUMN_INDEX) {
 			Student student = students.get(getStudentIndex(rowIndex));
-			double persantage;
+			double percentage;
 			if (isLecture) {
-				persantage = (group.getLectureHours() - student.getLectureAbsenceHours()) / (double) group.getLectureHours() * 100;
+				int lecture = group.getLectureHours();
+				if(lecture > 0) {
+					percentage = (group.getLectureHours() -student.getLectureAbsenceHours()) / (double)lecture * 100;
+				}else {
+					percentage = 100;
+				}
 			} else {
-				persantage = (group.getLabHours() - student.getLabAbsenceHours()) / (double) group.getLabHours() * 100;
+				int lab = group.getLabHours();
+				if(lab>0) {
+					percentage = (group.getLabHours() - student.getLabAbsenceHours()) / (double) lab* 100;
+				}else {
+					percentage = 100;
+				}
 			}
-			return String.format("%.1f", persantage) + "%";
+			return String.format("%.1f", percentage) + "%";
 		}
 		//Иначе возвращаем панель, отвечающую за отображение занятия
 		return getLessonLabel(getStudentIndex(rowIndex), columnIndex);
@@ -138,6 +155,7 @@ public class StudentTableModel extends AbstractTableModel {
 	 * @return объект студента
 	 */
 	public Student getStudentAt(int selectedRow) {
+		if(students == null)return null;
 		int index = getStudentIndex(selectedRow);
 		if (index >= 0 && index < students.size())
 			return students.get(index);
@@ -252,6 +270,7 @@ public class StudentTableModel extends AbstractTableModel {
 	 * @param isInc true, если нужно сортировать по возрастанию
 	 */
 	public void sortByAlphabet(boolean isInc) {
+		if(students == null)return;
 		students.sort(Comparator.comparing(Student::getFullName, isInc ? Comparator.naturalOrder() : Comparator.reverseOrder()));
 		fireTableDataChanged();
 	}
@@ -262,6 +281,7 @@ public class StudentTableModel extends AbstractTableModel {
 	 * @param isInc true, если нужно сортировать по возрастанию
 	 */
 	public void sortByGrade(boolean isInc) {
+		if (students == null)return;
 		students.sort((o1, o2) -> {
 			int result = Double.compare(o1.getAverageGrade(), o2.getAverageGrade());
 			return isInc ? result : result * (-1);
@@ -276,6 +296,7 @@ public class StudentTableModel extends AbstractTableModel {
 	 * @param isInc     true, если нужно сортировать по возрастанию
 	 */
 	public void sortByAttendance(boolean isLecture, boolean isInc) {
+		if (students == null)return;
 		if (isLecture) {
 			students.sort((o1, o2) -> {
 				int result = Integer.compare(o1.getLectureAbsenceList().size(), o2.getLectureAbsenceList().size());
@@ -287,7 +308,6 @@ public class StudentTableModel extends AbstractTableModel {
 				return isInc ? result * (-1) : result;
 			});
 		}
-
 		fireTableDataChanged();
 	}
 

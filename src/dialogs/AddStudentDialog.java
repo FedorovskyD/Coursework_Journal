@@ -12,14 +12,14 @@ import java.io.File;
  * Диалоговое окно для добавления студента.
  */
 public class AddStudentDialog extends JDialog {
-	private final JTextField jTextFieldFirstName;
-	private final JTextField jTextFieldLastName;
-	private final JTextField jTextFieldMiddleName;
-	private final JLabel jlblPhotoPath;
-	private final JComboBox<Group> jcmbGroupNumber;
-	private final JTextField jTextFieldEmail;
-	private final JTextField jTextFieldTelephone;
-	private final JButton jbtnAddStudent, jbtnChoosePhoto, jbtnClose;
+	private  JTextField jTextFieldFirstName;
+	private  JTextField jTextFieldLastName;
+	private  JTextField jTextFieldMiddleName;
+	private  JLabel jlblPhotoPath;
+	private  JComboBox<Group> jcmbGroupNumber;
+	private  JTextField jTextFieldEmail;
+	private  JTextField jTextFieldTelephone;
+	private  JButton jbtnAddStudent, jbtnChoosePhoto, jbtnClose;
 	private File photoPath;
 	protected MainFrame mainFrame;
 
@@ -31,8 +31,11 @@ public class AddStudentDialog extends JDialog {
 	public AddStudentDialog(JFrame parent) {
 		super(parent, "Добавить студента", true);
 		mainFrame = (MainFrame) parent;
-		photoPath = new File("photos/default.jpg");
-
+		if(mainFrame.getCurrGroup()==null){
+			JOptionPane.showMessageDialog(mainFrame,"Добавьте хотя бы одну группу для добавления студента!");
+			return;
+		}
+		photoPath = new File("img/default.jpg");
 		// Создание компонентов интерфейса
 		JLabel firstNameLabel = new JLabel("Имя:");
 		jTextFieldFirstName = new JTextField(20);
@@ -85,6 +88,7 @@ public class AddStudentDialog extends JDialog {
 		jbtnClose.addActionListener(addStudentDialogListener);
 		pack();
 		setLocationRelativeTo(parent);
+		setVisible(true);
 	}
 
 	// Геттеры для получения значений полей формы

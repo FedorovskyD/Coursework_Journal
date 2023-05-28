@@ -25,13 +25,13 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == mainFrame.getJbtnAddStudent()) {
-			new AddStudentDialog(mainFrame).setVisible(true);
+			new AddStudentDialog(mainFrame);
 		} else if (e.getSource() == mainFrame.getBtnAddGroup()) {
 			addNewGroup();
 		} else if (e.getSource() == mainFrame.getBtnDeleteGroup()) {
 			deleteGroup();
 		} else if (e.getSource() == mainFrame.getBtnAddLesson()) {
-			new AddLessonDialog(mainFrame).setVisible(true);
+			new AddLessonDialog(mainFrame);
 		} else if (e.getSource() == mainFrame.getJcmbGroupNumber()) {
 			onCmbGroupNumberActionPerformed();
 		} else if (e.getSource() == mainFrame.getJcmbCurrentDate()) {
@@ -66,6 +66,10 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 	}
 
 	private void deleteGroup() {
+		if(mainFrame.getCurrGroup()==null){
+			JOptionPane.showMessageDialog(mainFrame,"Нет ни одной группы!");
+			return;
+		}
 		Group[] groups = mainFrame.getGroups().toArray(new Group[0]);
 		int index = mainFrame.getJcmbGroupNumber().getSelectedIndex();
 		Group selectedGroup = (Group) JOptionPane.showInputDialog(

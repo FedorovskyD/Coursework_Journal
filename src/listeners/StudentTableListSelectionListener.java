@@ -7,7 +7,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 public class StudentTableListSelectionListener implements ListSelectionListener {
-	private MainFrame mainFrame;
+	private final MainFrame mainFrame;
 
 	public StudentTableListSelectionListener(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
