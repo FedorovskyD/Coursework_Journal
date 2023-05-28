@@ -126,12 +126,6 @@ public class ConfigFrame extends JFrame {
 		if(!properties.containsKey("mail.smtp.port")){
 			properties.setProperty("mail.smtp.port", "587");
 		}
-		/*if(!properties.containsKey("mail.password")) {
-			properties.setProperty("mail.password", "default");
-		}
-		if(!properties.containsKey("mail.username")) {
-			properties.setProperty("mail.username", "default");
-		}*/
 		// Установка свойств для базы данных
 		properties.setProperty("db.name", databaseName);
 		properties.setProperty("db.host", host);
@@ -142,10 +136,16 @@ public class ConfigFrame extends JFrame {
 		// Сохранение свойств в файл
 		try (OutputStream output = new FileOutputStream(configFile)) {
 			properties.store(output, "Настройки подключения к БД");
-			System.out.println("Файл конфигурации создан.");
-			JOptionPane.showMessageDialog(null,
-					"Подключение успешно установлено!\n Для запуска приложения закройте текущее окно.",
-					"Подключение установлено", JOptionPane.INFORMATION_MESSAGE);
+			if(checkDatabaseCredentials()) {
+				System.out.println("Файл конфигурации создан.");
+				JOptionPane.showMessageDialog(null,
+						"Подключение успешно установлено! Для запуска приложения закройте текущее окно.",
+						"Подключение установлено", JOptionPane.INFORMATION_MESSAGE);
+			}else {
+				JOptionPane.showMessageDialog(null,
+						"Ошибка подключения! Проверьте введенные данные!",
+						"Ошибка подключения", JOptionPane.ERROR_MESSAGE);
+			}
 		} catch (IOException ex) {
 			System.err.println("Ошибка при создании файла конфигурации: " + ex.getMessage());
 		}

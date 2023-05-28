@@ -12,10 +12,7 @@ import utils.PhotoUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -118,6 +115,9 @@ public class StudentCard extends JDialog {
 		gradeButtons = new ArrayList<>();
 		lessonButtons = new ArrayList<>();
 		defaultImageIcon = loadIcon();
+		JPanel jPanelEditAndSaveButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
+		jPanelEditAndSaveButtons.add(jbtnEditStudent);
+		jPanelEditAndSaveButtons.add(jbtnDeleteStudent);
 		// Создаем менеджер компоновки
 		GroupLayout groupLayout = new GroupLayout(infoPanel);
 		infoPanel.setLayout(groupLayout);
@@ -135,7 +135,7 @@ public class StudentCard extends JDialog {
 						.addComponent(jlblAttendanceHours)
 						.addComponent(jlblPercentage)
 						.addComponent(jlblAverageMark)
-						.addComponent(jbtnEditStudent))
+						.addComponent(jPanelEditAndSaveButtons))
 				.addGap(10)
 				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 						.addComponent(jpanelFullName)
@@ -144,8 +144,8 @@ public class StudentCard extends JDialog {
 						.addComponent(jlblLessonCountValue)
 						.addComponent(jlblStudentHoursValue)
 						.addComponent(jlblPercentageValue)
-						.addComponent(jlblAverageGradeValue)
-						.addComponent(jbtnDeleteStudent)));
+						.addComponent(jlblAverageGradeValue)));
+		//Вертикальная группа
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGap(15).addComponent(jlblPhoto)
@@ -181,8 +181,7 @@ public class StudentCard extends JDialog {
 								.addComponent(jlblAverageGradeValue))
 						.addGap(50) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(jbtnEditStudent)
-								.addComponent(jbtnDeleteStudent))));
+								.addComponent(jPanelEditAndSaveButtons))));
 		// Устанавливаем размер панели с информацией о студенте
 		infoPanel.setPreferredSize(new Dimension(1000, 300));
 		infoPanel.setMinimumSize(infoPanel.getPreferredSize());
@@ -354,7 +353,16 @@ public class StudentCard extends JDialog {
 		}
 
 		lessonButton.setPreferredSize(new Dimension(180, 80));
-
+		lessonButton.setMinimumSize(lessonButton.getPreferredSize());
+		lessonButton.setMaximumSize(lessonButton.getPreferredSize());
+		lessonButton.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				Rectangle bounds = lessonButton.getBounds();
+				bounds.setLocation(bounds.x, bounds.y - 80); // Регулируйте значение смещения по вертикали по своему усмотрению
+				jScrollPaneCalendar.getViewport().scrollRectToVisible(bounds);
+			}
+		});
 		if (absence != null) {
 			lessonButton.setHalf(absence.isHalf());
 		}

@@ -78,12 +78,14 @@ public class MainFrame extends JFrame {
 		// Создание пунктов меню
 		JMenuItem menuItemAboutAuthor = new JMenuItem("О авторе");
 		JMenuItem menuItemConfigEmail = new JMenuItem("Настроить почту");
+		JMenuItem menuItemConfigDateBase = new JMenuItem("Настроить подключение к БД");
 		JMenuItem menuItemAboutProgram = new JMenuItem("О программе");
 		JMenuItem menuItemExit = new JMenuItem("Выход");
 		// Добавление пунктов в меню
 		menuFile.add(menuItemAboutAuthor);
 		menuFile.add(menuItemAboutProgram);
 		menuFile.add(menuItemConfigEmail);
+		menuFile.add(menuItemConfigDateBase);
 		menuFile.addSeparator();
 		menuFile.add(menuItemExit);
 		// Добавление меню на фрейм
@@ -210,6 +212,20 @@ public class MainFrame extends JFrame {
 				EmailSender.sendEmail(input, "Отчет посещаемости до " + new SimpleDateFormat("dd.MM.yyyy").format(new Date()) + " " + getCurrGroup().getName(),
 						body,
 						ExcelTableUtil.createAttendanceTable(studentTable.getStudentTableModel()), fileName);
+			}
+		});
+		menuItemConfigDateBase.addActionListener(e -> {
+			int option = JOptionPane.showOptionDialog(null, "Для изменения подключения к БД необходимо закрыть главное окно. Продолжить?",
+					"Предупреждение", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
+			if (option == JOptionPane.YES_OPTION) {
+				dispose();
+				String jarPath = MainFrame.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				String jarDirectory = new File(jarPath).getParent();
+				File configFile = new File(jarDirectory, "config.properties");
+				if (configFile.exists()) {
+					new ConfigFrame(configFile).setVisible(true);
+				}
+				System.out.println("Выбран вариант 'Да'");
 			}
 		});
 		menuItemAboutAuthor.addActionListener(e -> new AboutDialog(null));

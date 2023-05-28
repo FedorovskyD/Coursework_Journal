@@ -31,17 +31,6 @@ public class ConnectionFactory {
 
 		return DriverManager.getConnection(url, username, password);
 	}
-
-	public static boolean checkConnectionData(String url, String username, String password) {
-		try {
-			DriverManager.getConnection(url, username, password);
-		} catch (SQLException e) {
-			return false;
-		}
-
-		return true;
-	}
-
 	public static void loadConfigProperties() {
 		props = new Properties();
 		FileInputStream fileInputStream;
