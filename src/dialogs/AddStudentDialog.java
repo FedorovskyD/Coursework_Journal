@@ -60,7 +60,7 @@ public class AddStudentDialog extends JDialog {
 		jbtnClose = new JButton("Закрыть");
 
 		// Расположени компонентов интерфейса на диалоговом окне
-		JPanel studentDataPanel = new JPanel(new GridLayout(10, 2));
+		JPanel studentDataPanel = new JPanel(new GridLayout(10, 2,5,5));
 		studentDataPanel.add(lastNameLabel);
 		studentDataPanel.add(jTextFieldLastName);
 		studentDataPanel.add(firstNameLabel);

@@ -35,7 +35,7 @@ public class AddStudentDialogListener implements ActionListener {
 			System.out.println("Студент с id = " + id + " добавлен");
 			student.setId(id);
 			if (addStudentDialog.getPhotoPath() != null) {
-				if (!addStudentDialog.getPhotoPath().equals(new File("photos/default.jpg"))) {
+				if (!addStudentDialog.getPhotoPath().equals(new File("photos/defaultPhoto.jpg"))) {
 					try {
 						PhotoUtils.getInstance().savePhoto(student, addStudentDialog.getPhotoPath());
 					} catch (IOException ex) {

@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
 		GroupDao groupDao = GroupDaoImpl.getInstance();
 		groups = groupDao.findAll();
 		//Создаем элементы гланого окна
-		JLabel currDateLbl = new JLabel("Текущая дата");
+		JLabel currDateLbl = new JLabel("Текущая дата:");
 		ButtonGroup buttonGroupLessonType = new ButtonGroup();
 		jradiobtnLab = new JRadioButton("Лабораторные", true);
 		jradiobtnLecture = new JRadioButton("Лекции", false);
@@ -76,16 +76,19 @@ public class MainFrame extends JFrame {
 		JMenu menuFile = new JMenu("Файл");
 		JMenuBar menuBar = new JMenuBar();
 		// Создание пунктов меню
-		JMenuItem menuItemAboutAuthor = new JMenuItem("О авторе");
+		JMenuItem menuItemAboutAuthor = new JMenuItem("Об авторе");
 		JMenuItem menuItemConfigEmail = new JMenuItem("Настроить почту");
 		JMenuItem menuItemConfigDateBase = new JMenuItem("Настроить подключение к БД");
+		JMenuItem menuItemHelp = new JMenuItem("Помощь");
 		JMenuItem menuItemAboutProgram = new JMenuItem("О программе");
 		JMenuItem menuItemExit = new JMenuItem("Выход");
 		// Добавление пунктов в меню
-		menuFile.add(menuItemAboutAuthor);
-		menuFile.add(menuItemAboutProgram);
+
 		menuFile.add(menuItemConfigEmail);
 		menuFile.add(menuItemConfigDateBase);
+		menuFile.add(menuItemHelp);
+		menuFile.add(menuItemAboutProgram);
+		menuFile.add(menuItemAboutAuthor);
 		menuFile.addSeparator();
 		menuFile.add(menuItemExit);
 		// Добавление меню на фрейм
@@ -228,6 +231,7 @@ public class MainFrame extends JFrame {
 				System.out.println("Выбран вариант 'Да'");
 			}
 		});
+		menuItemHelp.addActionListener(e -> new ProgramInfoWindow(studentCard.getMainWindow()));
 		menuItemAboutAuthor.addActionListener(e -> new AboutDialog(null));
 		btnSaveTable.addActionListener(e -> {
 			JFileChooser fileChooser = new JFileChooser();
@@ -263,9 +267,39 @@ public class MainFrame extends JFrame {
 				}
 			}
 		});
+		menuItemAboutProgram.addActionListener(e -> {
+			String programName = "Журнал посещаемости";
+			String version = "1.0";
+			String description = """
+					"Журнал посещаемости" - это программное приложение, разработанное для отслеживания посещаемости
+					 студентов в образовательных учреждениях. Оно позволяет преподавателям записывать и управлять
+					 данными о посещаемости, генерировать отчеты о посещаемости студентов и отправлять их по почте.""";
+
+			String aboutMessage = "Программа: " + programName + "\n"
+					+ "Версия: " + version + "\n\n"
+					+ "Описание: \n" + description;
+
+			JOptionPane.showMessageDialog(studentCard.getMainWindow(), aboutMessage, "О программе", JOptionPane.INFORMATION_MESSAGE);
+		});
+		menuItemExit.addActionListener(e -> {  // Программно вызываем событие закрытия окна
+			WindowEvent closeEvent = new WindowEvent(studentCard.getMainWindow(), WindowEvent.WINDOW_CLOSING);
+			studentCard.getMainWindow().dispatchEvent(closeEvent);});
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int result = JOptionPane.showConfirmDialog(studentCard.getMainWindow(),
+						"Вы действительно хотите выйти из приложения?",
+						"Подтверждение выхода",
+						JOptionPane.YES_NO_OPTION);
+
+				if (result == JOptionPane.YES_NO_OPTION) {
+					dispose(); // Закрываем окно приложения
+				}
+			}
+		});
 		setTitle("Журнал посещаемости");
 		setSize(new Dimension(1920, 1080));
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setExtendedState(MAXIMIZED_BOTH);
 		setVisible(true);

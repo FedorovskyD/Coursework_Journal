@@ -71,38 +71,52 @@ public class StudentCard extends JDialog {
 		JLabel jlblLessonHours = new JLabel("Часов занятий:");
 		JLabel jlblAttendanceHours = new JLabel("Часов присутствия:");
 		JLabel jlblPercentage = new JLabel("Процент посещения:");
-		JLabel jlblFullName = new JLabel("ФИО:");
 		Dimension txtFieldDimension = new Dimension(300, 20);
-		jTextFieldLastName = new JTextField(0);
-		jTextFieldFirstName = new JTextField(0);
-		jTextFieldMiddleName = new JTextField(0);
+		Font fullNameFont = new Font("Arial", Font.BOLD, 24);
+		Font normalFont = new Font("Arial", Font.PLAIN, 15);
+		Font boldFont = new Font("Arial", Font.BOLD, 15);
+		jlblLessonCountValue.setFont(boldFont);
+		jlblStudentHoursValue.setFont(boldFont);
+		jlblPercentageValue.setFont(boldFont);
+		jlblPercentage.setFont(normalFont);
+		jlblAttendanceHours.setFont(normalFont);
+		jlblLessonHours.setFont(normalFont);
+		jTextFieldLastName = new JTextField();
+		jTextFieldFirstName = new JTextField();
+		jTextFieldMiddleName = new JTextField();
+		jTextFieldLastName.setFont(fullNameFont);
+		jTextFieldFirstName.setFont(fullNameFont);
+		jTextFieldMiddleName.setFont(fullNameFont);
 		jTextFieldLastName.setEditable(false);
 		jTextFieldLastName.setBorder(null);
 		jTextFieldMiddleName.setEditable(false);
 		jTextFieldMiddleName.setBorder(null);
 		jTextFieldFirstName.setEditable(false);
 		jTextFieldFirstName.setBorder(null);
-		JPanel jpanelFullName = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-		jpanelFullName.setPreferredSize(new Dimension(500, 15));
-		jpanelFullName.setMaximumSize(jpanelFullName.getPreferredSize());
-		jpanelFullName.setMinimumSize(jpanelFullName.getPreferredSize());
+		JPanel jpanelFullName = new JPanel(new FlowLayout(FlowLayout.LEADING, 5, 0));
 		jpanelFullName.add(jTextFieldLastName);
 		jpanelFullName.add(jTextFieldFirstName);
 		jpanelFullName.add(jTextFieldMiddleName);
 		JLabel jlblEmail = new JLabel("Почта:");
+		jlblEmail.setFont(normalFont);
 		jTextFieldEmail = new JTextField(20);
 		jTextFieldEmail.setMaximumSize(txtFieldDimension);
 		jTextFieldEmail.setEditable(false);
 		jTextFieldEmail.setBorder(null);
 		JLabel jlblPhone = new JLabel("Телефон:");
+		jlblPhone.setFont(normalFont);
 		jTextFieldPhone = new JTextField(20);
+		jTextFieldPhone.setFont(boldFont);
+		jTextFieldEmail.setFont(boldFont);
 		jTextFieldPhone.setMaximumSize(txtFieldDimension);
 		jTextFieldPhone.setEditable(false);
 		jTextFieldPhone.setBorder(null);
 		jlblAverageMark = new JLabel(mainFrame.getJradiobtnLab().isSelected() ? "Средний балл:" : " ");
+		jlblAverageMark.setFont(normalFont);
 		jlblAverageGradeValue = new JLabel();
+		jlblAverageGradeValue.setFont(boldFont);
 		jbtnDeleteStudent = new JButton("Удалить студента");
-		jbtnEditStudent = new JButton("Редактировать");
+		jbtnEditStudent = new JButton("Редактировать профиль");
 		jbtnDeleteStudent.setVisible(false);
 		jbtnEditPhoto = new JButton("Изменить фото");
 		jbtnEditPhoto.setVisible(false);
@@ -114,7 +128,7 @@ public class StudentCard extends JDialog {
 		jlblPhoto.setMaximumSize(jlblPhoto.getPreferredSize());
 		gradeButtons = new ArrayList<>();
 		lessonButtons = new ArrayList<>();
-		defaultImageIcon = loadIcon();
+		defaultImageIcon = PhotoUtils.getInstance().loadImageIconFromProperties("defaultPhoto.jpg");
 		JPanel jPanelEditAndSaveButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		jPanelEditAndSaveButtons.add(jbtnEditStudent);
 		jPanelEditAndSaveButtons.add(jbtnDeleteStudent);
@@ -125,26 +139,30 @@ public class StudentCard extends JDialog {
 		groupLayout.setHorizontalGroup(groupLayout.createSequentialGroup()
 				.addGap(15)
 				.addGroup(groupLayout.createParallelGroup()
-						.addComponent(jlblPhoto).addComponent(jbtnEditPhoto))
-				.addGap(15)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
-						.addComponent(jlblFullName)
-						.addComponent(jlblEmail)
-						.addComponent(jlblPhone)
-						.addComponent(jlblLessonHours)
-						.addComponent(jlblAttendanceHours)
-						.addComponent(jlblPercentage)
-						.addComponent(jlblAverageMark)
-						.addComponent(jPanelEditAndSaveButtons))
-				.addGap(10)
-				.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
+						.addComponent(jlblPhoto)
+						.addComponent(jbtnEditPhoto))
+						.addGap(15)
+				.addGroup(groupLayout.createParallelGroup()
 						.addComponent(jpanelFullName)
-						.addComponent(jTextFieldEmail)
-						.addComponent(jTextFieldPhone)
-						.addComponent(jlblLessonCountValue)
-						.addComponent(jlblStudentHoursValue)
-						.addComponent(jlblPercentageValue)
-						.addComponent(jlblAverageGradeValue)));
+						.addGroup(groupLayout.createSequentialGroup()
+								.addGap(5)
+								.addGroup(groupLayout.createParallelGroup()
+										.addComponent(jlblEmail)
+										.addComponent(jlblPhone)
+										.addComponent(jlblLessonHours)
+										.addComponent(jlblAttendanceHours)
+										.addComponent(jlblPercentage)
+										.addComponent(jlblAverageMark))
+								.addGap(15)
+								.addGroup(groupLayout.createParallelGroup()
+										.addComponent(jTextFieldEmail)
+										.addComponent(jTextFieldPhone)
+										.addComponent(jlblLessonCountValue)
+										.addComponent(jlblStudentHoursValue)
+										.addComponent(jlblPercentageValue)
+										.addComponent(jlblAverageGradeValue)))
+						.addComponent(jPanelEditAndSaveButtons))
+				);
 		//Вертикальная группа
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
@@ -153,35 +171,32 @@ public class StudentCard extends JDialog {
 				.addGroup(groupLayout.createSequentialGroup()
 						.addGap(15)
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(jlblFullName)
 								.addComponent(jpanelFullName))
-						.addGap(10) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(jlblEmail)
 								.addComponent(jTextFieldEmail))
-						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addGap(8) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(jlblPhone)
 								.addComponent(jTextFieldPhone))
-						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addGap(8) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(jlblLessonHours)
 								.addComponent(jlblLessonCountValue))
-						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addGap(8) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(jlblAttendanceHours)
 								.addComponent(jlblStudentHoursValue))
-						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addGap(8) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(jlblPercentage)
 								.addComponent(jlblPercentageValue))
-						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addGap(8) // добавляем 10 пикселей расстояния между строками
 						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 								.addComponent(jlblAverageMark)
 								.addComponent(jlblAverageGradeValue))
-						.addGap(50) // добавляем 10 пикселей расстояния между строками
-						.addGroup(groupLayout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(jPanelEditAndSaveButtons))));
+						.addGap(10) // добавляем 10 пикселей расстояния между строками
+						.addComponent(jPanelEditAndSaveButtons)));
 		// Устанавливаем размер панели с информацией о студенте
 		infoPanel.setPreferredSize(new Dimension(1000, 300));
 		infoPanel.setMinimumSize(infoPanel.getPreferredSize());
@@ -210,7 +225,7 @@ public class StudentCard extends JDialog {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if (jbtnEditStudent.getText().equalsIgnoreCase("редактировать")) {
+				if (jbtnEditStudent.getText().equalsIgnoreCase("редактировать профиль")) {
 					mainFrame.refreshStudentTable();
 					setVisible(false);
 				} else {
@@ -521,17 +536,6 @@ public class StudentCard extends JDialog {
 			JOptionPane.showMessageDialog(mainFrame, "Нельзя выставить оценку в этот день");
 		}
 		currentLessonButton.requestFocus();
-	}
-
-	private ImageIcon loadIcon() {
-		ClassLoader classLoader = StudentCard.class.getClassLoader();
-		java.net.URL iconURL = classLoader.getResource("journal.jpg");
-		if (iconURL != null) {
-			return new ImageIcon(iconURL);
-		} else {
-			System.err.println("Не удалось загрузить иконку: ");
-			return null;
-		}
 	}
 
 	/**

@@ -65,7 +65,7 @@ public class AddLessonDialog extends JDialog {
 		jbtnCancel = new JButton("Закрыть");
 
 		// Создание панели с компонентами интерфейса
-		JPanel jpanel = new JPanel(new GridLayout(5, 2));
+		JPanel jpanel = new JPanel(new GridLayout(5, 2,5,5));
 		jpanel.add(jlblLessonType);
 		jpanel.add(jpanelLessonType);
 		jpanel.add(jlblHoliday);

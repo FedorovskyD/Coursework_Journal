@@ -46,7 +46,7 @@ public class EmailConfigDialog extends JDialog {
 		}
 
 		setSize(300, 150);
-		setLayout(new GridLayout(4, 2));
+		setLayout(new GridLayout(4, 2,5,5));
 
 		add(new JLabel("Почта:"));
 		jTextFieldUsername = new JTextField(20);

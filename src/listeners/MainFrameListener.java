@@ -54,7 +54,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 
 	private void addNewGroup() {
 		String groupName = JOptionPane.showInputDialog(mainFrame,
-				"Введите название группы:", "Добавление группы", JOptionPane.PLAIN_MESSAGE);
+				"Введите название группы:", "Добавление группы", JOptionPane.INFORMATION_MESSAGE);
 		if (groupName != null && !groupName.isEmpty()) {
 			Group group = new Group();
 			group.setName(groupName);
@@ -64,7 +64,6 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 			mainFrame.getStudentTable().requestFocus();
 		}
 	}
-
 	private void deleteGroup() {
 		if(mainFrame.getCurrGroup()==null){
 			JOptionPane.showMessageDialog(mainFrame,"Нет ни одной группы!");
@@ -76,7 +75,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 				mainFrame,
 				"Выберите группу для удаления:",
 				"Удаление группы",
-				JOptionPane.QUESTION_MESSAGE,
+				JOptionPane.INFORMATION_MESSAGE,
 				null,
 				groups,
 				groups[index]);

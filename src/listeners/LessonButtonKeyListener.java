@@ -108,8 +108,6 @@ public class LessonButtonKeyListener extends KeyAdapter {
 			}
 			studentCard.getMainWindow().getStudentTable().scrollRectToVisible(studentCard.getMainWindow().getStudentTable()
 					.getCellRect(studentCard.getMainWindow().getStudentTable().getSelectedRow(), selectedColumn, true));
-			/*Rectangle buttonRect = button.getBounds();
-			studentCard.getScrollPane().getViewport().scrollRectToVisible(buttonRect);*/
 			studentCard.getMainWindow().repaint();
 			nextLessonButton.requestFocus();
 		}

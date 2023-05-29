@@ -1,6 +1,7 @@
 package utils;
 
 import entity.Student;
+import gui.StudentCard;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -61,6 +62,16 @@ public class PhotoUtils {
 			}
 		}
 		return photosDirectory;
+	}
+	public ImageIcon loadImageIconFromProperties(String fileName){
+		ClassLoader classLoader = PhotoUtils.class.getClassLoader();
+		java.net.URL iconURL = classLoader.getResource(fileName);
+		if (iconURL != null) {
+			return new ImageIcon(iconURL);
+		} else {
+			System.err.println("Не удалось загрузить иконку: ");
+			return null;
+		}
 	}
 }
 

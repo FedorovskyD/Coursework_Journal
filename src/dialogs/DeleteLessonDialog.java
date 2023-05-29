@@ -84,7 +84,7 @@ public class DeleteLessonDialog extends JDialog {
 			}
 		});
 
-		setLayout(new GridLayout(4, 2));
+		setLayout(new GridLayout(4, 2,5,5));
 		add(new JLabel("Выберите группу:"));
 		add(jcmbGroupNumber);
 		add(new JLabel("Тип занятия:"));

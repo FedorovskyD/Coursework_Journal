@@ -5,6 +5,8 @@ import database.dao.impl.StudentDaoImpl;
 import entity.Student;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -38,8 +40,13 @@ public class StudentCardDialogListener implements ActionListener {
 					studentCard.getJTextFieldPhone().setEditable(false);
 					studentCard.getJTextFieldFirstName().setEditable(false);
 					studentCard.getJTextFieldMiddleName().setEditable(false);
+					studentCard.getJTextFieldLastName().setBorder(null);
+					studentCard.getJTextFieldEmail().setBorder(null);
+					studentCard.getJTextFieldPhone().setBorder(null);
+					studentCard.getJTextFieldFirstName().setBorder(null);
+					studentCard.getJTextFieldMiddleName().setBorder(null);
 					studentCard.getJbtnDeleteStudent().setVisible(false);
-					studentCard.getJbtnEditStudent().setText("Редактировать");
+					studentCard.getJbtnEditStudent().setText("Редактировать профиль");
 					studentCard.getJbtnEditPhoto().setVisible(false);
 					studentCard.getMainWindow().getCurrentGroup().getStudents().remove(studentCard.getMainWindow().getCurrentStudentFromTable());
 					studentCard.getMainWindow().refreshStudentTable();
@@ -48,12 +55,18 @@ public class StudentCardDialogListener implements ActionListener {
 				}
 			}
 		}else if(e.getSource() == studentCard.getJbtnEditStudent()){
-			if (studentCard.getJbtnEditStudent().getText().equalsIgnoreCase("Редактировать")) {
+			if (studentCard.getJbtnEditStudent().getText().equalsIgnoreCase("Редактировать профиль")) {
+				Border border = BorderFactory.createLineBorder(Color.BLACK,1);
 				studentCard.getJTextFieldLastName().setEditable(true);
 				studentCard.getJTextFieldFirstName().setEditable(true);
 				studentCard.getJTextFieldMiddleName().setEditable(true);
 				studentCard.getJTextFieldEmail().setEditable(true);
 				studentCard.getJTextFieldPhone().setEditable(true);
+				studentCard.getJTextFieldLastName().setBorder(border);
+				studentCard.getJTextFieldFirstName().setBorder(border);
+				studentCard.getJTextFieldMiddleName().setBorder(border);
+				studentCard.getJTextFieldEmail().setBorder(border);
+				studentCard.getJTextFieldPhone().setBorder(border);
 				studentCard.getJbtnDeleteStudent().setVisible(true);
 				studentCard.getJbtnEditStudent().setText("Сохранить");
 				studentCard.getJpanelCalendar().setEnabled(false);
@@ -76,13 +89,18 @@ public class StudentCardDialogListener implements ActionListener {
 					StudentDaoImpl.getInstance().update(student1);
 					SwingUtilities.invokeLater(studentCard.getMainWindow().getStudentTable()::repaint);
 				}
+				studentCard.getJTextFieldLastName().setBorder(null);
+				studentCard.getJTextFieldEmail().setBorder(null);
+				studentCard.getJTextFieldPhone().setBorder(null);
+				studentCard.getJTextFieldFirstName().setBorder(null);
+				studentCard.getJTextFieldMiddleName().setBorder(null);
 				studentCard.getJTextFieldLastName().setEditable(false);
 				studentCard.getJTextFieldFirstName().setEditable(false);
 				studentCard.getJTextFieldMiddleName().setEditable(false);
 				studentCard.getJTextFieldEmail().setEditable(false);
 				studentCard.getJTextFieldPhone().setEditable(false);
 				studentCard.getJbtnDeleteStudent().setVisible(false);
-				studentCard.getJbtnEditStudent().setText("Редактировать");
+				studentCard.getJbtnEditStudent().setText("Редактировать профиль");
 				studentCard.getJpanelCalendar().setEnabled(true);
 				studentCard.getJbtnEditPhoto().setVisible(false);
 				studentCard.getCurrentLessonButton().requestFocus();

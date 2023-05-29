@@ -58,10 +58,18 @@ public class ExcelTableUtil {
 
 			if (studentTableModel.isLecture()) {
 				int lectureHours = studentTableModel.getGroup().getLectureHours();
-				attendanceCell.setCellValue((lectureHours - students.get(i).getLectureAbsenceHours()) / (double) lectureHours * 100);
+				if(lectureHours>0) {
+					attendanceCell.setCellValue((lectureHours - students.get(i).getLectureAbsenceHours()) / (double) lectureHours * 100);
+				}else {
+					attendanceCell.setCellValue(100);
+				}
 			} else {
 				int labHours = studentTableModel.getGroup().getLabHours();
-				attendanceCell.setCellValue((labHours - students.get(i).getLabAbsenceHours()) / (double) labHours * 100);
+				if(labHours>0) {
+					attendanceCell.setCellValue((labHours - students.get(i).getLabAbsenceHours()) / (double) labHours * 100);
+				}else {
+					attendanceCell.setCellValue(100);
+				}
 				gradeCell = dataRow.createCell(2);
 				gradeCell.setCellValue(students.get(i).getAverageGrade());
 			}
