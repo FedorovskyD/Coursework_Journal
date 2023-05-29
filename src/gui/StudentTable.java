@@ -10,10 +10,17 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 /**
- * проверен
+ * StudentTable - пользовательский компонент, представляющий таблицу студентов.
+ * Наследуется от класса JTable.
  */
 public class StudentTable extends JTable {
-
+	/**
+	 * Конструктор класса StudentTable.
+	 * Создает таблицу студентов на основе группы и указывает, является ли это лекцией.
+	 * @param group группа студентов
+	 * @param isLecture флаг, указывающий, является ли это лекцией
+	 * @param lessonJComboBox выпадающий список с уроками
+	 */
 	public StudentTable(Group group, boolean isLecture, JComboBox<Lesson> lessonJComboBox) {
 		super(new StudentTableModel(group, isLecture));
 		setDefaultRenderer(Object.class, new StudentTableCellRender(getStudentTableModel().getFIRST_LAB_COLUMN_INDEX()));

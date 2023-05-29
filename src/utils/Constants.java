@@ -1,7 +1,9 @@
 package utils;
 
 import java.awt.*;
-
+/**
+ * Класс Constants - содержит константы, используемые в приложении.
+ */
 public class Constants {
 	public static final Color FIRST_ROW_COLOR = new Color(238, 234, 234);
 	public static final Color SECOND_ROW_COLOR = Color.WHITE;

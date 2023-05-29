@@ -6,6 +6,9 @@ import gui.MainFrame;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Слушатель событий мыши на таблице со студентами наследуется от MouseAdapter.
+ */
 public class StudentTableMouseListener extends MouseAdapter {
 	private final MainFrame mainFrame;
 

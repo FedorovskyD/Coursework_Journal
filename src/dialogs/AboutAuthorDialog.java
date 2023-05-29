@@ -1,6 +1,5 @@
 package dialogs;
 
-import gui.StudentCard;
 import utils.PhotoUtils;
 
 import javax.swing.*;
@@ -8,8 +7,15 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class AboutDialog extends JDialog {
-    public AboutDialog(JFrame parent) {
+/**
+ * Класс с информацией об авторах
+ */
+public class AboutAuthorDialog extends JDialog {
+    /**
+     * Конструктор класса с информацией об авторах
+     * @param parent главное окно
+     */
+    public AboutAuthorDialog(JFrame parent) {
         super(parent, "Об авторе", true);
 
         // Общая панель

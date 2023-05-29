@@ -9,9 +9,11 @@ import gui.LessonButton;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-
+/**
+ * Слушатель окна кнопок занятий, наследуется от класса KeyAdapter.
+ */
 public class LessonButtonKeyListener extends KeyAdapter {
-	private StudentCard studentCard;
+	private final StudentCard studentCard;
 
 	public LessonButtonKeyListener(StudentCard studentCard) {
 		this.studentCard = studentCard;

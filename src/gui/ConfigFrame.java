@@ -10,6 +10,9 @@ import java.io.*;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * Окно для получениия данных подключения к БД
+ */
 public class ConfigFrame extends JFrame {
 	private final JTextField databaseField;
 	private final JTextField hostField;
@@ -18,6 +21,10 @@ public class ConfigFrame extends JFrame {
 	private final JPasswordField passwordField;
 	private final JCheckBox showPasswordCheckbox;
 
+	/**
+	 * Конструктор окна для получениия данных подключения к БД
+	 * @param configFile файл с данными
+	 */
 	public ConfigFrame(File configFile) {
 		setTitle("Конфигурация подключения к базе данных");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

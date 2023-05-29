@@ -14,6 +14,9 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Слушатель главного окна, реализует интерфейсы ActionListener и ListSelectionListener.
+ */
 public class MainFrameListener implements ActionListener, ListSelectionListener {
 
 	private final MainFrame mainFrame;
@@ -26,9 +29,9 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == mainFrame.getJbtnAddStudent()) {
 			new AddStudentDialog(mainFrame);
-		} else if (e.getSource() == mainFrame.getBtnAddGroup()) {
+		} else if (e.getSource() == mainFrame.getJbtnAddGroup()) {
 			addNewGroup();
-		} else if (e.getSource() == mainFrame.getBtnDeleteGroup()) {
+		} else if (e.getSource() == mainFrame.getJbtnDeleteGroup()) {
 			deleteGroup();
 		} else if (e.getSource() == mainFrame.getBtnAddLesson()) {
 			new AddLessonDialog(mainFrame);
@@ -46,7 +49,7 @@ public class MainFrameListener implements ActionListener, ListSelectionListener 
 		} else if (e.getSource() == mainFrame.getJradiobtnLecture() ||
 				e.getSource() == mainFrame.getJradiobtnLab()) {
 			onRadioActionPerformed();
-		} else if (e.getSource()==mainFrame.getBtnDeleteLesson()) {
+		} else if (e.getSource()==mainFrame.getJbtnDeleteLesson()) {
 			new DeleteLessonDialog(mainFrame);
 		}
 

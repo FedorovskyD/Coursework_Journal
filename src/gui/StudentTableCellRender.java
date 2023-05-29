@@ -7,20 +7,38 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 
 /**
- * Класс отвечающий за отображение таблицы
+ * Класс StudentTableCellRender - настраивает отображение ячеек в таблице студентов.
+ * Наследуется от класса DefaultTableCellRenderer.
  */
 public class StudentTableCellRender extends DefaultTableCellRenderer {
+	/**
+	 * Конструктор класса StudentTableCellRender.
+	 * @param column Номер колонки для подсветки
+	 */
 	public StudentTableCellRender(int column) {
 		columnToHighlight = column;
 	}
 
 	private final int columnToHighlight; // номер колонки для подсветки
 
-
+	/**
+	 * Проверяет, нужно ли подсветить указанную колонку.
+	 * @param column Номер колонки
+	 * @return true, если колонка нуждается в подсветке, иначе - false
+	 */
 	private boolean isColumnHighlighted(int column) {
 		return column == columnToHighlight;
 	}
-
+	/**
+	 * Переопределенный метод getTableCellRendererComponent для настройки отображения ячеек таблицы.
+	 * @param table Таблица
+	 * @param value Значение ячейки
+	 * @param isSelected Выбрана ли ячейка
+	 * @param hasFocus Имеет ли ячейка фокус
+	 * @param row Номер строки
+	 * @param column Номер колонки
+	 * @return Компонент отображения ячейки
+	 */
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 		Component cellComponent = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);

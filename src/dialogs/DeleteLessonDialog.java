@@ -152,6 +152,9 @@ public class DeleteLessonDialog extends JDialog {
 			jcmbLesson.setModel(new DefaultComboBoxModel<>(group.getLabs().toArray(new Lesson[0])));
 		}
 	}
+	/*
+	Проверяем существует ли хотя бы одно занятие
+	 */
 	private boolean hasAnyLesson(List<Group> groups) {
 		for (Group group : groups) {
 			if (!group.getLabs().isEmpty() || !group.getLectures().isEmpty()) {

@@ -1,6 +1,6 @@
 package gui;
 
-import dialogs.AboutDialog;
+import dialogs.AboutAuthorDialog;
 import dialogs.EmailConfigDialog;
 import database.dao.GroupDao;
 import database.dao.impl.GroupDaoImpl;
@@ -34,7 +34,7 @@ import java.util.Objects;
  * и отправки этого отчета по электронной почте.
  */
 public class MainFrame extends JFrame {
-	private final JButton jbtnAddStudent, jbtnAddLab, btnAddGroup, btnDeleteGroup, btnDeleteLesson;
+	private final JButton jbtnAddStudent, jbtnAddLab, jbtnAddGroup, jbtnDeleteGroup, jbtnDeleteLesson;
 	private final StudentTable studentTable;
 	private final StudentCard studentCard;
 	private final JRadioButton jradiobtnLecture, jradiobtnLab, jradiobtnInc, jradiobtnDec;
@@ -101,13 +101,28 @@ public class MainFrame extends JFrame {
 		jcmbGroupNumber.setPreferredSize(new Dimension(100, 30));
 		jcmbGroupNumber.setMaximumSize(jcmbGroupNumber.getPreferredSize());
 		// Создаем кнопки
+		Dimension btnDimension = new Dimension(200,30);
 		JButton btnSaveTable = new JButton("Сохранить таблицу в файл");
+		btnSaveTable.setMinimumSize(btnDimension);
+		btnSaveTable.setMaximumSize(btnDimension);
 		jbtnAddStudent = new JButton("Добавить студента");
-		btnAddGroup = new JButton("Добавить группу");
-		btnDeleteGroup = new JButton("Удалить группу");
+		jbtnAddStudent.setMinimumSize(btnDimension);
+		jbtnAddStudent.setMinimumSize(btnDimension);
+		jbtnAddGroup = new JButton("Добавить группу");
+		jbtnAddGroup.setMinimumSize(btnDimension);
+		jbtnAddGroup.setMaximumSize(btnDimension);
+		jbtnDeleteGroup = new JButton("Удалить группу");
+		jbtnDeleteGroup.setMinimumSize(btnDimension);
+		jbtnDeleteGroup.setMaximumSize(btnDimension);
 		jbtnAddLab = new JButton("Добавить занятие");
-		btnDeleteLesson = new JButton("Удалить занятие");
-		JButton btnSendByEmail = new JButton("Отправить на почту");
+		jbtnAddLab.setMinimumSize(btnDimension);
+		jbtnAddLab.setMaximumSize(btnDimension);
+		jbtnDeleteLesson = new JButton("Удалить занятие");
+		jbtnDeleteLesson.setMinimumSize(btnDimension);
+		jbtnDeleteLesson.setMaximumSize(btnDimension);
+		JButton jbtnSendByEmail = new JButton("Отправить на почту");
+		jbtnSendByEmail.setMinimumSize(btnDimension);
+		jbtnSendByEmail.setMaximumSize(btnDimension);
 		//Создаем combobox для выбора даты занятия
 		jcmbCurrentDate = new JComboBox<>();
 		refreshDateCmb();
@@ -145,12 +160,12 @@ public class MainFrame extends JFrame {
 						.addComponent(scrollPane)
 						.addGroup(groupLayout.createParallelGroup()
 								.addComponent(jbtnAddStudent)
-								.addComponent(btnAddGroup)
-								.addComponent(btnDeleteGroup)
+								.addComponent(jbtnAddGroup)
+								.addComponent(jbtnDeleteGroup)
 								.addComponent(jbtnAddLab)
-								.addComponent(btnDeleteLesson)
+								.addComponent(jbtnDeleteLesson)
 								.addComponent(btnSaveTable)
-								.addComponent(btnSendByEmail))
+								.addComponent(jbtnSendByEmail))
 				)
 		);
 		groupLayout.setVerticalGroup(groupLayout.createParallelGroup()
@@ -171,12 +186,13 @@ public class MainFrame extends JFrame {
 								.addComponent(jCheckBoxMarkUnder))
 						.addComponent(scrollPane))
 				.addGroup(groupLayout.createSequentialGroup()
+						.addGap(50)
 						.addComponent(jbtnAddStudent)
-						.addComponent(btnAddGroup)
-						.addComponent(btnDeleteGroup)
+						.addComponent(jbtnAddGroup)
+						.addComponent(jbtnDeleteGroup)
 						.addComponent(jbtnAddLab)
-						.addComponent(btnDeleteLesson)
-						.addComponent(btnSendByEmail)
+						.addComponent(jbtnDeleteLesson)
+						.addComponent(jbtnSendByEmail)
 						.addComponent(btnSaveTable))
 		);
 		// Добавление слушателей
@@ -190,8 +206,8 @@ public class MainFrame extends JFrame {
 		StudentTableMouseListener studentTableMouseListener = new StudentTableMouseListener(this);
 		StudentTableKeyListener studentTableKeyListener = new StudentTableKeyListener(this);
 		jbtnAddStudent.addActionListener(mainFrameListener);
-		btnAddGroup.addActionListener(mainFrameListener);
-		btnDeleteGroup.addActionListener(mainFrameListener);
+		jbtnAddGroup.addActionListener(mainFrameListener);
+		jbtnDeleteGroup.addActionListener(mainFrameListener);
 		jbtnAddLab.addActionListener(mainFrameListener);
 		studentTable.getSelectionModel().addListSelectionListener(mainFrameListener);
 		jcmbGroupNumber.addActionListener(mainFrameListener);
@@ -199,7 +215,7 @@ public class MainFrame extends JFrame {
 		jradiobtnLecture.addActionListener(mainFrameListener);
 		jradiobtnLab.addActionListener(mainFrameListener);
 		jradiobtnInc.addActionListener(mainFrameListener);
-		btnDeleteLesson.addActionListener(mainFrameListener);
+		jbtnDeleteLesson.addActionListener(mainFrameListener);
 		jcmbSortOption.addActionListener(mainFrameListener);
 		jcmbCurrentDate.addActionListener(mainFrameListener);
 		studentTable.getSelectionModel().addListSelectionListener(studentTableListSelectionListener);
@@ -207,7 +223,7 @@ public class MainFrame extends JFrame {
 		studentTable.addKeyListener(studentTableKeyListener);
 		menuItemConfigEmail.addActionListener(e -> new EmailConfigDialog(null).setVisible(true));
 		// Слушатель кнопки для отправки отчета по почте
-		btnSendByEmail.addActionListener(e -> {
+		jbtnSendByEmail.addActionListener(e -> {
 			String input = JOptionPane.showInputDialog(null, "Введите получателей через запятую:");
 			if (input != null) {
 				String body = getCurrentGroup().getName() + (jradiobtnLecture.isSelected() ? " Лекции" : " Лабораторные");
@@ -228,11 +244,10 @@ public class MainFrame extends JFrame {
 				if (configFile.exists()) {
 					new ConfigFrame(configFile).setVisible(true);
 				}
-				System.out.println("Выбран вариант 'Да'");
 			}
 		});
 		menuItemHelp.addActionListener(e -> new ProgramInfoWindow(studentCard.getMainWindow()));
-		menuItemAboutAuthor.addActionListener(e -> new AboutDialog(null));
+		menuItemAboutAuthor.addActionListener(e -> new AboutAuthorDialog(null));
 		btnSaveTable.addActionListener(e -> {
 			JFileChooser fileChooser = new JFileChooser();
 			// Устанавливаем режим выбора директории
@@ -368,8 +383,8 @@ public class MainFrame extends JFrame {
 	 *
 	 * @return кнопка "Добавить группу"
 	 */
-	public JButton getBtnAddGroup() {
-		return btnAddGroup;
+	public JButton getJbtnAddGroup() {
+		return jbtnAddGroup;
 	}
 
 	/**
@@ -377,8 +392,8 @@ public class MainFrame extends JFrame {
 	 *
 	 * @return кнопка "Удалить группу"
 	 */
-	public JButton getBtnDeleteGroup() {
-		return btnDeleteGroup;
+	public JButton getJbtnDeleteGroup() {
+		return jbtnDeleteGroup;
 	}
 
 	/**
@@ -602,7 +617,7 @@ public class MainFrame extends JFrame {
 	 *
 	 * @return кнопка "Удалить занятие"
 	 */
-	public JButton getBtnDeleteLesson() {
-		return btnDeleteLesson;
+	public JButton getJbtnDeleteLesson() {
+		return jbtnDeleteLesson;
 	}
 }

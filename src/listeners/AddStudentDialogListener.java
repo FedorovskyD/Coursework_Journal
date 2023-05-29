@@ -12,7 +12,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
-
+/**
+ * Слушатель окна добавения студента, реализует интерфейс ActionListener.
+ */
 public class AddStudentDialogListener implements ActionListener {
 	private final AddStudentDialog addStudentDialog;
 

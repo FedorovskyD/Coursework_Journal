@@ -6,6 +6,9 @@ import gui.MainFrame;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+/**
+ * Слушатель выбора строки в таблице со студентами, реализует интерфейс ListSelectionListener.
+ */
 public class StudentTableListSelectionListener implements ListSelectionListener {
 	private final MainFrame mainFrame;
 

@@ -13,8 +13,16 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+/**
+ * Утилита ExcelTableUtil предоставляет методы для создания Excel-таблиц.
+ */
 public class ExcelTableUtil {
-
+	/**
+	 * Создает таблицу посещаемости в формате Excel.
+	 *
+	 * @param studentTableModel модель таблицы студентов
+	 * @return массив байтов, представляющих таблицу в формате Excel
+	 */
 	public static byte[] createAttendanceTable(StudentTableModel studentTableModel) {
 		List<Student> students = studentTableModel.getStudents();
 		List<Lesson> lessons = studentTableModel.getLessons();

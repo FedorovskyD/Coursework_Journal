@@ -6,6 +6,9 @@ import gui.LessonButton;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+/**
+ * Слушатель событий нажатия клавиш мыши на кнопке с занятием, наследуется от MouseAdapter.
+ */
 public class LessonButtonMouseListener extends MouseAdapter {
 	private final StudentCard studentCard;
 

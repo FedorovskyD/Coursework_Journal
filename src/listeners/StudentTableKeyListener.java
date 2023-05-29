@@ -6,6 +6,9 @@ import gui.StudentTable;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+/**
+ * Слушатель нажатия клавиш на таблице студентов, наследуется от класса KeyAdapter.
+ */
 public class StudentTableKeyListener extends KeyAdapter {
 	private final MainFrame mainFrame;
 

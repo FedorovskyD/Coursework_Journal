@@ -9,8 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Comparator;
 
+/**
+ * Слушатель окна добавения занятия, реализует интерфейс ActionListener.
+ */
 public class AddLessonDialogListener implements ActionListener {
-	private AddLessonDialog addLessonDialog;
+	private final AddLessonDialog addLessonDialog;
 
 	public AddLessonDialogListener(AddLessonDialog addLessonDialog) {
 		this.addLessonDialog = addLessonDialog;

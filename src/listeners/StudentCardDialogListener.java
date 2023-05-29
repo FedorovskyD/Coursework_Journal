@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+/**
+ * Слушатель окна с карточкой стуента, реализует интерфейс ActionListener.
+ */
 public class StudentCardDialogListener implements ActionListener {
 	private final StudentCard studentCard;
 	public StudentCardDialogListener(StudentCard studentCard){

@@ -11,12 +11,23 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
 import javax.swing.*;
+/**
+ * Класс EmailSender предоставляет методы для отправки электронных писем.
+ */
 
 public class EmailSender {
 	private static final String CONFIG_FILE_NAME = "config.properties";
 	private static final String MAIL_USERNAME = "mail.username";
 	private static final String MAIL_PASSWORD = "mail.password";
-
+	/**
+	 * Отправляет электронное письмо.
+	 *
+	 * @param recipients список получателей (адреса электронной почты)
+	 * @param subject    тема письма
+	 * @param body       текст письма
+	 * @param fileData   данные вложенного файла
+	 * @param fileName   имя вложенного файла
+	 */
 	public static void sendEmail(String recipients, String subject, String body, byte[] fileData, String fileName) {
 
 		// Загрузка свойств email

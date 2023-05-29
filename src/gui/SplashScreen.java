@@ -5,6 +5,10 @@ import utils.PhotoUtils;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * SplashScreen - класс, представляющий заставку приложения.
+ * Наследуется от класса JFrame.
+ */
 public class SplashScreen extends JFrame {
 	private final JButton jbtnNext;
 
@@ -15,7 +19,10 @@ public class SplashScreen extends JFrame {
 			jlblAuthor1Initials, jlblAuthor2Initials, jlblReviewerInfo, jlblReviewerInitials, jlblPlace, jlblImage;
 	JPanel jpanelTop, jpanelTitle, jpanelMiddle, jpanelPlace, jpanelButtons, jpanelBntu, jpanelFitr, jpanelDepartment,
 			jpanelCourseWork, jpanelDiscipline, jpanelTitleName, jpanelIconImage, jpanelOtherInfo, jpanelAuthorInfo, jpanelReviewerInfo;
-
+	/**
+	 * Конструктор класса SplashScreen.
+	 * Создает окно заставки и инициализирует все компоненты.
+	 */
 	public SplashScreen() {
 
 		setSize(800, 700);
